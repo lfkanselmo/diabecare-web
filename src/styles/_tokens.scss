@@ -1,0 +1,87 @@
+:root {
+  // ── Colores primarios
+  --color-primary:          #1565C0;
+  --color-primary-light:    #1976D2;
+  --color-primary-dark:     #0D47A1;
+
+  // ── Colores semánticos
+  --color-success:          #2E7D32;
+  --color-success-light:    #E8F5E9;
+  --color-warning:          #F57F17;
+  --color-warning-light:    #FFF8E1;
+  --color-danger:           #C62828;
+  --color-danger-light:     #FFEBEE;
+  --color-info:             #00695C;
+  --color-info-light:       #E0F2F1;
+
+  // ── Estados de glucosa
+  --glucose-critically-low:  #880E4F;
+  --glucose-low:             #C62828;
+  --glucose-normal:          #2E7D32;
+  --glucose-high:            #F57F17;
+  --glucose-critically-high: #BF360C;
+
+  // ── Superficies
+  --color-background:       #F5F7FA;
+  --color-surface:          #FFFFFF;
+  --color-surface-variant:  #F0F4F8;
+  --color-border:           #E0E0E0;
+
+  // ── Texto
+  --color-text-primary:     #1C2833;
+  --color-text-secondary:   #546E7A;
+  --color-text-disabled:    #9E9E9E;
+  --color-text-inverse:     #FFFFFF;
+
+  // ── Tipografía
+  --font-family:            'Inter', sans-serif;
+  --font-size-xs:           12px;
+  --font-size-sm:           14px;
+  --font-size-md:           16px;
+  --font-size-lg:           18px;
+  --font-size-xl:           22px;
+  --font-size-2xl:          28px;
+  --font-size-metric:       36px;
+
+  --font-weight-regular:    400;
+  --font-weight-medium:     500;
+  --font-weight-semibold:   600;
+  --font-weight-bold:       700;
+
+  --line-height-tight:      1.2;
+  --line-height-normal:     1.5;
+  --line-height-relaxed:    1.75;
+
+  // ── Espaciado
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  // ── Bordes
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-full: 9999px;
+
+  // ── Sombras
+  --shadow-sm:  0 1px 4px rgba(0, 0, 0, 0.08);
+  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.12);
+
+  // ── Layout
+  --sidebar-width:        260px;
+  --navbar-height:        64px;
+  --content-max-width:    1280px;
+
+  // ── Transiciones
+  --transition-fast:      150ms ease;
+  --transition-normal:    250ms ease;
+  --transition-slow:      400ms ease;
+}

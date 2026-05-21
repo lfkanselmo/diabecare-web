@@ -1,0 +1,15 @@
+<nav class="sidebar" [class.sidebar--open]="isOpen" [class.sidebar--closed]="!isOpen">
+<ul class="sidebar__nav">
+  @for (item of navItems; track item.route) {
+  <li class="sidebar__item">
+
+    <a class="sidebar__link" [routerLink]="item.route" routerLinkActive="sidebar__link--active">
+    <mat-icon class="sidebar__icon">{{ item.icon }}</mat-icon>
+    @if (isOpen) {
+    <span class="sidebar__label">{{ item.label }}</span>
+    }
+  </a>
+  </li>
+}
+</ul>
+</nav>

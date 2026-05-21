@@ -1,0 +1,148 @@
+<div class="dashboard">
+  <div class="dashboard__header">
+    <div>
+      <h1 class="dashboard__title">Dashboard</h1>
+      <p class="dashboard__date">{{ today | date:'EEEE, d MMMM yyyy':'':'es' }}</p>
+    </div>
+    <a mat-raised-button color="primary" routerLink="/app/glucose/register">
+      <mat-icon>add</mat-icon>
+      Registrar glucosa
+    </a>
+  </div>
+
+  <div class="dashboard__grid">
+    <div class="dashboard__card dashboard__card--glucose">
+      <div class="dashboard__card-header">
+        <mat-icon>water_drop</mat-icon>
+        <span>Glucosa promedio (7 días)</span>
+      </div>
+      <div class="dashboard__metric">
+        @if (glucoseStats()) {
+          <span class="dashboard__metric-value">{{ glucoseStats()!.average | number:'1.0-0' }}</span>
+          <span class="dashboard__metric-unit">mg/dL</span>
+        } @else {
+          <span class="dashboard__metric-empty">Sin datos</span>
+        }
+      </div>
+      @if (glucoseStats()) {
+        <div class="dashboard__card-footer">
+          <span>TIR: {{ glucoseStats()!.timeInRangePercent | number:'1.0-1' }}%</span>
+          <span>HbA1c est.: {{ glucoseStats()!.estimatedHba1c | number:'1.0-1' }}%</span>
+        </div>
+      }
+      <a class="dashboard__card-link" routerLink="/app/glucose/history">Ver historial</a>
+    </div>
+
+    <div class="dashboard__card dashboard__card--calories">
+      <div class="dashboard__card-header">
+        <mat-icon>restaurant</mat-icon>
+        <span>Calorías hoy</span>
+      </div>
+      <div class="dashboard__metric">
+        @if (dailySummary()) {
+          <span class="dashboard__metric-value">{{ dailySummary()!.totalCalories | number:'1.0-0' }}</span>
+          <span class="dashboard__metric-unit">kcal</span>
+        } @else {
+          <span class="dashboard__metric-empty">Sin datos</span>
+        }
+      </div>
+      @if (dailySummary()?.calorieGoal) {
+        <div class="dashboard__card-footer">
+          <span>Meta: {{ dailySummary()!.calorieGoal }} kcal</span>
+          @if (dailySummary()!.goalReached) {
+            <span class="dashboard__badge dashboard__badge--success">Meta cumplida</span>
+          }
+        </div>
+      }
+      <a class="dashboard__card-link" routerLink="/app/nutrition/log">Registrar comida</a>
+    </div>
+
+    <div class="dashboard__card dashboard__card--vitals">
+      <div class="dashboard__card-header">
+        <mat-icon>favorite</mat-icon>
+        <span>Último registro vital</span>
+      </div>
+      @if (latestVitals()) {
+        <div class="dashboard__vitals">
+          @if (latestVitals()!.weightKg) {
+            <div class="dashboard__vital-item">
+              <span class="dashboard__vital-label">Peso</span>
+              <span class="dashboard__vital-value">{{ latestVitals()!.weightKg }} kg</span>
+            </div>
+          }
+          @if (latestVitals()!.bmi) {
+            <div class="dashboard__vital-item">
+              <span class="dashboard__vital-label">IMC</span>
+              <span class="dashboard__vital-value">{{ latestVitals()!.bmi | number:'1.0-1' }}</span>
+            </div>
+          }
+          @if (latestVitals()!.systolicBp) {
+            <div class="dashboard__vital-item">
+              <span class="dashboard__vital-label">Presión</span>
+              <span class="dashboard__vital-value">
+                {{ latestVitals()!.systolicBp }}/{{ latestVitals()!.diastolicBp }}
+              </span>
+            </div>
+          }
+          @if (latestVitals()!.hba1c) {
+            <div class="dashboard__vital-item">
+              <span class="dashboard__vital-label">HbA1c</span>
+              <span class="dashboard__vital-value">{{ latestVitals()!.hba1c }}%</span>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="dashboard__metric-empty">Sin registros</p>
+      }
+      <a class="dashboard__card-link" routerLink="/app/vitals">Registrar signos</a>
+    </div>
+
+    <div class="dashboard__card dashboard__card--cv">
+      <div class="dashboard__card-header">
+        <mat-icon>show_chart</mat-icon>
+        <span>Variabilidad glucémica</span>
+      </div>
+      <div class="dashboard__metric">
+        @if (glucoseStats()) {
+          <span
+            class="dashboard__metric-value"
+            [class.dashboard__metric-value--warning]="glucoseStats()!.coefficientOfVariation >= 36"
+          >
+            {{ glucoseStats()!.coefficientOfVariation | number:'1.0-1' }}%
+          </span>
+          <span class="dashboard__metric-unit">CV</span>
+        } @else {
+          <span class="dashboard__metric-empty">Sin datos</span>
+        }
+      </div>
+      @if (glucoseStats()) {
+        <div class="dashboard__card-footer">
+          @if (glucoseStats()!.coefficientOfVariation >= 36) {
+            <span class="dashboard__badge dashboard__badge--warning">Variabilidad alta</span>
+          } @else {
+            <span class="dashboard__badge dashboard__badge--success">Variabilidad aceptable</span>
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="dashboard__actions">
+    <a mat-stroked-button routerLink="/app/glucose/register">
+      <mat-icon>water_drop</mat-icon>
+      Glucosa
+    </a>
+    <a mat-stroked-button routerLink="/app/nutrition/log">
+      <mat-icon>restaurant</mat-icon>
+      Comida
+    </a>
+    <a mat-stroked-button routerLink="/app/vitals">
+      <mat-icon>favorite</mat-icon>
+      Signos vitales
+    </a>
+    <a mat-stroked-button routerLink="/app/medications">
+      <mat-icon>medication</mat-icon>
+      Medicamentos
+    </a>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+
+  &__body {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    background-color: var(--color-background);
+    padding: var(--space-6);
+  }
+
+  &.sidebar-collapsed .shell__content {
+    margin-left: 0;
+  }
+}

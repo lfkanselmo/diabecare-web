@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '@core/guards/auth.guard';
+import { authGuard } from './core/guards/auth.guard';
 
 export const routes: Routes = [
     {
@@ -43,6 +43,11 @@ export const routes: Routes = [
                 path: 'medications',
                 loadChildren: () =>
                     import('./features/medications/medications.routes').then(m => m.MEDICATIONS_ROUTES)
+            },
+            {
+                path: '',
+                redirectTo: 'dashboard',
+                pathMatch: 'full'
             }
         ]
     },

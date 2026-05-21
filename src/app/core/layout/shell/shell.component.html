@@ -1,0 +1,9 @@
+<div class="shell" [class.sidebar-collapsed]="!sidebarOpen">
+  <app-navbar (menuToggle)="toggleSidebar()" />
+  <div class="shell__body">
+    <app-sidebar [isOpen]="sidebarOpen" />
+    <main class="shell__content">
+      <router-outlet />
+    </main>
+  </div>
+</div>

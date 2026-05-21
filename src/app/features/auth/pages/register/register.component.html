@@ -1,0 +1,141 @@
+<div class="register">
+  <div class="register__card">
+    <div class="register__header">
+      <mat-icon class="register__logo">monitor_heart</mat-icon>
+      <h1 class="register__title">DiabeCare</h1>
+      <p class="register__subtitle">Crea tu cuenta</p>
+    </div>
+
+    <mat-stepper orientation="vertical" #stepper>
+      <mat-step [stepControl]="accountForm" label="Datos de acceso">
+        <form [formGroup]="accountForm">
+          <div class="register__fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Correo electrónico</mat-label>
+              <input matInput formControlName="email" type="email" />
+              <mat-icon matSuffix>mail</mat-icon>
+              @if (accountForm.get('email')?.hasError('required')) {
+                <mat-error>El correo es obligatorio</mat-error>
+              }
+              @if (accountForm.get('email')?.hasError('email')) {
+                <mat-error>Ingresa un correo válido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contraseña</mat-label>
+              <input
+                matInput
+                formControlName="password"
+                [type]="hidePassword ? 'password' : 'text'"
+              />
+              <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+                <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+              </button>
+              @if (accountForm.get('password')?.hasError('minlength')) {
+                <mat-error>Mínimo 8 caracteres</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Confirmar contraseña</mat-label>
+              <input matInput formControlName="confirmPassword" type="password" />
+              @if (accountForm.hasError('passwordMismatch')) {
+                <mat-error>Las contraseñas no coinciden</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="register__actions">
+            <button mat-raised-button color="primary" matStepperNext type="button">
+              Siguiente
+            </button>
+          </div>
+        </form>
+      </mat-step>
+
+      <mat-step [stepControl]="profileForm" label="Perfil médico">
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="register__fields">
+            <mat-form-field appearance="outline">
+              <mat-label>Nombre completo</mat-label>
+              <input matInput formControlName="fullName" />
+              @if (profileForm.get('fullName')?.hasError('required')) {
+                <mat-error>El nombre es obligatorio</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de nacimiento</mat-label>
+              <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
+              <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
+              <mat-datepicker #dobPicker />
+              @if (profileForm.get('dateOfBirth')?.hasError('required')) {
+                <mat-error>La fecha de nacimiento es obligatoria</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de diabetes</mat-label>
+              <mat-select formControlName="diabetesType">
+                @for (type of diabetesTypes; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                }
+              </mat-select>
+              @if (profileForm.get('diabetesType')?.hasError('required')) {
+                <mat-error>Selecciona el tipo de diabetes</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha de diagnóstico</mat-label>
+              <input matInput [matDatepicker]="diagPicker" formControlName="diagnosisDate" />
+              <mat-datepicker-toggle matIconSuffix [for]="diagPicker" />
+              <mat-datepicker #diagPicker />
+              @if (profileForm.get('diagnosisDate')?.hasError('required')) {
+                <mat-error>La fecha de diagnóstico es obligatoria</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Talla (cm)</mat-label>
+              <input matInput formControlName="heightCm" type="number" />
+              <mat-icon matSuffix>height</mat-icon>
+              @if (profileForm.get('heightCm')?.hasError('required')) {
+                <mat-error>La talla es obligatoria</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          @if (errorMessage) {
+            <div class="register__error">
+              <mat-icon>error_outline</mat-icon>
+              <span>{{ errorMessage }}</span>
+            </div>
+          }
+
+          <div class="register__actions">
+            <button mat-button matStepperPrevious type="button">Atrás</button>
+            <button
+              mat-raised-button
+              color="primary"
+              type="submit"
+              [disabled]="loading"
+            >
+              @if (loading) {
+                <mat-spinner diameter="20" />
+              } @else {
+                Crear cuenta
+              }
+            </button>
+          </div>
+        </form>
+      </mat-step>
+    </mat-stepper>
+
+    <p class="register__footer">
+      ¿Ya tienes cuenta?
+      <a routerLink="/auth/login">Inicia sesión</a>
+    </p>
+  </div>
+</div>

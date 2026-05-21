@@ -31,4 +31,15 @@ export class AuthService {
     private hasToken(): boolean {
         return !!localStorage.getItem(TOKEN_KEY);
     }
+
+    getPatientId(): string | null {
+        const raw = localStorage.getItem(PATIENT_KEY);
+        if (!raw) return null;
+        try {
+            const patient = JSON.parse(raw);
+            return patient?.patientId ?? null;
+        } catch {
+            return null;
+        }
+    }
 }

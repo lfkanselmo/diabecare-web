@@ -1,0 +1,65 @@
+<div class="login">
+  <div class="login__card">
+    <div class="login__header">
+      <mat-icon class="login__logo">monitor_heart</mat-icon>
+      <h1 class="login__title">DiabeCare</h1>
+      <p class="login__subtitle">Inicia sesión en tu cuenta</p>
+    </div>
+
+    <form class="login__form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput formControlName="email" type="email" autocomplete="email" />
+        <mat-icon matSuffix>mail</mat-icon>
+        @if (form.get('email')?.hasError('required')) {
+          <mat-error>El correo es obligatorio</mat-error>
+        }
+        @if (form.get('email')?.hasError('email')) {
+          <mat-error>Ingresa un correo válido</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Contraseña</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          [type]="hidePassword ? 'password' : 'text'"
+          autocomplete="current-password"
+        />
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        @if (form.get('password')?.hasError('required')) {
+          <mat-error>La contraseña es obligatoria</mat-error>
+        }
+      </mat-form-field>
+
+      @if (errorMessage) {
+        <div class="login__error">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ errorMessage }}</span>
+        </div>
+      }
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        class="login__submit"
+        [disabled]="loading"
+      >
+        @if (loading) {
+          <mat-spinner diameter="20" />
+        } @else {
+          Ingresar
+        }
+      </button>
+    </form>
+
+    <p class="login__footer">
+      ¿No tienes cuenta?
+      <a routerLink="/auth/register">Regístrate aquí</a>
+    </p>
+  </div>
+</div>

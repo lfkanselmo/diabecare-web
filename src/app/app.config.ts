@@ -6,7 +6,6 @@ import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
 import { routes } from './app.routes';
-import { environment } from '../environments/environment';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 
@@ -18,6 +17,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimationsAsync(),
     provideStore({}),
     provideEffects([]),
-    provideStoreDevtools({ maxAge: 25, logOnly: environment.production }),
+    provideStoreDevtools({ maxAge: 25, logOnly: false }),
   ]
 };

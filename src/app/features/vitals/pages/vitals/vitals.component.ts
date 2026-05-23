@@ -1,8 +1,91 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { DatePipe, DecimalPipe } from '@angular/common';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { VitalsService } from '../../services/vitals.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { VitalSignResponse } from '../../../../shared/models/vitals.model';
 
 @Component({
     selector: 'app-vitals',
     standalone: true,
-    template: `<p>Vitals</p>`
+    imports: [
+        ReactiveFormsModule,
+        DatePipe,
+        DecimalPipe,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatIconModule,
+        MatSnackBarModule,
+        MatDividerModule
+    ],
+    templateUrl: './vitals.component.html',
+    styleUrl: './vitals.component.scss'
 })
-export class VitalsComponent { }
+export class VitalsComponent implements OnInit {
+
+    private readonly fb = inject(FormBuilder);
+    private readonly vitalsService = inject(VitalsService);
+    private readonly authService = inject(AuthService);
+    private readonly snackBar = inject(MatSnackBar);
+
+    loading = signal(false);
+    history = signal<VitalSignResponse[]>([]);
+
+    form: FormGroup = this.fb.group({
+        weightKg: [null],
+        heightCm: [null],
+        systolicBp: [null],
+        diastolicBp: [null],
+        heartRate: [null],
+        hba1c: [null],
+        notes: ['']
+    });
+
+    readonly bmiLabels: Record<string, string> = {
+        UNDERWEIGHT: 'Bajo peso',
+        NORMAL: 'Normal',
+        OVERWEIGHT: 'Sobrepeso',
+        OBESE: 'Obesidad'
+    };
+
+    ngOnInit(): void {
+        this.loadHistory();
+    }
+
+    onSubmit(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
+        this.loading.set(true);
+
+        this.vitalsService.register(patientId, this.form.getRawValue()).subscribe({
+            next: (vital) => {
+                this.history.update(list => [vital, ...list]);
+                this.form.reset();
+                this.snackBar.open('Signos vitales registrados', 'Cerrar', { duration: 3000 });
+                this.loading.set(false);
+            },
+            error: () => {
+                this.snackBar.open('Error al registrar los signos vitales', 'Cerrar', { duration: 3000 });
+                this.loading.set(false);
+            }
+        });
+    }
+
+    private loadHistory(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
+        this.vitalsService.getAll(patientId).subscribe({
+            next: (data) => this.history.set(data),
+            error: () => { }
+        });
+    }
+}

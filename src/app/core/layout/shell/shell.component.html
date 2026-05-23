@@ -1,5 +1,8 @@
 <div class="shell" [class.sidebar-collapsed]="!sidebarOpen">
   <app-navbar (menuToggle)="toggleSidebar()" />
+  @if (loadingService.isLoading()) {
+    <mat-progress-bar mode="indeterminate" />
+  }
   <div class="shell__body">
     <app-sidebar [isOpen]="sidebarOpen" />
     <main class="shell__content">

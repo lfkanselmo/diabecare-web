@@ -1,0 +1,140 @@
+<div class="meal-log">
+  <div class="meal-log__header">
+    <button mat-icon-button (click)="onCancel()">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 class="meal-log__title">Registrar comida</h1>
+  </div>
+
+  <div class="meal-log__layout">
+    <div class="meal-log__card">
+      <h2 class="meal-log__section-title">Datos de la comida</h2>
+
+      <form [formGroup]="mealForm">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de comida</mat-label>
+          <mat-select formControlName="mealType">
+            @for (type of mealTypes; track type.value) {
+              <mat-option [value]="type.value">{{ type.label }}</mat-option>
+            }
+          </mat-select>
+          @if (mealForm.get('mealType')?.hasError('required')) {
+            <mat-error>Selecciona el tipo de comida</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Fecha y hora</mat-label>
+          <input matInput formControlName="consumedAt" type="datetime-local" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Notas (opcional)</mat-label>
+          <textarea matInput formControlName="notes" rows="2"></textarea>
+        </mat-form-field>
+      </form>
+
+      <mat-divider />
+
+      <h2 class="meal-log__section-title">Agregar alimentos</h2>
+
+      <form [formGroup]="itemForm" (ngSubmit)="onAddItem()" class="meal-log__item-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre del alimento</mat-label>
+          <input matInput formControlName="foodName" />
+          @if (itemForm.get('foodName')?.hasError('required')) {
+            <mat-error>El nombre es obligatorio</mat-error>
+          }
+        </mat-form-field>
+
+        <div class="meal-log__row">
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad (g)</mat-label>
+            <input matInput formControlName="quantityGrams" type="number" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Calorías (kcal)</mat-label>
+            <input matInput formControlName="calories" type="number" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Carbohidratos (g)</mat-label>
+            <input matInput formControlName="carbohydrates" type="number" />
+          </mat-form-field>
+        </div>
+
+        <div class="meal-log__row">
+          <mat-form-field appearance="outline">
+            <mat-label>Proteínas (g)</mat-label>
+            <input matInput formControlName="proteins" type="number" />
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Grasas (g)</mat-label>
+            <input matInput formControlName="fats" type="number" />
+          </mat-form-field>
+        </div>
+
+        <button mat-stroked-button color="primary" type="submit" [disabled]="itemForm.invalid">
+          <mat-icon>add</mat-icon>
+          Agregar alimento
+        </button>
+      </form>
+    </div>
+
+    <div class="meal-log__card">
+      <h2 class="meal-log__section-title">Resumen</h2>
+
+      @if (items().length === 0) {
+        <div class="meal-log__empty">
+          <mat-icon>restaurant</mat-icon>
+          <p>Agrega alimentos a tu comida</p>
+        </div>
+      } @else {
+        <div class="meal-log__totals">
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">Calorías</span>
+            <span class="meal-log__total-value">{{ totalCalories | number:'1.0-0' }} kcal</span>
+          </div>
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">Carbohidratos</span>
+            <span class="meal-log__total-value">{{ totalCarbs | number:'1.0-1' }} g</span>
+          </div>
+        </div>
+
+        <div class="meal-log__items">
+          @for (item of items(); track item.foodName; let i = $index) {
+            <div class="meal-log__item">
+              <div class="meal-log__item-info">
+                <span class="meal-log__item-name">{{ item.foodName }}</span>
+                <span class="meal-log__item-detail">
+                  {{ item.quantityGrams }}g — {{ item.calories | number:'1.0-0' }} kcal
+                </span>
+              </div>
+              <button mat-icon-button color="warn" (click)="onRemoveItem(i)">
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      }
+
+      <div class="meal-log__actions">
+        <button mat-stroked-button (click)="onCancel()">Cancelar</button>
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="mealForm.invalid || items().length === 0 || loading()"
+          (click)="onSubmit()"
+        >
+          @if (loading()) {
+            Guardando...
+          } @else {
+            Guardar comida
+          }
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

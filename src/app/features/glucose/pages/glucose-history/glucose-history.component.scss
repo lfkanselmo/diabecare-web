@@ -7,6 +7,14 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+    gap: var(--space-4);
+  }
+
+  &__header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
   }
 
   &__title {
@@ -37,15 +45,20 @@
     }
   }
 
+  &__card {
+    background: var(--color-surface);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    padding: var(--space-6);
+  }
+
   &__table-container {
     background: var(--color-surface);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow-sm);
     overflow: hidden;
 
-    table {
-      width: 100%;
-    }
+    table { width: 100%; }
   }
 
   &__value {

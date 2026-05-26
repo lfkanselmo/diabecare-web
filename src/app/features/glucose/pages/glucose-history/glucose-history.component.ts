@@ -1,29 +1,32 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { GlucoseReadingResponse, GlucoseStatus } from '../../../../shared/models/glucose.model';
-import { NgClass } from '@angular/common';
+import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
 
 @Component({
     selector: 'app-glucose-history',
     standalone: true,
     imports: [
-        NgClass,
         RouterLink,
         DatePipe,
         DecimalPipe,
+        NgClass,
         MatButtonModule,
         MatIconModule,
         MatTableModule,
         MatChipsModule,
-        MatSnackBarModule
+        MatButtonToggleModule,
+        MatSnackBarModule,
+        GlucoseChartComponent
     ],
     templateUrl: './glucose-history.component.html',
     styleUrl: './glucose-history.component.scss'
@@ -36,6 +39,7 @@ export class GlucoseHistoryComponent implements OnInit {
 
     readings = signal<GlucoseReadingResponse[]>([]);
     loading = signal(true);
+    view = signal<'chart' | 'table'>('chart');
 
     readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
 

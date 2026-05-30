@@ -12,6 +12,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
+import { FoodResponse } from '../../../../shared/models/food.model';
+import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
 
 @Component({
     selector: 'app-meal-log',
@@ -25,7 +27,8 @@ import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.m
         MatIconModule,
         MatSelectModule,
         MatSnackBarModule,
-        MatDividerModule
+        MatDividerModule,
+        FoodSearchComponent
     ],
     templateUrl: './meal-log.component.html',
     styleUrl: './meal-log.component.scss'
@@ -40,6 +43,7 @@ export class MealLogComponent {
 
     loading = signal(false);
     items = signal<MealItemRequest[]>([]);
+    selectedFood = signal<FoodResponse | null>(null);
 
     mealForm: FormGroup = this.fb.group({
         mealType: ['', Validators.required],
@@ -47,13 +51,8 @@ export class MealLogComponent {
         notes: ['']
     });
 
-    itemForm: FormGroup = this.fb.group({
-        foodName: ['', Validators.required],
-        quantityGrams: [null, [Validators.required, Validators.min(0.1)]],
-        calories: [null, [Validators.required, Validators.min(0)]],
-        carbohydrates: [null, [Validators.required, Validators.min(0)]],
-        proteins: [null],
-        fats: [null]
+    quantityForm: FormGroup = this.fb.group({
+        quantityGrams: [null, [Validators.required, Validators.min(0.1)]]
     });
 
     readonly mealTypes: { value: MealType; label: string }[] = [
@@ -71,10 +70,58 @@ export class MealLogComponent {
         return this.items().reduce((sum, i) => sum + i.carbohydrates, 0);
     }
 
+    get totalProteins(): number {
+        return this.items().reduce((sum, i) => sum + (i.proteins ?? 0), 0);
+    }
+
+    get totalFats(): number {
+        return this.items().reduce((sum, i) => sum + (i.fats ?? 0), 0);
+    }
+
+    get calculatedValues() {
+        const food = this.selectedFood();
+        const qty = this.quantityForm.get('quantityGrams')?.value;
+        if (!food || !qty || qty <= 0) return null;
+
+        const factor = qty / 100;
+        return {
+            calories: Math.round(food.caloriesPer100g * factor * 10) / 10,
+            carbohydrates: Math.round(food.carbsPer100g * factor * 10) / 10,
+            proteins: Math.round(food.proteinsPer100g * factor * 10) / 10,
+            fats: Math.round(food.fatsPer100g * factor * 10) / 10
+        };
+    }
+
+    onFoodSelected(food: FoodResponse): void {
+        this.selectedFood.set(food);
+        this.quantityForm.reset();
+    }
+
+    onClearFood(): void {
+        this.selectedFood.set(null);
+        this.quantityForm.reset();
+    }
+
     onAddItem(): void {
-        if (this.itemForm.invalid) return;
-        this.items.update(list => [...list, this.itemForm.getRawValue()]);
-        this.itemForm.reset();
+        if (!this.selectedFood() || this.quantityForm.invalid) return;
+        const calc = this.calculatedValues;
+        if (!calc) return;
+
+        const food = this.selectedFood()!;
+        const qty = this.quantityForm.get('quantityGrams')?.value;
+
+        this.items.update(list => [...list, {
+            foodName: food.name,
+            quantityGrams: qty,
+            calories: calc.calories,
+            carbohydrates: calc.carbohydrates,
+            proteins: calc.proteins,
+            fats: calc.fats,
+            foodCode: food.foodId
+        }]);
+
+        this.selectedFood.set(null);
+        this.quantityForm.reset();
     }
 
     onRemoveItem(index: number): void {
@@ -90,9 +137,15 @@ export class MealLogComponent {
         this.loading.set(true);
 
         const value = this.mealForm.getRawValue();
+
+        const localDate = value.consumedAt;
+        const consumedAt = localDate.length === 16
+            ? localDate + ':00'
+            : localDate;
+
         const request = {
             ...value,
-            consumedAt: new Date(value.consumedAt).toISOString(),
+            consumedAt,
             items: this.items()
         };
 
@@ -103,6 +156,7 @@ export class MealLogComponent {
             },
             error: () => {
                 this.snackBar.open('Error al registrar la comida', 'Cerrar', { duration: 3000 });
+                this.loading.set(false);
             }
         });
     }
@@ -110,4 +164,4 @@ export class MealLogComponent {
     onCancel(): void {
         this.router.navigate(['/app/dashboard']);
     }
-};
+}

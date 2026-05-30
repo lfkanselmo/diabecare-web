@@ -32,3 +32,15 @@ export interface GlucoseStatsResponse {
     timeAboveRangePercent: number;
     totalReadings: number;
 }
+
+export interface MealMarkerResponse {
+    consumedAt: string;
+    mealType: string;
+    totalCalories: number;
+    totalCarbohydrates: number;
+}
+
+export interface GlucoseCorrelationResponse {
+    readings: GlucoseReadingResponse[];
+    mealMarkers: MealMarkerResponse[];
+}

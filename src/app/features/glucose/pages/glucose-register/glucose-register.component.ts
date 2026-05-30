@@ -67,10 +67,11 @@ export class GlucoseRegisterComponent {
         this.loading.set(true);
 
         const value = this.form.getRawValue();
-        const request = {
-            ...value,
-            measuredAt: new Date(value.measuredAt).toISOString()
-        };
+        const measuredAt = value.measuredAt.length === 16
+            ? value.measuredAt + ':00'
+            : value.measuredAt;
+
+        const request = { ...value, measuredAt };
 
         this.glucoseService.register(patientId, request).subscribe({
             next: () => {

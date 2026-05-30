@@ -4,12 +4,15 @@ import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
-import { MatChipsModule } from '@angular/material/chips';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { GlucoseReadingResponse, GlucoseStatus } from '../../../../shared/models/glucose.model';
+import {
+    GlucoseReadingResponse,
+    GlucoseStatus,
+    MealMarkerResponse
+} from '../../../../shared/models/glucose.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
 
 @Component({
@@ -23,7 +26,6 @@ import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-ch
         MatButtonModule,
         MatIconModule,
         MatTableModule,
-        MatChipsModule,
         MatButtonToggleModule,
         MatSnackBarModule,
         GlucoseChartComponent
@@ -38,6 +40,7 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly snackBar = inject(MatSnackBar);
 
     readings = signal<GlucoseReadingResponse[]>([]);
+    mealMarkers = signal<MealMarkerResponse[]>([]);
     loading = signal(true);
     view = signal<'chart' | 'table'>('chart');
 
@@ -107,7 +110,8 @@ export class GlucoseHistoryComponent implements OnInit {
 
         this.glucoseService.getHistory(patientId, from.toISOString(), to).subscribe({
             next: (data) => {
-                this.readings.set(data);
+                this.readings.set(data.readings);
+                this.mealMarkers.set(data.mealMarkers);
                 this.loading.set(false);
             },
             error: () => this.loading.set(false)

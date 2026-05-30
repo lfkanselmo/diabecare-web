@@ -48,8 +48,6 @@ export class LoginComponent {
 
         this.authApiService.login(this.form.getRawValue()).subscribe({
             next: (response) => {
-                console.log('Login response:', response);
-                console.log('Patient:', response.patient);
                 this.authService.saveSession(response.accessToken, response.patient);
                 this.router.navigate(['/app/dashboard']);
             },

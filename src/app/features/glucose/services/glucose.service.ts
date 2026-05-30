@@ -3,10 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
-    GlucoseReadingResponse,
+    GlucoseCorrelationResponse,
     GlucoseStatsResponse,
     RegisterGlucoseRequest
-} from '@shared/models/glucose.model';
+} from '../../../shared/models/glucose.model';
 
 @Injectable({ providedIn: 'root' })
 export class GlucoseService {
@@ -14,13 +14,13 @@ export class GlucoseService {
     private readonly http = inject(HttpClient);
     private readonly baseUrl = `${environment.apiUrl}/glucose`;
 
-    register(patientId: string, request: RegisterGlucoseRequest): Observable<GlucoseReadingResponse> {
-        return this.http.post<GlucoseReadingResponse>(`${this.baseUrl}/${patientId}`, request);
+    register(patientId: string, request: RegisterGlucoseRequest) {
+        return this.http.post(`${this.baseUrl}/${patientId}`, request);
     }
 
-    getHistory(patientId: string, from: string, to: string): Observable<GlucoseReadingResponse[]> {
+    getHistory(patientId: string, from: string, to: string): Observable<GlucoseCorrelationResponse> {
         const params = new HttpParams().set('from', from).set('to', to);
-        return this.http.get<GlucoseReadingResponse[]>(
+        return this.http.get<GlucoseCorrelationResponse>(
             `${this.baseUrl}/${patientId}/history`, { params });
     }
 

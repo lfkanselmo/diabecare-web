@@ -1,0 +1,39 @@
+<div class="food-search">
+  <mat-form-field appearance="outline" class="food-search__input">
+    <mat-label>Buscar alimento</mat-label>
+    <input matInput [formControl]="searchControl" autocomplete="off" />
+    @if (searching()) {
+      <mat-spinner matSuffix diameter="20" />
+    } @else if (searchControl.value) {
+      <button mat-icon-button matSuffix (click)="onClear()">
+        <mat-icon>close</mat-icon>
+      </button>
+    } @else {
+      <mat-icon matSuffix>search</mat-icon>
+    }
+    <mat-hint>Escribe al menos 2 caracteres</mat-hint>
+  </mat-form-field>
+
+  @if (showResults() && results().length > 0) {
+    <div class="food-search__results">
+      @for (food of results(); track food.foodId) {
+        <button class="food-search__result-item" (click)="onSelect(food)">
+          <div class="food-search__result-name">{{ food.name }}</div>
+          <div class="food-search__result-macros">
+            {{ food.caloriesPer100g }} kcal
+            · C: {{ food.carbsPer100g }}g
+            · P: {{ food.proteinsPer100g }}g
+            · G: {{ food.fatsPer100g }}g
+            <span class="food-search__result-category">{{ food.category }}</span>
+          </div>
+        </button>
+      }
+    </div>
+  }
+
+  @if (showResults() && !searching() && results().length === 0 && searchControl.value!.length >= 2) {
+    <div class="food-search__empty">
+      No se encontraron alimentos para "{{ searchControl.value }}"
+    </div>
+  }
+</div>

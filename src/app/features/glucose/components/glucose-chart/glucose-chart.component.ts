@@ -1,7 +1,7 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
-import { GlucoseReadingResponse } from '../../../../shared/models/glucose.model';
+import { GlucoseReadingResponse, MealMarkerResponse } from '../../../../shared/models/glucose.model';
 
 @Component({
     selector: 'app-glucose-chart',
@@ -13,17 +13,17 @@ import { GlucoseReadingResponse } from '../../../../shared/models/glucose.model'
 export class GlucoseChartComponent implements OnChanges {
 
     @Input() readings: GlucoseReadingResponse[] = [];
+    @Input() mealMarkers: MealMarkerResponse[] = [];
     @Input() targetMin = 70;
     @Input() targetMax = 180;
 
     chartOptions: EChartsOption = {};
 
-    private readonly statusColors: Record<string, string> = {
-        CRITICALLY_LOW: '#880E4F',
-        LOW: '#C62828',
-        NORMAL: '#2E7D32',
-        HIGH: '#F57F17',
-        CRITICALLY_HIGH: '#BF360C'
+    private readonly mealTypeLabels: Record<string, string> = {
+        BREAKFAST: 'Desayuno',
+        LUNCH: 'Almuerzo',
+        DINNER: 'Cena',
+        SNACK: 'Merienda'
     };
 
     ngOnChanges(): void {
@@ -44,7 +44,8 @@ export class GlucoseChartComponent implements OnChanges {
         );
 
         const values = sorted.map(r => r.value);
-        const colors = sorted.map(r => this.statusColors[r.status] ?? '#2E7D32');
+
+        const mealMarkLines = this.buildMealMarkLines(sorted);
 
         this.chartOptions = {
             backgroundColor: 'transparent',
@@ -52,8 +53,9 @@ export class GlucoseChartComponent implements OnChanges {
             tooltip: {
                 trigger: 'axis',
                 formatter: (params: any) => {
-                    const p = params[0];
+                    const p = Array.isArray(params) ? params[0] : params;
                     const reading = sorted[p.dataIndex];
+                    if (!reading) return '';
                     return `
             <div style="font-size:13px">
               <strong>${p.name}</strong><br/>
@@ -66,11 +68,7 @@ export class GlucoseChartComponent implements OnChanges {
             xAxis: {
                 type: 'category',
                 data: dates,
-                axisLabel: {
-                    rotate: 35,
-                    fontSize: 11,
-                    color: '#546E7A'
-                },
+                axisLabel: { rotate: 35, fontSize: 11, color: '#546E7A' },
                 axisLine: { lineStyle: { color: '#E0E0E0' } }
             },
             yAxis: {
@@ -114,7 +112,8 @@ export class GlucoseChartComponent implements OnChanges {
                                 yAxis: this.targetMax,
                                 label: { formatter: `Máx ${this.targetMax}`, position: 'end', fontSize: 10 },
                                 lineStyle: { color: '#F57F17', opacity: 0.6 }
-                            }
+                            },
+                            ...mealMarkLines
                         ]
                     },
                     markArea: {
@@ -125,6 +124,32 @@ export class GlucoseChartComponent implements OnChanges {
                 }
             ]
         };
+    }
+
+    private buildMealMarkLines(sorted: GlucoseReadingResponse[]): any[] {
+        if (!this.mealMarkers.length || !sorted.length) return [];
+
+        return this.mealMarkers.map(meal => {
+            const mealTime = new Date(meal.consumedAt).getTime();
+            const closestIndex = sorted.reduce((bestIdx, r, idx) => {
+                const diff = Math.abs(new Date(r.measuredAt).getTime() - mealTime);
+                const bestDiff = Math.abs(new Date(sorted[bestIdx].measuredAt).getTime() - mealTime);
+                return diff < bestDiff ? idx : bestIdx;
+            }, 0);
+
+            const mealLabel = this.mealTypeLabels[meal.mealType] ?? meal.mealType;
+
+            return {
+                xAxis: closestIndex,
+                label: {
+                    formatter: `🍽 ${mealLabel}\n${Math.round(meal.totalCalories)} kcal`,
+                    position: 'insideStartTop',
+                    fontSize: 9,
+                    color: '#00695C'
+                },
+                lineStyle: { color: '#00695C', type: 'dashed', opacity: 0.5, width: 1 }
+            };
+        });
     }
 
     private getReadingTypeLabel(type: string): string {

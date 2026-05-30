@@ -18,6 +18,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: var(--space-6);
+    align-items: start;
 
     @media (max-width: 768px) {
       grid-template-columns: 1fr;
@@ -48,20 +49,70 @@
     color: var(--color-text-primary);
   }
 
-  &__row {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  &__selected-food {
+    background: var(--color-surface-variant);
+    border-radius: var(--radius-md);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
-
-    @media (max-width: 480px) {
-      grid-template-columns: 1fr;
-    }
   }
 
-  &__item-form {
+  &__selected-food-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+  }
+
+  &__selected-food-name {
+    display: block;
+    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    color: var(--color-text-primary);
+  }
+
+  &__selected-food-ref {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin-top: var(--space-1);
+  }
+
+  &__quantity-form {
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
+
+    mat-form-field { width: 100%; }
+  }
+
+  &__calculated {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-2);
+    background: var(--color-surface);
+    border-radius: var(--radius-sm);
+    padding: var(--space-3);
+  }
+
+  &__calc-item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  &__calc-label {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  &__calc-value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-primary);
   }
 
   &__empty {

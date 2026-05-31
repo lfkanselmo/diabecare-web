@@ -1,0 +1,15 @@
+@if (alerts.length > 0) {
+<div class="alerts-panel">
+    @for (alert of alerts; track alert.type) {
+    <div class="alerts-panel__item alerts-panel__item--{{ alert.severity | lowercase }}">
+        <mat-icon class="alerts-panel__icon">
+            {{ severityIcons[alert.severity] }}
+        </mat-icon>
+        <div class="alerts-panel__content">
+            <span class="alerts-panel__title">{{ alert.title }}</span>
+            <span class="alerts-panel__message">{{ alert.message }}</span>
+        </div>
+    </div>
+    }
+</div>
+}

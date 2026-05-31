@@ -7,14 +7,24 @@ import { GlucoseService } from '../../../glucose/services/glucose.service';
 import { NutritionService } from '../../../nutrition/services/nutrition.service';
 import { VitalsService } from '../../../vitals/services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AlertService } from '../../../../core/services/alert.service';
 import { GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
 import { DailySummaryResponse } from '../../../../shared/models/nutrition.model';
 import { VitalSignResponse } from '../../../../shared/models/vitals.model';
+import { AlertResponse } from '../../../../shared/models/alert.model';
+import { AlertsPanelComponent } from '../../../../shared/components/alerts-panel/alerts-panel.component';
 
 @Component({
     selector: 'app-dashboard',
     standalone: true,
-    imports: [MatIconModule, MatButtonModule, RouterLink, DatePipe, DecimalPipe],
+    imports: [
+        MatIconModule,
+        MatButtonModule,
+        RouterLink,
+        DatePipe,
+        DecimalPipe,
+        AlertsPanelComponent
+    ],
     templateUrl: './dashboard.component.html',
     styleUrl: './dashboard.component.scss'
 })
@@ -24,6 +34,7 @@ export class DashboardComponent implements OnInit {
     private readonly nutritionService = inject(NutritionService);
     private readonly vitalsService = inject(VitalsService);
     private readonly authService = inject(AuthService);
+    private readonly alertService = inject(AlertService);
 
     readonly today = new Date();
     readonly patientId = this.authService.getPatientId();
@@ -31,6 +42,7 @@ export class DashboardComponent implements OnInit {
     glucoseStats = signal<GlucoseStatsResponse | null>(null);
     dailySummary = signal<DailySummaryResponse | null>(null);
     latestVitals = signal<VitalSignResponse | null>(null);
+    alerts = signal<AlertResponse[]>([]);
     loading = signal(true);
 
     ngOnInit(): void {
@@ -60,6 +72,11 @@ export class DashboardComponent implements OnInit {
 
         this.vitalsService.getLatest(this.patientId).subscribe({
             next: (vitals) => this.latestVitals.set(vitals),
+            error: () => { }
+        });
+
+        this.alertService.getAlerts(this.patientId).subscribe({
+            next: (data) => this.alerts.set(data),
             error: () => { }
         });
 

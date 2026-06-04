@@ -1,8 +1,12 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { RegisterVitalSignRequest, VitalSignResponse } from '@shared/models/vitals.model';
+import {
+    Hba1cTrendResponse,
+    RegisterVitalSignRequest,
+    VitalSignResponse
+} from '../../../shared/models/vitals.model';
 
 @Injectable({ providedIn: 'root' })
 export class VitalsService {
@@ -20,5 +24,11 @@ export class VitalsService {
 
     getLatest(patientId: string): Observable<VitalSignResponse> {
         return this.http.get<VitalSignResponse>(`${this.baseUrl}/${patientId}/latest`);
+    }
+
+    getHba1cTrend(patientId: string, months = 6): Observable<Hba1cTrendResponse[]> {
+        const params = new HttpParams().set('months', months);
+        return this.http.get<Hba1cTrendResponse[]>(
+            `${this.baseUrl}/${patientId}/hba1c-trend`, { params });
     }
 }

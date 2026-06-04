@@ -4,7 +4,6 @@
   <div class="vitals__layout">
     <div class="vitals__card">
       <h2 class="vitals__section-title">Nuevo registro</h2>
-
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="vitals__row">
           <mat-form-field appearance="outline">
@@ -12,108 +11,103 @@
             <input matInput formControlName="weightKg" type="number" step="0.1" />
             <mat-icon matSuffix>monitor_weight</mat-icon>
           </mat-form-field>
-
           <mat-form-field appearance="outline">
             <mat-label>Talla (cm)</mat-label>
             <input matInput formControlName="heightCm" type="number" />
             <mat-icon matSuffix>height</mat-icon>
           </mat-form-field>
         </div>
-
         <div class="vitals__row">
           <mat-form-field appearance="outline">
             <mat-label>Presión sistólica (mmHg)</mat-label>
             <input matInput formControlName="systolicBp" type="number" />
           </mat-form-field>
-
           <mat-form-field appearance="outline">
             <mat-label>Presión diastólica (mmHg)</mat-label>
             <input matInput formControlName="diastolicBp" type="number" />
           </mat-form-field>
         </div>
-
         <div class="vitals__row">
           <mat-form-field appearance="outline">
             <mat-label>Frecuencia cardíaca (bpm)</mat-label>
             <input matInput formControlName="heartRate" type="number" />
             <mat-icon matSuffix>favorite</mat-icon>
           </mat-form-field>
-
           <mat-form-field appearance="outline">
             <mat-label>HbA1c (%)</mat-label>
             <input matInput formControlName="hba1c" type="number" step="0.1" />
           </mat-form-field>
         </div>
-
         <mat-form-field appearance="outline">
           <mat-label>Notas (opcional)</mat-label>
           <textarea matInput formControlName="notes" rows="2"></textarea>
         </mat-form-field>
-
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="loading()"
-        >
-          @if (loading()) {
-            Guardando...
-          } @else {
-            Guardar registro
-          }
+        <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
+          @if (loading()) { Guardando... } @else { Guardar registro }
         </button>
       </form>
     </div>
 
     <div class="vitals__card">
       <h2 class="vitals__section-title">Historial</h2>
-
       @if (history().length === 0) {
-        <div class="vitals__empty">
-          <mat-icon>favorite_border</mat-icon>
-          <p>Sin registros todavía</p>
-        </div>
+      <div class="vitals__empty">
+        <mat-icon>favorite_border</mat-icon>
+        <p>Sin registros todavía</p>
+      </div>
       } @else {
-        <div class="vitals__history">
-          @for (vital of history(); track vital.vitalId) {
-            <div class="vitals__record">
-              <div class="vitals__record-date">
-                {{ vital.measuredAt | date:'dd/MM/yyyy HH:mm' }}
-              </div>
-              <div class="vitals__record-values">
-                @if (vital.weightKg) {
-                  <div class="vitals__chip">
-                    <mat-icon>monitor_weight</mat-icon>
-                    {{ vital.weightKg }} kg
-                    @if (vital.bmi) {
-                      — IMC {{ vital.bmi | number:'1.0-1' }}
-                      ({{ bmiLabels[vital.bmiCategory ?? ''] }})
-                    }
-                  </div>
-                }
-                @if (vital.systolicBp) {
-                  <div class="vitals__chip">
-                    <mat-icon>compress</mat-icon>
-                    {{ vital.systolicBp }}/{{ vital.diastolicBp }} mmHg
-                  </div>
-                }
-                @if (vital.heartRate) {
-                  <div class="vitals__chip">
-                    <mat-icon>favorite</mat-icon>
-                    {{ vital.heartRate }} bpm
-                  </div>
-                }
-                @if (vital.hba1c) {
-                  <div class="vitals__chip">
-                    HbA1c {{ vital.hba1c }}%
-                  </div>
-                }
-              </div>
+      <div class="vitals__history">
+        @for (vital of history(); track vital.vitalId) {
+        <div class="vitals__record">
+          <div class="vitals__record-date">
+            {{ vital.measuredAt | date:'dd/MM/yyyy HH:mm' }}
+          </div>
+          <div class="vitals__record-values">
+            @if (vital.weightKg) {
+            <div class="vitals__chip">
+              <mat-icon>monitor_weight</mat-icon>
+              {{ vital.weightKg }} kg
+              @if (vital.bmi) {
+              — IMC {{ vital.bmi | number:'1.0-1' }}
+              ({{ bmiLabels[vital.bmiCategory ?? ''] }})
+              }
             </div>
-            <mat-divider />
-          }
+            }
+            @if (vital.systolicBp) {
+            <div class="vitals__chip">
+              <mat-icon>compress</mat-icon>
+              {{ vital.systolicBp }}/{{ vital.diastolicBp }} mmHg
+            </div>
+            }
+            @if (vital.heartRate) {
+            <div class="vitals__chip">
+              <mat-icon>favorite</mat-icon>
+              {{ vital.heartRate }} bpm
+            </div>
+            }
+            @if (vital.hba1c) {
+            <div class="vitals__chip">
+              HbA1c {{ vital.hba1c }}%
+            </div>
+            }
+          </div>
         </div>
+        <mat-divider />
+        }
+      </div>
       }
     </div>
+  </div>
+
+  <div class="vitals__trend-card">
+    <div class="vitals__trend-header">
+      <h2 class="vitals__section-title">Tendencia HbA1c estimada</h2>
+      <mat-button-toggle-group [value]="trendMonths()" (change)="onTrendMonthsChange($event.value)">
+        <mat-button-toggle [value]="3">3 meses</mat-button-toggle>
+        <mat-button-toggle [value]="6">6 meses</mat-button-toggle>
+        <mat-button-toggle [value]="12">12 meses</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+    <app-hba1c-chart [trend]="hba1cTrend()" />
   </div>
 </div>

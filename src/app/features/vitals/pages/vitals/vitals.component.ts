@@ -7,9 +7,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { VitalsService } from '../../services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import { VitalSignResponse } from '../../../../shared/models/vitals.model';
+import { Hba1cTrendResponse, VitalSignResponse } from '../../../../shared/models/vitals.model';
+import { Hba1cChartComponent } from '../../components/hba1c-chart/hba1c-chart.component';
 
 @Component({
     selector: 'app-vitals',
@@ -23,7 +25,9 @@ import { VitalSignResponse } from '../../../../shared/models/vitals.model';
         MatButtonModule,
         MatIconModule,
         MatSnackBarModule,
-        MatDividerModule
+        MatDividerModule,
+        MatButtonToggleModule,
+        Hba1cChartComponent
     ],
     templateUrl: './vitals.component.html',
     styleUrl: './vitals.component.scss'
@@ -37,6 +41,8 @@ export class VitalsComponent implements OnInit {
 
     loading = signal(false);
     history = signal<VitalSignResponse[]>([]);
+    hba1cTrend = signal<Hba1cTrendResponse[]>([]);
+    trendMonths = signal<3 | 6 | 12>(6);
 
     form: FormGroup = this.fb.group({
         weightKg: [null],
@@ -57,6 +63,7 @@ export class VitalsComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadHistory();
+        this.loadTrend();
     }
 
     onSubmit(): void {
@@ -69,6 +76,7 @@ export class VitalsComponent implements OnInit {
             next: (vital) => {
                 this.history.update(list => [vital, ...list]);
                 this.form.reset();
+                this.loadTrend();
                 this.snackBar.open('Signos vitales registrados', 'Cerrar', { duration: 3000 });
                 this.loading.set(false);
             },
@@ -79,12 +87,25 @@ export class VitalsComponent implements OnInit {
         });
     }
 
+    onTrendMonthsChange(months: 3 | 6 | 12): void {
+        this.trendMonths.set(months);
+        this.loadTrend();
+    }
+
     private loadHistory(): void {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
-
         this.vitalsService.getAll(patientId).subscribe({
             next: (data) => this.history.set(data),
+            error: () => { }
+        });
+    }
+
+    private loadTrend(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+        this.vitalsService.getHba1cTrend(patientId, this.trendMonths()).subscribe({
+            next: (data) => this.hba1cTrend.set(data),
             error: () => { }
         });
     }

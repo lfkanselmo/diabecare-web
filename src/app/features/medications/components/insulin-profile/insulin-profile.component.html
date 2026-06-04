@@ -1,0 +1,42 @@
+<div class="insulin-profile">
+    <h2 class="insulin-profile__title">
+        <mat-icon>tune</mat-icon>
+        Perfil de insulina
+    </h2>
+    <p class="insulin-profile__subtitle">
+        Configura estos valores con tu médico para activar la calculadora.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onSave()">
+        <mat-form-field appearance="outline">
+            <mat-label>Factor de sensibilidad (mg/dL por unidad)</mat-label>
+            <input matInput formControlName="sensitivityFactor" type="number" step="0.5" />
+            <mat-hint>Cuánto baja tu glucosa con 1 unidad de insulina</mat-hint>
+            @if (form.get('sensitivityFactor')?.hasError('required')) {
+            <mat-error>Este campo es obligatorio</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Ratio insulina:carbohidratos (g por unidad)</mat-label>
+            <input matInput formControlName="carbRatio" type="number" step="0.5" />
+            <mat-hint>Gramos de carbs que cubre 1 unidad de insulina</mat-hint>
+            @if (form.get('carbRatio')?.hasError('required')) {
+            <mat-error>Este campo es obligatorio</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+            <mat-label>Glucosa objetivo para corrección (mg/dL)</mat-label>
+            <input matInput formControlName="targetGlucose" type="number" />
+            <mat-hint>Generalmente entre 100 y 120 mg/dL</mat-hint>
+            @if (form.get('targetGlucose')?.hasError('required')) {
+            <mat-error>Este campo es obligatorio</mat-error>
+            }
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+            @if (loading()) { Guardando... } @else { Guardar perfil }
+        </button>
+    </form>
+</div>

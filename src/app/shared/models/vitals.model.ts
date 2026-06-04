@@ -24,3 +24,10 @@ export interface VitalSignResponse {
     measuredAt: string;
     notes: string | null;
 }
+
+export interface Hba1cTrendResponse {
+    month: string;
+    estimatedHba1c: number | null;
+    averageGlucose: number | null;
+    totalReadings: number;
+}

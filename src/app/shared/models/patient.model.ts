@@ -11,4 +11,7 @@ export interface PatientResponse {
     dailyCalorieGoal: number | null;
     activityLevel: string;
     preferredGlucoseUnit: string;
+    insulinSensitivityFactor: number | null;
+    insulinToCarbRatio: number | null;
+    targetGlucoseForCorrection: number | null;
 }

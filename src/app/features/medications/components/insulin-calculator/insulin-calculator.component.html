@@ -1,0 +1,72 @@
+<div class="insulin-calc">
+    <h2 class="insulin-calc__title">
+        <mat-icon>calculate</mat-icon>
+        Calculadora de insulina
+    </h2>
+    <p class="insulin-calc__subtitle">
+        Calcula tu dosis sugerida basada en tu glucosa actual y los carbohidratos a consumir.
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onCalculate()">
+        <mat-form-field appearance="outline">
+            <mat-label>Glucosa actual (mg/dL)</mat-label>
+            <input matInput formControlName="currentGlucose" type="number" />
+            <mat-icon matSuffix>water_drop</mat-icon>
+            @if (form.get('currentGlucose')?.hasError('required')) {
+            <mat-error>El valor de glucosa es obligatorio</mat-error>
+            }
+        </mat-form-field>
+
+        <mat-checkbox formControlName="beforeMeal" color="primary">
+            Voy a comer (calcular dosis de comida)
+        </mat-checkbox>
+
+        @if (form.get('beforeMeal')?.value) {
+        <mat-form-field appearance="outline">
+            <mat-label>Carbohidratos a consumir (g)</mat-label>
+            <input matInput formControlName="carbsToEat" type="number" min="0" />
+            <mat-icon matSuffix>restaurant</mat-icon>
+        </mat-form-field>
+        }
+
+        <div class="insulin-calc__actions">
+            <button mat-stroked-button type="button" (click)="onReset()">
+                Limpiar
+            </button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+                @if (loading()) { Calculando... } @else { Calcular dosis }
+            </button>
+        </div>
+    </form>
+
+    @if (result()) {
+    <mat-divider />
+    <div class="insulin-calc__result">
+        <div class="insulin-calc__result-grid">
+            <div class="insulin-calc__result-item">
+                <span class="insulin-calc__result-label">Dosis corrección</span>
+                <span class="insulin-calc__result-value">
+                    {{ result()!.correctionDose | number:'1.0-1' }} U
+                </span>
+            </div>
+            <div class="insulin-calc__result-item">
+                <span class="insulin-calc__result-label">Dosis comida</span>
+                <span class="insulin-calc__result-value">
+                    {{ result()!.mealDose | number:'1.0-1' }} U
+                </span>
+            </div>
+            <div class="insulin-calc__result-item insulin-calc__result-item--total">
+                <span class="insulin-calc__result-label">Dosis total</span>
+                <span class="insulin-calc__result-value insulin-calc__result-value--total">
+                    {{ result()!.totalDose | number:'1.0-1' }} U
+                </span>
+            </div>
+        </div>
+        <p class="insulin-calc__explanation">{{ result()!.explanation }}</p>
+        <p class="insulin-calc__disclaimer">
+            <mat-icon>info</mat-icon>
+            Esta es una sugerencia basada en tu perfil. Consulta siempre con tu médico antes de ajustar dosis.
+        </p>
+    </div>
+    }
+</div>

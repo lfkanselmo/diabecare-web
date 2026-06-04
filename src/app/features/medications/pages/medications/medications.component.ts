@@ -15,6 +15,9 @@ import {
     MedicationResponse,
     MedicationType
 } from '../../../../shared/models/medication.model';
+import { MatTabsModule } from '@angular/material/tabs';
+import { InsulinCalculatorComponent } from '../../components/insulin-calculator/insulin-calculator.component';
+import { InsulinProfileComponent } from '../../components/insulin-profile/insulin-profile.component';
 
 @Component({
     selector: 'app-medications',
@@ -27,7 +30,10 @@ import {
         MatIconModule,
         MatSelectModule,
         MatSnackBarModule,
-        MatChipsModule
+        MatChipsModule,
+        MatTabsModule,
+        InsulinCalculatorComponent,
+        InsulinProfileComponent
     ],
     templateUrl: './medications.component.html',
     styleUrl: './medications.component.scss'

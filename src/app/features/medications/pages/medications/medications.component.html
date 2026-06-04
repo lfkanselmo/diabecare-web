@@ -1,95 +1,107 @@
 <div class="medications">
   <h1 class="medications__title">Medicamentos</h1>
 
-  <div class="medications__layout">
-    <div class="medications__card">
-      <h2 class="medications__section-title">Nuevo medicamento</h2>
+  <mat-tab-group>
+    <mat-tab label="Medicamentos activos">
+      <div class="medications__tab-content">
+        <div class="medications__layout">
+          <div class="medications__card">
+            <h2 class="medications__section-title">Nuevo medicamento</h2>
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+              <mat-form-field appearance="outline">
+                <mat-label>Nombre del medicamento</mat-label>
+                <input matInput formControlName="name" />
+                <mat-icon matSuffix>medication</mat-icon>
+                @if (form.get('name')?.hasError('required')) {
+                <mat-error>El nombre es obligatorio</mat-error>
+                }
+              </mat-form-field>
 
-      <form [formGroup]="form" (ngSubmit)="onSubmit()">
-        <mat-form-field appearance="outline">
-          <mat-label>Nombre del medicamento</mat-label>
-          <input matInput formControlName="name" />
-          <mat-icon matSuffix>medication</mat-icon>
-          @if (form.get('name')?.hasError('required')) {
-            <mat-error>El nombre es obligatorio</mat-error>
-          }
-        </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Tipo</mat-label>
+                <mat-select formControlName="type">
+                  @for (type of medicationTypes; track type.value) {
+                  <mat-option [value]="type.value">{{ type.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Tipo</mat-label>
-          <mat-select formControlName="type">
-            @for (type of medicationTypes; track type.value) {
-              <mat-option [value]="type.value">{{ type.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <div class="medications__row">
-          <mat-form-field appearance="outline">
-            <mat-label>Dosis</mat-label>
-            <input matInput formControlName="dose" type="number" step="0.01" />
-          </mat-form-field>
-
-          <mat-form-field appearance="outline">
-            <mat-label>Unidad</mat-label>
-            <mat-select formControlName="doseUnit">
-              @for (unit of doseUnits; track unit.value) {
-                <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
-              }
-            </mat-select>
-          </mat-form-field>
-        </div>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Frecuencia</mat-label>
-          <mat-select formControlName="frequency">
-            @for (freq of frequencies; track freq.value) {
-              <mat-option [value]="freq.value">{{ freq.label }}</mat-option>
-            }
-          </mat-select>
-        </mat-form-field>
-
-        <mat-form-field appearance="outline">
-          <mat-label>Notas (opcional)</mat-label>
-          <textarea matInput formControlName="notes" rows="2"></textarea>
-        </mat-form-field>
-
-        <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
-          @if (loading()) {
-            Guardando...
-          } @else {
-            Agregar medicamento
-          }
-        </button>
-      </form>
-    </div>
-
-    <div class="medications__card">
-      <h2 class="medications__section-title">Medicamentos activos</h2>
-
-      @if (medications().length === 0) {
-        <div class="medications__empty">
-          <mat-icon>medication</mat-icon>
-          <p>No hay medicamentos activos</p>
-        </div>
-      } @else {
-        <div class="medications__list">
-          @for (med of medications(); track med.medicationId) {
-            <div class="medications__item">
-              <div class="medications__item-info">
-                <span class="medications__item-name">{{ med.name }}</span>
-                <span class="medications__item-detail">
-                  {{ med.dose }} {{ med.doseUnit }} — {{ getFrequencyLabel(med.frequency) }}
-                </span>
-                <span class="medications__item-type">{{ getTypeLabel(med.type) }}</span>
+              <div class="medications__row">
+                <mat-form-field appearance="outline">
+                  <mat-label>Dosis</mat-label>
+                  <input matInput formControlName="dose" type="number" step="0.01" />
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                  <mat-label>Unidad</mat-label>
+                  <mat-select formControlName="doseUnit">
+                    @for (unit of doseUnits; track unit.value) {
+                    <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
               </div>
-              <button mat-icon-button color="warn" (click)="onDeactivate(med.medicationId)">
-                <mat-icon>close</mat-icon>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Frecuencia</mat-label>
+                <mat-select formControlName="frequency">
+                  @for (freq of frequencies; track freq.value) {
+                  <mat-option [value]="freq.value">{{ freq.label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Notas (opcional)</mat-label>
+                <textarea matInput formControlName="notes" rows="2"></textarea>
+              </mat-form-field>
+
+              <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+                @if (loading()) { Guardando... } @else { Agregar medicamento }
               </button>
+            </form>
+          </div>
+
+          <div class="medications__card">
+            <h2 class="medications__section-title">Medicamentos activos</h2>
+            @if (medications().length === 0) {
+            <div class="medications__empty">
+              <mat-icon>medication</mat-icon>
+              <p>No hay medicamentos activos</p>
             </div>
-          }
+            } @else {
+            <div class="medications__list">
+              @for (med of medications(); track med.medicationId) {
+              <div class="medications__item">
+                <div class="medications__item-info">
+                  <span class="medications__item-name">{{ med.name }}</span>
+                  <span class="medications__item-detail">
+                    {{ med.dose }} {{ med.doseUnit }} — {{ getFrequencyLabel(med.frequency) }}
+                  </span>
+                  <span class="medications__item-type">{{ getTypeLabel(med.type) }}</span>
+                </div>
+                <button mat-icon-button color="warn" (click)="onDeactivate(med.medicationId)">
+                  <mat-icon>close</mat-icon>
+                </button>
+              </div>
+              }
+            </div>
+            }
+          </div>
         </div>
-      }
-    </div>
-  </div>
+      </div>
+    </mat-tab>
+
+    <mat-tab label="Calculadora de insulina">
+      <div class="medications__tab-content">
+        <div class="medications__layout">
+          <div class="medications__card">
+            <app-insulin-calculator />
+          </div>
+          <div class="medications__card">
+            <app-insulin-profile />
+          </div>
+        </div>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
 </div>

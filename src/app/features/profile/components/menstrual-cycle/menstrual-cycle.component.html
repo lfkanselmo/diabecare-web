@@ -1,0 +1,130 @@
+<div class="cycle">
+    <div class="cycle__layout">
+        <div class="cycle__card">
+            <h2 class="cycle__section-title">
+                <mat-icon>calendar_month</mat-icon>
+                Registrar nuevo ciclo
+            </h2>
+            <p class="cycle__hint">
+                Registra el inicio de tu período para llevar el seguimiento y recibir
+                orientación personalizada sobre tu glucosa.
+            </p>
+
+            <form [formGroup]="form" (ngSubmit)="onRegister()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha de inicio del ciclo</mat-label>
+                    <input matInput formControlName="startDate" type="date" />
+                    <mat-icon matSuffix>event</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Duración de la menstruación (días)</mat-label>
+                    <input matInput formControlName="periodLengthDays" type="number" min="2" max="10" />
+                    <mat-hint>Generalmente entre 3 y 7 días</mat-hint>
+                </mat-form-field>
+
+                <div class="cycle__symptoms-section">
+                    <label class="cycle__symptoms-label">Síntomas frecuentes</label>
+                    <div class="cycle__symptoms-grid">
+                        @for (symptom of commonSymptoms; track symptom) {
+                        <button type="button" class="cycle__symptom-chip"
+                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptom)"
+                            (click)="toggleSymptom(symptom)">
+                            {{ symptom }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Notas adicionales (opcional)</mat-label>
+                    <textarea matInput formControlName="notes" rows="2"></textarea>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+                    @if (saving()) { Registrando... } @else { Registrar inicio de ciclo }
+                </button>
+            </form>
+        </div>
+
+        <div class="cycle__card">
+            @if (loading()) {
+            <p class="cycle__loading">Cargando...</p>
+            } @else if (noData() || !status()) {
+            <div class="cycle__empty">
+                <mat-icon>calendar_today</mat-icon>
+                <h3>Sin ciclos registrados</h3>
+                <p>Registra tu primer ciclo para comenzar el seguimiento.</p>
+            </div>
+            } @else {
+            <h2 class="cycle__section-title">
+                <mat-icon>insights</mat-icon>
+                Estado actual del ciclo
+            </h2>
+
+            <div class="cycle__phase-card" [style.border-color]="getPhaseColor(status()!.currentPhase)">
+                <div class="cycle__phase-header">
+                    <mat-icon [style.color]="getPhaseColor(status()!.currentPhase)">
+                        {{ getPhaseIcon(status()!.currentPhase) }}
+                    </mat-icon>
+                    <div>
+                        <span class="cycle__phase-label" [style.color]="getPhaseColor(status()!.currentPhase)">
+                            {{ status()!.currentPhaseLabel }}
+                        </span>
+                        <span class="cycle__phase-day">
+                            Día {{ status()!.dayOfCycle }} del ciclo
+                        </span>
+                    </div>
+                </div>
+                <p class="cycle__phase-guidance">{{ status()!.glucoseGuidance }}</p>
+            </div>
+
+            <div class="cycle__stats">
+                <div class="cycle__stat">
+                    <span class="cycle__stat-label">Próximo ciclo</span>
+                    <span class="cycle__stat-value">
+                        {{ status()!.nextCycleStart | date:'dd MMM yyyy' }}
+                    </span>
+                    <span class="cycle__stat-sub">
+                        @if (status()!.daysUntilNextCycle > 0) {
+                        En {{ status()!.daysUntilNextCycle }} días
+                        } @else {
+                        Hoy o próximamente
+                        }
+                    </span>
+                </div>
+                <div class="cycle__stat">
+                    <span class="cycle__stat-label">Duración promedio</span>
+                    <span class="cycle__stat-value">
+                        {{ status()!.averageCycleLength | number:'1.0-0' }} días
+                    </span>
+                    <span class="cycle__stat-sub">Basado en tu historial</span>
+                </div>
+            </div>
+
+            @if (status()!.history.length > 0) {
+            <mat-divider />
+            <h3 class="cycle__history-title">Historial reciente</h3>
+            <div class="cycle__history">
+                @for (item of status()!.history; track item.cycleId) {
+                <div class="cycle__history-item">
+                    <span class="cycle__history-date">
+                        {{ item.startDate | date:'dd/MM/yyyy' }}
+                    </span>
+                    <span class="cycle__history-detail">
+                        @if (item.cycleLengthDays) {
+                        {{ item.cycleLengthDays }} días de ciclo ·
+                        }
+                        {{ item.periodLengthDays ?? 5 }} días de período
+                    </span>
+                    @if (item.symptoms) {
+                    <span class="cycle__history-symptoms">{{ item.symptoms }}</span>
+                    }
+                </div>
+                }
+            </div>
+            }
+            }
+        </div>
+    </div>
+</div>

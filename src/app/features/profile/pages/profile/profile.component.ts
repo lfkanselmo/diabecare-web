@@ -12,6 +12,8 @@ import { DatePipe } from '@angular/common';
 import { ProfileService } from '../../services/profile.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
+import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
     selector: 'app-profile',
@@ -26,7 +28,9 @@ import { PatientResponse } from '../../../../shared/models/patient.model';
         MatSelectModule,
         MatSnackBarModule,
         MatDividerModule,
-        MatChipsModule
+        MatChipsModule,
+        MatTabsModule,
+        MenstrualCycleComponent
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.scss'
@@ -125,5 +129,9 @@ export class ProfileComponent implements OnInit {
 
     getActivityLabel(level: string): string {
         return this.activityLevels.find(a => a.value === level)?.label ?? level;
+    }
+
+    get isFemale(): boolean {
+        return this.patient()?.biologicalSex === 'FEMALE';
     }
 }

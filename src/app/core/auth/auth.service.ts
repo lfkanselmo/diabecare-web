@@ -6,7 +6,7 @@ const PATIENT_KEY = 'dc_patient';
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-    private readonly _isAuthenticated = signal(this.hasToken());
+    private readonly _isAuthenticated = signal(this.checkValidToken());
 
     isAuthenticated(): boolean {
         return this._isAuthenticated();
@@ -28,10 +28,6 @@ export class AuthService {
         this._isAuthenticated.set(false);
     }
 
-    private hasToken(): boolean {
-        return !!localStorage.getItem(TOKEN_KEY);
-    }
-
     getPatientId(): string | null {
         const raw = localStorage.getItem(PATIENT_KEY);
         if (!raw) return null;
@@ -40,6 +36,22 @@ export class AuthService {
             return patient?.patientId ?? null;
         } catch {
             return null;
+        }
+    }
+
+    private checkValidToken(): boolean {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) return false;
+        return !this.isTokenExpired(token);
+    }
+
+    private isTokenExpired(token: string): boolean {
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const expiryMs = payload.exp * 1000;
+            return Date.now() >= expiryMs;
+        } catch {
+            return true;
         }
     }
 }

@@ -50,7 +50,8 @@ export class RegisterComponent {
         dateOfBirth: [null, Validators.required],
         diabetesType: ['', Validators.required],
         diagnosisDate: [null, Validators.required],
-        heightCm: ['', [Validators.required, Validators.min(50), Validators.max(250)]]
+        heightCm: ['', [Validators.required, Validators.min(50), Validators.max(250)]],
+        biologicalSex: ['NOT_SPECIFIED']
     });
 
     readonly diabetesTypes = [
@@ -81,7 +82,8 @@ export class RegisterComponent {
             dateOfBirth: dob.toISOString().split('T')[0],
             diabetesType: this.profileForm.get('diabetesType')?.value,
             diagnosisDate: diagDate.toISOString().split('T')[0],
-            heightCm: String(this.profileForm.get('heightCm')?.value)
+            heightCm: String(this.profileForm.get('heightCm')?.value),
+            biologicalSex: String(this.profileForm.get('biologicalSex')?.value)
         };
 
         this.authApiService.register(request).subscribe({

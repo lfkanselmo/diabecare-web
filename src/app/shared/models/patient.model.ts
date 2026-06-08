@@ -14,4 +14,5 @@ export interface PatientResponse {
     insulinSensitivityFactor: number | null;
     insulinToCarbRatio: number | null;
     targetGlucoseForCorrection: number | null;
+    biologicalSex: string;
 }

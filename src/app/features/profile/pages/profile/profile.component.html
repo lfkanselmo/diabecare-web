@@ -1,0 +1,142 @@
+<div class="profile">
+    <h1 class="profile__title">Mi perfil</h1>
+
+    @if (loading()) {
+    <p class="profile__loading">Cargando...</p>
+    } @else if (patient()) {
+    <div class="profile__layout">
+        <div class="profile__card">
+            <h2 class="profile__section-title">Información personal</h2>
+
+            <div class="profile__info-grid">
+                <div class="profile__info-item">
+                    <span class="profile__info-label">Nombre</span>
+                    <span class="profile__info-value">{{ patient()!.fullName }}</span>
+                </div>
+                <div class="profile__info-item">
+                    <span class="profile__info-label">Edad</span>
+                    <span class="profile__info-value">{{ patient()!.age }} años</span>
+                </div>
+                <div class="profile__info-item">
+                    <span class="profile__info-label">Fecha de nacimiento</span>
+                    <span class="profile__info-value">
+                        {{ patient()!.dateOfBirth | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+                <div class="profile__info-item">
+                    <span class="profile__info-label">Tipo de diabetes</span>
+                    <span class="profile__info-value">
+                        {{ diabetesTypeLabels[patient()!.diabetesType] }}
+                    </span>
+                </div>
+                <div class="profile__info-item">
+                    <span class="profile__info-label">Fecha de diagnóstico</span>
+                    <span class="profile__info-value">
+                        {{ patient()!.diagnosisDate | date:'dd/MM/yyyy' }}
+                    </span>
+                </div>
+            </div>
+
+            <mat-divider />
+
+            <h2 class="profile__section-title">Configuración médica</h2>
+
+            <form [formGroup]="form" (ngSubmit)="onSave()">
+                <div class="profile__row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Talla (cm)</mat-label>
+                        <input matInput formControlName="heightCm" type="number" />
+                        <mat-icon matSuffix>height</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Meta calórica diaria (kcal)</mat-label>
+                        <input matInput formControlName="dailyCalorieGoal" type="number" />
+                        <mat-icon matSuffix>local_fire_department</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <div class="profile__row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Glucosa mínima objetivo (mg/dL)</mat-label>
+                        <input matInput formControlName="targetGlucoseMin" type="number" />
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Glucosa máxima objetivo (mg/dL)</mat-label>
+                        <input matInput formControlName="targetGlucoseMax" type="number" />
+                    </mat-form-field>
+                </div>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Nivel de actividad física</mat-label>
+                    <mat-select formControlName="activityLevel">
+                        @for (level of activityLevels; track level.value) {
+                        <mat-option [value]="level.value">{{ level.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Unidad de glucosa preferida</mat-label>
+                    <mat-select formControlName="preferredGlucoseUnit">
+                        @for (unit of glucoseUnits; track unit.value) {
+                        <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || saving()">
+                    @if (saving()) { Guardando... } @else { Guardar cambios }
+                </button>
+            </form>
+        </div>
+
+        <div class="profile__card">
+            <h2 class="profile__section-title">Resumen del perfil</h2>
+
+            <div class="profile__summary">
+                <div class="profile__summary-item">
+                    <mat-icon>water_drop</mat-icon>
+                    <div class="profile__summary-info">
+                        <span class="profile__summary-label">Rango de glucosa objetivo</span>
+                        <span class="profile__summary-value">
+                            {{ patient()!.targetGlucoseMin }} — {{ patient()!.targetGlucoseMax }} mg/dL
+                        </span>
+                    </div>
+                </div>
+
+                @if (patient()!.dailyCalorieGoal) {
+                <div class="profile__summary-item">
+                    <mat-icon>local_fire_department</mat-icon>
+                    <div class="profile__summary-info">
+                        <span class="profile__summary-label">Meta calórica</span>
+                        <span class="profile__summary-value">
+                            {{ patient()!.dailyCalorieGoal }} kcal/día
+                        </span>
+                    </div>
+                </div>
+                }
+
+                <div class="profile__summary-item">
+                    <mat-icon>directions_run</mat-icon>
+                    <div class="profile__summary-info">
+                        <span class="profile__summary-label">Nivel de actividad</span>
+                        <span class="profile__summary-value">
+                            {{ getActivityLabel(patient()!.activityLevel) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="profile__summary-item">
+                    <mat-icon>straighten</mat-icon>
+                    <div class="profile__summary-info">
+                        <span class="profile__summary-label">Talla</span>
+                        <span class="profile__summary-value">{{ patient()!.heightCm }} cm</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    }
+</div>

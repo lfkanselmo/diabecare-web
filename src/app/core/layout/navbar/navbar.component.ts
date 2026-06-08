@@ -5,7 +5,9 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../auth/auth.service';
+import { ThemeService } from '../../services/theme.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -17,7 +19,8 @@ import { Router } from '@angular/router';
         MatIconModule,
         MatButtonModule,
         MatMenuModule,
-        MatDividerModule
+        MatDividerModule,
+        MatTooltipModule
     ],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss'
@@ -28,6 +31,7 @@ export class NavbarComponent {
 
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    readonly themeService = inject(ThemeService);
 
     onMenuToggle(): void {
         this.menuToggle.emit();

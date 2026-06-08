@@ -1,0 +1,97 @@
+<div class="exercise-log">
+    <div class="exercise-log__layout">
+        <div class="exercise-log__card">
+            <h2 class="exercise-log__section-title">Registrar ejercicio</h2>
+
+            <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Tipo de ejercicio</mat-label>
+                    <mat-select formControlName="exerciseType">
+                        @for (type of exerciseTypes; track type.value) {
+                        <mat-option [value]="type.value">
+                            <mat-icon>{{ type.icon }}</mat-icon>
+                            {{ type.label }}
+                        </mat-option>
+                        }
+                    </mat-select>
+                    @if (form.get('exerciseType')?.hasError('required')) {
+                    <mat-error>Selecciona el tipo de ejercicio</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Intensidad</mat-label>
+                    <mat-select formControlName="intensity">
+                        @for (i of intensities; track i.value) {
+                        <mat-option [value]="i.value">{{ i.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Duración (minutos)</mat-label>
+                    <input matInput formControlName="durationMinutes" type="number" min="1" />
+                    <mat-icon matSuffix>timer</mat-icon>
+                    @if (form.get('durationMinutes')?.hasError('required')) {
+                    <mat-error>La duración es obligatoria</mat-error>
+                    }
+                    @if (form.get('durationMinutes')?.hasError('min')) {
+                    <mat-error>Mínimo 1 minuto</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha y hora</mat-label>
+                    <input matInput formControlName="performedAt" type="datetime-local" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Notas (opcional)</mat-label>
+                    <textarea matInput formControlName="notes" rows="2"></textarea>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
+                    @if (loading()) { Guardando... } @else { Registrar ejercicio }
+                </button>
+            </form>
+        </div>
+
+        <div class="exercise-log__card">
+            <h2 class="exercise-log__section-title">Historial (30 días)</h2>
+
+            @if (history().length === 0) {
+            <div class="exercise-log__empty">
+                <mat-icon>directions_run</mat-icon>
+                <p>Sin registros de ejercicio</p>
+            </div>
+            } @else {
+            <div class="exercise-log__history">
+                @for (log of history(); track log.exerciseId) {
+                <div class="exercise-log__item">
+                    <div class="exercise-log__item-left">
+                        <span class="exercise-log__item-name">
+                            {{ getExerciseLabel(log.exerciseType) }}
+                        </span>
+                        <span class="exercise-log__item-detail">
+                            {{ log.durationMinutes }} min ·
+                            Intensidad {{ getIntensityLabel(log.intensity) }} ·
+                            {{ log.caloriesBurned | number:'1.0-0' }} kcal quemadas
+                        </span>
+                        <span class="exercise-log__item-date">
+                            {{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}
+                        </span>
+                    </div>
+                    <span class="exercise-log__intensity-badge"
+                        [class.exercise-log__intensity-badge--low]="log.intensity === 'LOW'"
+                        [class.exercise-log__intensity-badge--moderate]="log.intensity === 'MODERATE'"
+                        [class.exercise-log__intensity-badge--high]="log.intensity === 'HIGH'">
+                        {{ getIntensityLabel(log.intensity) }}
+                    </span>
+                </div>
+                <mat-divider />
+                }
+            </div>
+            }
+        </div>
+    </div>
+</div>

@@ -51,10 +51,16 @@ export const routes: Routes = [
                         .then(m => m.ReportComponent)
             },
             {
+                path: 'profile',
+                loadComponent: () =>
+                    import('./features/profile/pages/profile/profile.component')
+                        .then(m => m.ProfileComponent)
+            },
+            {
                 path: '',
                 redirectTo: 'dashboard',
                 pathMatch: 'full'
-            }
+            },
         ]
     },
     {

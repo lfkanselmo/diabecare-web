@@ -26,5 +26,6 @@ export class SidebarComponent {
         { label: 'Signos vitales', icon: 'favorite', route: '/app/vitals' },
         { label: 'Medicamentos', icon: 'medication', route: '/app/medications' },
         { label: 'Reportes', icon: 'picture_as_pdf', route: '/app/reports' },
+        { label: 'Mi perfil', icon: 'person', route: '/app/profile' },
     ];
 }

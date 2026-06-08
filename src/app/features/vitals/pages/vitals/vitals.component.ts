@@ -12,6 +12,8 @@ import { VitalsService } from '../../services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { Hba1cTrendResponse, VitalSignResponse } from '../../../../shared/models/vitals.model';
 import { Hba1cChartComponent } from '../../components/hba1c-chart/hba1c-chart.component';
+import { ExerciseLogComponent } from '../../components/exercise-log/exercise-log.component';
+import { MatTabsModule } from '@angular/material/tabs';
 
 @Component({
     selector: 'app-vitals',
@@ -27,7 +29,9 @@ import { Hba1cChartComponent } from '../../components/hba1c-chart/hba1c-chart.co
         MatSnackBarModule,
         MatDividerModule,
         MatButtonToggleModule,
-        Hba1cChartComponent
+        MatTabsModule,
+        Hba1cChartComponent,
+        ExerciseLogComponent
     ],
     templateUrl: './vitals.component.html',
     styleUrl: './vitals.component.scss'

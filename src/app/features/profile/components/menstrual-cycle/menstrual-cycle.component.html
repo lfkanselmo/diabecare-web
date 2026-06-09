@@ -124,6 +124,12 @@
                 }
             </div>
             }
+
+            @if (status()) {
+            <div class="cycle__calendar-card">
+                <app-cycle-calendar [status]="status()!" />
+            </div>
+            }
             }
         </div>
     </div>

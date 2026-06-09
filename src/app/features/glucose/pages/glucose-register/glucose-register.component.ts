@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { GlucoseUnit, ReadingType } from '../../../../shared/models/glucose.model';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-glucose-register',
@@ -33,6 +34,7 @@ export class GlucoseRegisterComponent {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
 
@@ -44,19 +46,6 @@ export class GlucoseRegisterComponent {
         notes: [''],
         deviceSource: ['']
     });
-
-    readonly readingTypes: { value: ReadingType; label: string }[] = [
-        { value: 'FASTING', label: 'Ayuno' },
-        { value: 'PRE_MEAL', label: 'Preprandial' },
-        { value: 'POST_MEAL', label: 'Postprandial' },
-        { value: 'BEDTIME', label: 'Antes de dormir' },
-        { value: 'RANDOM', label: 'Aleatoria' }
-    ];
-
-    readonly units: { value: GlucoseUnit; label: string }[] = [
-        { value: 'MG_DL', label: 'mg/dL' },
-        { value: 'MMOL_L', label: 'mmol/L' }
-    ];
 
     onSubmit(): void {
         if (this.form.invalid) return;

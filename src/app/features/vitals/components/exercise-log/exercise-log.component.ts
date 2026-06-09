@@ -10,11 +10,8 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import {
-    ExerciseIntensity,
-    ExerciseLogResponse,
-    ExerciseType
-} from '../../../../shared/models/exercise.model';
+import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
+import { MetadataService } from '../../../../core/services/metadata.service';
 
 @Component({
     selector: 'app-exercise-log',
@@ -40,6 +37,7 @@ export class ExerciseLogComponent implements OnInit {
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     history = signal<ExerciseLogResponse[]>([]);
@@ -51,46 +49,6 @@ export class ExerciseLogComponent implements OnInit {
         notes: [''],
         performedAt: [new Date().toISOString().slice(0, 16)]
     });
-
-    readonly exerciseTypes: { value: ExerciseType; label: string; icon: string }[] = [
-        { value: 'WALKING', label: 'Caminata', icon: 'directions_walk' },
-        { value: 'RUNNING', label: 'Trote / Carrera', icon: 'directions_run' },
-        { value: 'CYCLING', label: 'Ciclismo', icon: 'directions_bike' },
-        { value: 'SWIMMING', label: 'Natación', icon: 'pool' },
-        { value: 'WEIGHT_TRAINING', label: 'Pesas', icon: 'fitness_center' },
-        { value: 'YOGA', label: 'Yoga', icon: 'self_improvement' },
-        { value: 'FOOTBALL', label: 'Fútbol', icon: 'sports_soccer' },
-        { value: 'BASKETBALL', label: 'Baloncesto', icon: 'sports_basketball' },
-        { value: 'DANCING', label: 'Baile', icon: 'music_note' },
-        { value: 'HIKING', label: 'Senderismo', icon: 'landscape' },
-        { value: 'OTHER', label: 'Otro', icon: 'sports' }
-    ];
-
-    readonly intensities: { value: ExerciseIntensity; label: string; color: string }[] = [
-        { value: 'LOW', label: 'Baja', color: 'var(--color-success)' },
-        { value: 'MODERATE', label: 'Moderada', color: 'var(--color-warning)' },
-        { value: 'HIGH', label: 'Alta', color: 'var(--color-danger)' }
-    ];
-
-    readonly intensityLabels: Record<ExerciseIntensity, string> = {
-        LOW: 'Baja',
-        MODERATE: 'Moderada',
-        HIGH: 'Alta'
-    };
-
-    readonly exerciseLabels: Record<ExerciseType, string> = {
-        WALKING: 'Caminata',
-        RUNNING: 'Trote / Carrera',
-        CYCLING: 'Ciclismo',
-        SWIMMING: 'Natación',
-        WEIGHT_TRAINING: 'Pesas',
-        YOGA: 'Yoga',
-        FOOTBALL: 'Fútbol',
-        BASKETBALL: 'Baloncesto',
-        DANCING: 'Baile',
-        HIKING: 'Senderismo',
-        OTHER: 'Otro'
-    };
 
     ngOnInit(): void {
         this.loadHistory();
@@ -126,11 +84,11 @@ export class ExerciseLogComponent implements OnInit {
     }
 
     getExerciseLabel(type: string): string {
-        return this.exerciseLabels[type as ExerciseType] ?? type;
+        return this.metadata.getLabelByValue(this.metadata.exerciseTypes(), type);
     }
 
     getIntensityLabel(intensity: string): string {
-        return this.intensityLabels[intensity as ExerciseIntensity] ?? intensity;
+        return this.metadata.getLabelByValue(this.metadata.exerciseIntensities(), intensity);
     }
 
     private loadHistory(): void {

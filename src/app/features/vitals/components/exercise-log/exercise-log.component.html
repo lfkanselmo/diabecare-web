@@ -7,11 +7,8 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Tipo de ejercicio</mat-label>
                     <mat-select formControlName="exerciseType">
-                        @for (type of exerciseTypes; track type.value) {
-                        <mat-option [value]="type.value">
-                            <mat-icon>{{ type.icon }}</mat-icon>
-                            {{ type.label }}
-                        </mat-option>
+                        @for (type of metadata.exerciseTypes(); track type.value) {
+                        <mat-option [value]="type.value">{{ type.label }}</mat-option>
                         }
                     </mat-select>
                     @if (form.get('exerciseType')?.hasError('required')) {
@@ -22,7 +19,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Intensidad</mat-label>
                     <mat-select formControlName="intensity">
-                        @for (i of intensities; track i.value) {
+                        @for (i of metadata.exerciseIntensities(); track i.value) {
                         <mat-option [value]="i.value">{{ i.label }}</mat-option>
                         }
                     </mat-select>

@@ -18,6 +18,7 @@ import {
 import { MatTabsModule } from '@angular/material/tabs';
 import { InsulinCalculatorComponent } from '../../components/insulin-calculator/insulin-calculator.component';
 import { InsulinProfileComponent } from '../../components/insulin-profile/insulin-profile.component';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-medications',
@@ -44,6 +45,7 @@ export class MedicationsComponent implements OnInit {
     private readonly medicationsService = inject(MedicationsService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     medications = signal<MedicationResponse[]>([]);
@@ -56,46 +58,6 @@ export class MedicationsComponent implements OnInit {
         frequency: ['', Validators.required],
         notes: ['']
     });
-
-    readonly medicationTypes: { value: MedicationType; label: string }[] = [
-        { value: 'INSULIN_BASAL', label: 'Insulina basal' },
-        { value: 'INSULIN_BOLUS', label: 'Insulina bolo' },
-        { value: 'ORAL', label: 'Oral' },
-        { value: 'INJECTABLE', label: 'Inyectable' }
-    ];
-
-    readonly doseUnits: { value: DoseUnit; label: string }[] = [
-        { value: 'MG', label: 'mg' },
-        { value: 'ML', label: 'mL' },
-        { value: 'UNITS', label: 'Unidades' }
-    ];
-
-    readonly frequencies: { value: MedicationFrequency; label: string }[] = [
-        { value: 'ONCE_DAILY', label: 'Una vez al día' },
-        { value: 'TWICE_DAILY', label: 'Dos veces al día' },
-        { value: 'THREE_TIMES_DAILY', label: 'Tres veces al día' },
-        { value: 'WITH_MEALS', label: 'Con las comidas' },
-        { value: 'BEFORE_MEALS', label: 'Antes de las comidas' },
-        { value: 'AT_BEDTIME', label: 'Al acostarse' },
-        { value: 'AS_NEEDED', label: 'Según necesidad' }
-    ];
-
-    readonly typeLabels: Record<MedicationType, string> = {
-        INSULIN_BASAL: 'Insulina basal',
-        INSULIN_BOLUS: 'Insulina bolo',
-        ORAL: 'Oral',
-        INJECTABLE: 'Inyectable'
-    };
-
-    readonly frequencyLabels: Record<MedicationFrequency, string> = {
-        ONCE_DAILY: 'Una vez al día',
-        TWICE_DAILY: 'Dos veces al día',
-        THREE_TIMES_DAILY: 'Tres veces al día',
-        WITH_MEALS: 'Con las comidas',
-        BEFORE_MEALS: 'Antes de las comidas',
-        AT_BEDTIME: 'Al acostarse',
-        AS_NEEDED: 'Según necesidad'
-    };
 
     ngOnInit(): void {
         this.loadMedications();
@@ -138,12 +100,12 @@ export class MedicationsComponent implements OnInit {
         });
     }
 
-    getTypeLabel(type: string): string {
-        return this.typeLabels[type as MedicationType] ?? type;
+    getMedicationTypeLabel(type: string): string {
+        return this.metadata.getLabelByValue(this.metadata.medicationTypes(), type);
     }
 
-    getFrequencyLabel(frequency: string): string {
-        return this.frequencyLabels[frequency as MedicationFrequency] ?? frequency;
+    getFrequencyLabel(freq: string): string {
+        return this.metadata.getLabelByValue(this.metadata.medicationFrequencies(), freq);
     }
 
     private loadMedications(): void {

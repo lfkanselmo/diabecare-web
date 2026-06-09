@@ -14,6 +14,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
 import { MatTabsModule } from '@angular/material/tabs';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-profile',
@@ -41,6 +42,7 @@ export class ProfileComponent implements OnInit {
     private readonly profileService = inject(ProfileService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     saving = signal(false);
@@ -54,26 +56,6 @@ export class ProfileComponent implements OnInit {
         activityLevel: ['', Validators.required],
         preferredGlucoseUnit: ['', Validators.required]
     });
-
-    readonly activityLevels = [
-        { value: 'SEDENTARY', label: 'Sedentario' },
-        { value: 'LIGHTLY_ACTIVE', label: 'Ligeramente activo' },
-        { value: 'MODERATELY_ACTIVE', label: 'Moderadamente activo' },
-        { value: 'VERY_ACTIVE', label: 'Muy activo' }
-    ];
-
-    readonly glucoseUnits = [
-        { value: 'MG_DL', label: 'mg/dL' },
-        { value: 'MMOL_L', label: 'mmol/L' }
-    ];
-
-    readonly diabetesTypeLabels: Record<string, string> = {
-        TYPE_1: 'Tipo 1',
-        TYPE_2: 'Tipo 2',
-        GESTATIONAL: 'Gestacional',
-        LADA: 'LADA',
-        MODY: 'MODY'
-    };
 
     ngOnInit(): void {
         this.loadProfile();
@@ -128,7 +110,7 @@ export class ProfileComponent implements OnInit {
     }
 
     getActivityLabel(level: string): string {
-        return this.activityLevels.find(a => a.value === level)?.label ?? level;
+        return this.metadata.getLabelByValue(this.metadata.activityLevels(), level);
     }
 
     get isFemale(): boolean {

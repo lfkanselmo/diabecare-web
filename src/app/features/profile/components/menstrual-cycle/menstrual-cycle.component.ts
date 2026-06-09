@@ -14,6 +14,7 @@ import {
     CyclePhase,
     MenstrualCycleStatusResponse
 } from '../../../../shared/models/menstrual-cycle.model';
+import { CycleCalendarComponent } from '../cycle-calendar/cycle-calendar.component';
 
 @Component({
     selector: 'app-menstrual-cycle',
@@ -28,7 +29,8 @@ import {
         MatIconModule,
         MatSnackBarModule,
         MatDividerModule,
-        MatChipsModule
+        MatChipsModule,
+        CycleCalendarComponent
     ],
     templateUrl: './menstrual-cycle.component.html',
     styleUrl: './menstrual-cycle.component.scss'

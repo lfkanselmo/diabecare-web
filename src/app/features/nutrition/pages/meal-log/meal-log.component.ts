@@ -14,6 +14,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
 import { FoodResponse } from '../../../../shared/models/food.model';
 import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-meal-log',
@@ -40,6 +41,7 @@ export class MealLogComponent {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     items = signal<MealItemRequest[]>([]);
@@ -54,13 +56,6 @@ export class MealLogComponent {
     quantityForm: FormGroup = this.fb.group({
         quantityGrams: [null, [Validators.required, Validators.min(0.1)]]
     });
-
-    readonly mealTypes: { value: MealType; label: string }[] = [
-        { value: 'BREAKFAST', label: 'Desayuno' },
-        { value: 'LUNCH', label: 'Almuerzo' },
-        { value: 'DINNER', label: 'Cena' },
-        { value: 'SNACK', label: 'Merienda' }
-    ];
 
     get totalCalories(): number {
         return this.items().reduce((sum, i) => sum + i.calories, 0);

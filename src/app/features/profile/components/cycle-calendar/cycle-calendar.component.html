@@ -1,0 +1,57 @@
+<div class="cycle-cal">
+    <div class="cycle-cal__wheel-section">
+        <h3 class="cycle-cal__subtitle">Tu ciclo actual</h3>
+        <div echarts [options]="wheelOptions" class="cycle-cal__wheel"></div>
+
+        <div class="cycle-cal__legend">
+            @for (entry of phaseConfig | keyvalue; track entry.key) {
+            <div class="cycle-cal__legend-item">
+                <span class="cycle-cal__legend-dot" [style.background]="entry.value.color"></span>
+                <span class="cycle-cal__legend-text">
+                    {{ entry.value.icon }} {{ entry.value.label }}
+                    <span class="cycle-cal__legend-days">días {{ entry.value.days }}</span>
+                </span>
+            </div>
+            }
+        </div>
+    </div>
+
+    <div class="cycle-cal__calendar-section">
+        <h3 class="cycle-cal__subtitle">
+            {{ currentMonth | date:'MMMM yyyy':'':'es' | titlecase }}
+        </h3>
+
+        <div class="cycle-cal__weekdays">
+            @for (day of ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']; track day) {
+            <span class="cycle-cal__weekday">{{ day }}</span>
+            }
+        </div>
+
+        <div class="cycle-cal__grid">
+            @for (day of calendarDays; track $index) {
+            <div class="cycle-cal__day" [class.cycle-cal__day--empty]="!day.date"
+                [class.cycle-cal__day--today]="day.isToday" [class.cycle-cal__day--predicted]="day.isPredicted"
+                [style.background-color]="getDayColor(day)" [style.border-color]="getDayBorderColor(day)"
+                [title]="day.phase ? phaseConfig[day.phase].label : ''">
+                @if (day.date) {
+                <span class="cycle-cal__day-number">{{ day.date }}</span>
+                @if (day.isPredicted) {
+                <span class="cycle-cal__day-icon">🩸</span>
+                }
+                }
+            </div>
+            }
+        </div>
+
+        <div class="cycle-cal__calendar-legend">
+            <div class="cycle-cal__cal-legend-item">
+                <span class="cycle-cal__cal-dot cycle-cal__cal-dot--today"></span>
+                <span>Hoy</span>
+            </div>
+            <div class="cycle-cal__cal-legend-item">
+                <span class="cycle-cal__cal-dot cycle-cal__cal-dot--predicted">🩸</span>
+                <span>Próximo período predicho</span>
+            </div>
+        </div>
+    </div>
+</div>

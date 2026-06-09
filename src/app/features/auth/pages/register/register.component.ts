@@ -12,6 +12,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
 import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-register',
@@ -38,6 +39,7 @@ export class RegisterComponent {
     private readonly authApiService = inject(AuthApiService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    readonly metadata = inject(MetadataService);
 
     accountForm: FormGroup = this.fb.group({
         email: ['', [Validators.required, Validators.email]],

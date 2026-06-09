@@ -14,12 +14,12 @@
         <mat-form-field appearance="outline">
           <mat-label>Tipo de comida</mat-label>
           <mat-select formControlName="mealType">
-            @for (type of mealTypes; track type.value) {
-              <mat-option [value]="type.value">{{ type.label }}</mat-option>
+            @for (type of metadata.mealTypes(); track type.value) {
+            <mat-option [value]="type.value">{{ type.label }}</mat-option>
             }
           </mat-select>
           @if (mealForm.get('mealType')?.hasError('required')) {
-            <mat-error>Selecciona el tipo de comida</mat-error>
+          <mat-error>Selecciona el tipo de comida</mat-error>
           }
         </mat-form-field>
 
@@ -41,62 +41,57 @@
       <app-food-search (foodSelected)="onFoodSelected($event)" />
 
       @if (selectedFood()) {
-        <div class="meal-log__selected-food">
-          <div class="meal-log__selected-food-header">
-            <div>
-              <span class="meal-log__selected-food-name">{{ selectedFood()!.name }}</span>
-              <span class="meal-log__selected-food-ref">
-                Por 100g: {{ selectedFood()!.caloriesPer100g }} kcal ·
-                C: {{ selectedFood()!.carbsPer100g }}g ·
-                P: {{ selectedFood()!.proteinsPer100g }}g ·
-                G: {{ selectedFood()!.fatsPer100g }}g
-              </span>
-            </div>
-            <button mat-icon-button (click)="onClearFood()">
-              <mat-icon>close</mat-icon>
-            </button>
+      <div class="meal-log__selected-food">
+        <div class="meal-log__selected-food-header">
+          <div>
+            <span class="meal-log__selected-food-name">{{ selectedFood()!.name }}</span>
+            <span class="meal-log__selected-food-ref">
+              Por 100g: {{ selectedFood()!.caloriesPer100g }} kcal ·
+              C: {{ selectedFood()!.carbsPer100g }}g ·
+              P: {{ selectedFood()!.proteinsPer100g }}g ·
+              G: {{ selectedFood()!.fatsPer100g }}g
+            </span>
           </div>
-
-          <form [formGroup]="quantityForm" class="meal-log__quantity-form">
-            <mat-form-field appearance="outline">
-              <mat-label>Cantidad (gramos)</mat-label>
-              <input matInput formControlName="quantityGrams" type="number" min="0.1" step="1" />
-              <mat-icon matSuffix>scale</mat-icon>
-            </mat-form-field>
-
-            @if (calculatedValues) {
-              <div class="meal-log__calculated">
-                <div class="meal-log__calc-item">
-                  <span class="meal-log__calc-label">Calorías</span>
-                  <span class="meal-log__calc-value">{{ calculatedValues.calories | number:'1.0-1' }} kcal</span>
-                </div>
-                <div class="meal-log__calc-item">
-                  <span class="meal-log__calc-label">Carbohidratos</span>
-                  <span class="meal-log__calc-value">{{ calculatedValues.carbohydrates | number:'1.0-1' }} g</span>
-                </div>
-                <div class="meal-log__calc-item">
-                  <span class="meal-log__calc-label">Proteínas</span>
-                  <span class="meal-log__calc-value">{{ calculatedValues.proteins | number:'1.0-1' }} g</span>
-                </div>
-                <div class="meal-log__calc-item">
-                  <span class="meal-log__calc-label">Grasas</span>
-                  <span class="meal-log__calc-value">{{ calculatedValues.fats | number:'1.0-1' }} g</span>
-                </div>
-              </div>
-            }
-
-            <button
-              mat-stroked-button
-              color="primary"
-              type="button"
-              [disabled]="quantityForm.invalid || !calculatedValues"
-              (click)="onAddItem()"
-            >
-              <mat-icon>add</mat-icon>
-              Agregar a la comida
-            </button>
-          </form>
+          <button mat-icon-button (click)="onClearFood()">
+            <mat-icon>close</mat-icon>
+          </button>
         </div>
+
+        <form [formGroup]="quantityForm" class="meal-log__quantity-form">
+          <mat-form-field appearance="outline">
+            <mat-label>Cantidad (gramos)</mat-label>
+            <input matInput formControlName="quantityGrams" type="number" min="0.1" step="1" />
+            <mat-icon matSuffix>scale</mat-icon>
+          </mat-form-field>
+
+          @if (calculatedValues) {
+          <div class="meal-log__calculated">
+            <div class="meal-log__calc-item">
+              <span class="meal-log__calc-label">Calorías</span>
+              <span class="meal-log__calc-value">{{ calculatedValues.calories | number:'1.0-1' }} kcal</span>
+            </div>
+            <div class="meal-log__calc-item">
+              <span class="meal-log__calc-label">Carbohidratos</span>
+              <span class="meal-log__calc-value">{{ calculatedValues.carbohydrates | number:'1.0-1' }} g</span>
+            </div>
+            <div class="meal-log__calc-item">
+              <span class="meal-log__calc-label">Proteínas</span>
+              <span class="meal-log__calc-value">{{ calculatedValues.proteins | number:'1.0-1' }} g</span>
+            </div>
+            <div class="meal-log__calc-item">
+              <span class="meal-log__calc-label">Grasas</span>
+              <span class="meal-log__calc-value">{{ calculatedValues.fats | number:'1.0-1' }} g</span>
+            </div>
+          </div>
+          }
+
+          <button mat-stroked-button color="primary" type="button"
+            [disabled]="quantityForm.invalid || !calculatedValues" (click)="onAddItem()">
+            <mat-icon>add</mat-icon>
+            Agregar a la comida
+          </button>
+        </form>
+      </div>
       }
     </div>
 
@@ -104,59 +99,55 @@
       <h2 class="meal-log__section-title">Resumen</h2>
 
       @if (items().length === 0) {
-        <div class="meal-log__empty">
-          <mat-icon>restaurant</mat-icon>
-          <p>Agrega alimentos a tu comida</p>
-        </div>
+      <div class="meal-log__empty">
+        <mat-icon>restaurant</mat-icon>
+        <p>Agrega alimentos a tu comida</p>
+      </div>
       } @else {
-        <div class="meal-log__totals">
-          <div class="meal-log__total-item">
-            <span class="meal-log__total-label">Calorías</span>
-            <span class="meal-log__total-value">{{ totalCalories | number:'1.0-0' }} kcal</span>
-          </div>
-          <div class="meal-log__total-item">
-            <span class="meal-log__total-label">Carbohidratos</span>
-            <span class="meal-log__total-value">{{ totalCarbs | number:'1.0-1' }} g</span>
-          </div>
-          <div class="meal-log__total-item">
-            <span class="meal-log__total-label">Proteínas</span>
-            <span class="meal-log__total-value">{{ totalProteins | number:'1.0-1' }} g</span>
-          </div>
-          <div class="meal-log__total-item">
-            <span class="meal-log__total-label">Grasas</span>
-            <span class="meal-log__total-value">{{ totalFats | number:'1.0-1' }} g</span>
-          </div>
+      <div class="meal-log__totals">
+        <div class="meal-log__total-item">
+          <span class="meal-log__total-label">Calorías</span>
+          <span class="meal-log__total-value">{{ totalCalories | number:'1.0-0' }} kcal</span>
         </div>
+        <div class="meal-log__total-item">
+          <span class="meal-log__total-label">Carbohidratos</span>
+          <span class="meal-log__total-value">{{ totalCarbs | number:'1.0-1' }} g</span>
+        </div>
+        <div class="meal-log__total-item">
+          <span class="meal-log__total-label">Proteínas</span>
+          <span class="meal-log__total-value">{{ totalProteins | number:'1.0-1' }} g</span>
+        </div>
+        <div class="meal-log__total-item">
+          <span class="meal-log__total-label">Grasas</span>
+          <span class="meal-log__total-value">{{ totalFats | number:'1.0-1' }} g</span>
+        </div>
+      </div>
 
-        <div class="meal-log__items">
-          @for (item of items(); track item.foodName; let i = $index) {
-            <div class="meal-log__item">
-              <div class="meal-log__item-info">
-                <span class="meal-log__item-name">{{ item.foodName }}</span>
-                <span class="meal-log__item-detail">
-                  {{ item.quantityGrams }}g —
-                  {{ item.calories | number:'1.0-0' }} kcal ·
-                  C: {{ item.carbohydrates | number:'1.0-1' }}g ·
-                  P: {{ item.proteins | number:'1.0-1' }}g ·
-                  G: {{ item.fats | number:'1.0-1' }}g
-                </span>
-              </div>
-              <button mat-icon-button color="warn" (click)="onRemoveItem(i)">
-                <mat-icon>delete_outline</mat-icon>
-              </button>
-            </div>
-          }
+      <div class="meal-log__items">
+        @for (item of items(); track item.foodName; let i = $index) {
+        <div class="meal-log__item">
+          <div class="meal-log__item-info">
+            <span class="meal-log__item-name">{{ item.foodName }}</span>
+            <span class="meal-log__item-detail">
+              {{ item.quantityGrams }}g —
+              {{ item.calories | number:'1.0-0' }} kcal ·
+              C: {{ item.carbohydrates | number:'1.0-1' }}g ·
+              P: {{ item.proteins | number:'1.0-1' }}g ·
+              G: {{ item.fats | number:'1.0-1' }}g
+            </span>
+          </div>
+          <button mat-icon-button color="warn" (click)="onRemoveItem(i)">
+            <mat-icon>delete_outline</mat-icon>
+          </button>
         </div>
+        }
+      </div>
       }
 
       <div class="meal-log__actions">
         <button mat-stroked-button (click)="onCancel()">Cancelar</button>
-        <button
-          mat-raised-button
-          color="primary"
-          [disabled]="mealForm.invalid || items().length === 0 || loading()"
-          (click)="onSubmit()"
-        >
+        <button mat-raised-button color="primary" [disabled]="mealForm.invalid || items().length === 0 || loading()"
+          (click)="onSubmit()">
           @if (loading()) { Guardando... } @else { Guardar comida }
         </button>
       </div>

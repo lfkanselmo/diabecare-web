@@ -13,18 +13,18 @@
           <mat-label>Valor</mat-label>
           <input matInput formControlName="value" type="number" />
           @if (form.get('value')?.hasError('required')) {
-            <mat-error>El valor es obligatorio</mat-error>
+          <mat-error>El valor es obligatorio</mat-error>
           }
           @if (form.get('value')?.hasError('min') || form.get('value')?.hasError('max')) {
-            <mat-error>El valor debe estar entre 20 y 600</mat-error>
+          <mat-error>El valor debe estar entre 20 y 600</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="glucose-register__unit">
           <mat-label>Unidad</mat-label>
           <mat-select formControlName="unit">
-            @for (unit of units; track unit.value) {
-              <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
+            @for (unit of metadata.glucoseUnits(); track unit.value) {
+            <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
             }
           </mat-select>
         </mat-form-field>
@@ -33,12 +33,12 @@
       <mat-form-field appearance="outline">
         <mat-label>Tipo de medición</mat-label>
         <mat-select formControlName="readingType">
-          @for (type of readingTypes; track type.value) {
-            <mat-option [value]="type.value">{{ type.label }}</mat-option>
+          @for (type of metadata.readingTypes(); track type.value) {
+          <mat-option [value]="type.value">{{ type.label }}</mat-option>
           }
         </mat-select>
         @if (form.get('readingType')?.hasError('required')) {
-          <mat-error>Selecciona el tipo de medición</mat-error>
+        <mat-error>Selecciona el tipo de medición</mat-error>
         }
       </mat-form-field>
 
@@ -46,7 +46,7 @@
         <mat-label>Fecha y hora</mat-label>
         <input matInput formControlName="measuredAt" type="datetime-local" />
         @if (form.get('measuredAt')?.hasError('required')) {
-          <mat-error>La fecha y hora son obligatorias</mat-error>
+        <mat-error>La fecha y hora son obligatorias</mat-error>
         }
       </mat-form-field>
 
@@ -65,9 +65,9 @@
         <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
           @if (loading()) {
-            Guardando...
+          Guardando...
           } @else {
-            Guardar lectura
+          Guardar lectura
           }
         </button>
       </div>

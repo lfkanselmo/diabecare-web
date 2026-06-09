@@ -20,7 +20,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Tipo</mat-label>
                 <mat-select formControlName="type">
-                  @for (type of medicationTypes; track type.value) {
+                  @for (type of metadata.medicationTypes(); track type.value) {
                   <mat-option [value]="type.value">{{ type.label }}</mat-option>
                   }
                 </mat-select>
@@ -34,7 +34,7 @@
                 <mat-form-field appearance="outline">
                   <mat-label>Unidad</mat-label>
                   <mat-select formControlName="doseUnit">
-                    @for (unit of doseUnits; track unit.value) {
+                    @for (unit of metadata.doseUnits(); track unit.value) {
                     <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
                     }
                   </mat-select>
@@ -44,7 +44,7 @@
               <mat-form-field appearance="outline">
                 <mat-label>Frecuencia</mat-label>
                 <mat-select formControlName="frequency">
-                  @for (freq of frequencies; track freq.value) {
+                  @for (freq of metadata.medicationFrequencies(); track freq.value) {
                   <mat-option [value]="freq.value">{{ freq.label }}</mat-option>
                   }
                 </mat-select>
@@ -77,7 +77,7 @@
                   <span class="medications__item-detail">
                     {{ med.dose }} {{ med.doseUnit }} — {{ getFrequencyLabel(med.frequency) }}
                   </span>
-                  <span class="medications__item-type">{{ getTypeLabel(med.type) }}</span>
+                  <span class="medications__item-type">{{ getMedicationTypeLabel(med.type) }}</span>
                 </div>
                 <button mat-icon-button color="warn" (click)="onDeactivate(med.medicationId)">
                   <mat-icon>close</mat-icon>

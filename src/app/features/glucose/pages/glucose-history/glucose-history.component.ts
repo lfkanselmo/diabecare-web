@@ -14,6 +14,7 @@ import {
     MealMarkerResponse
 } from '../../../../shared/models/glucose.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
+import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-glucose-history',
@@ -38,6 +39,7 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly glucoseService = inject(GlucoseService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    readonly metadata = inject(MetadataService);
 
     readings = signal<GlucoseReadingResponse[]>([]);
     mealMarkers = signal<MealMarkerResponse[]>([]);
@@ -45,22 +47,6 @@ export class GlucoseHistoryComponent implements OnInit {
     view = signal<'chart' | 'table'>('chart');
 
     readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
-
-    readonly statusLabels: Record<GlucoseStatus, string> = {
-        CRITICALLY_LOW: 'Crítico bajo',
-        LOW: 'Bajo',
-        NORMAL: 'Normal',
-        HIGH: 'Alto',
-        CRITICALLY_HIGH: 'Crítico alto'
-    };
-
-    readonly readingTypeLabels: Record<string, string> = {
-        FASTING: 'Ayuno',
-        PRE_MEAL: 'Preprandial',
-        POST_MEAL: 'Postprandial',
-        BEDTIME: 'Antes de dormir',
-        RANDOM: 'Aleatoria'
-    };
 
     ngOnInit(): void {
         this.loadHistory();
@@ -82,7 +68,14 @@ export class GlucoseHistoryComponent implements OnInit {
     }
 
     getStatusLabel(status: string): string {
-        return this.statusLabels[status as GlucoseStatus] ?? status;
+        const labels: Record<string, string> = {
+            CRITICALLY_LOW: 'Crítico bajo',
+            LOW: 'Bajo',
+            NORMAL: 'Normal',
+            HIGH: 'Alto',
+            CRITICALLY_HIGH: 'Crítico alto'
+        };
+        return labels[status] ?? status;
     }
 
     getStatusClass(status: string): string {
@@ -97,7 +90,7 @@ export class GlucoseHistoryComponent implements OnInit {
     }
 
     getReadingTypeLabel(type: string): string {
-        return this.readingTypeLabels[type] ?? type;
+        return this.metadata.getLabelByValue(this.metadata.readingTypes(), type);
     }
 
     private loadHistory(): void {

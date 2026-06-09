@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectorRef } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -43,6 +43,7 @@ export class ProfileComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
     readonly metadata = inject(MetadataService);
+    private readonly cdr = inject(ChangeDetectorRef);
 
     loading = signal(false);
     saving = signal(false);
@@ -103,6 +104,7 @@ export class ProfileComponent implements OnInit {
                     activityLevel: data.activityLevel,
                     preferredGlucoseUnit: data.preferredGlucoseUnit
                 });
+                this.cdr.detectChanges();
                 this.loading.set(false);
             },
             error: () => this.loading.set(false)

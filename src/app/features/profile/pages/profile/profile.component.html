@@ -117,7 +117,8 @@
                                 <div class="profile__summary-info">
                                     <span class="profile__summary-label">Nivel de actividad</span>
                                     <span class="profile__summary-value">
-                                        {{ getActivityLabel(patient()!.activityLevel) }}
+                                        {{ metadata.getLabelByValue(metadata.activityLevels(), patient()!.activityLevel)
+                                        }}
                                     </span>
                                 </div>
                             </div>

@@ -23,7 +23,11 @@
         <span class="dashboard__metric-value">{{ glucoseStats()!.average | number:'1.0-0' }}</span>
         <span class="dashboard__metric-unit">mg/dL</span>
         } @else {
-        <span class="dashboard__metric-empty">Sin datos</span>
+        <div class="dashboard__empty-state">
+          <mat-icon>water_drop</mat-icon>
+          <span>Aún no hay lecturas</span>
+          <a class="dashboard__empty-cta" routerLink="/app/glucose/register">+ Registrar ahora</a>
+        </div>
         }
       </div>
       @if (glucoseStats()) {
@@ -31,8 +35,8 @@
         <span>TIR: {{ glucoseStats()!.timeInRangePercent | number:'1.0-1' }}%</span>
         <span>HbA1c est.: {{ glucoseStats()!.estimatedHba1c | number:'1.0-1' }}%</span>
       </div>
-      }
       <a class="dashboard__card-link" routerLink="/app/glucose/history">Ver historial</a>
+      }
     </div>
 
     <div class="dashboard__card dashboard__card--calories">
@@ -45,7 +49,11 @@
         <span class="dashboard__metric-value">{{ dailySummary()!.totalCalories | number:'1.0-0' }}</span>
         <span class="dashboard__metric-unit">kcal</span>
         } @else {
-        <span class="dashboard__metric-empty">Sin datos</span>
+        <div class="dashboard__empty-state">
+          <mat-icon>restaurant</mat-icon>
+          <span>Sin comidas hoy</span>
+          <a class="dashboard__empty-cta" routerLink="/app/nutrition/log">+ Registrar comida</a>
+        </div>
         }
       </div>
       @if (dailySummary()?.calorieGoal) {
@@ -56,7 +64,9 @@
         }
       </div>
       }
+      @if (dailySummary()) {
       <a class="dashboard__card-link" routerLink="/app/nutrition/log">Registrar comida</a>
+      }
     </div>
 
     <div class="dashboard__card dashboard__card--vitals">
@@ -93,10 +103,14 @@
         </div>
         }
       </div>
+      <a class="dashboard__card-link" routerLink="/app/vitals">Ver signos vitales</a>
       } @else {
-      <p class="dashboard__metric-empty">Sin registros</p>
+      <div class="dashboard__empty-state">
+        <mat-icon>favorite_border</mat-icon>
+        <span>Sin registros vitales</span>
+        <a class="dashboard__empty-cta" routerLink="/app/vitals">+ Registrar signos</a>
+      </div>
       }
-      <a class="dashboard__card-link" routerLink="/app/vitals">Registrar signos</a>
     </div>
 
     <div class="dashboard__card dashboard__card--cv">
@@ -112,7 +126,10 @@
         </span>
         <span class="dashboard__metric-unit">CV</span>
         } @else {
-        <span class="dashboard__metric-empty">Sin datos</span>
+        <div class="dashboard__empty-state">
+          <mat-icon>show_chart</mat-icon>
+          <span>Sin datos suficientes</span>
+        </div>
         }
       </div>
       @if (glucoseStats()) {

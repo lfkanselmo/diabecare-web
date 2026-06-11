@@ -1,9 +1,10 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
     GlucoseCorrelationResponse,
+    GlucoseReadingResponse,
     GlucoseStatsResponse,
     RegisterGlucoseRequest
 } from '../../../shared/models/glucose.model';
@@ -32,5 +33,21 @@ export class GlucoseService {
 
     delete(patientId: string, readingId: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${patientId}/${readingId}`);
+    }
+
+    getLatestReading(patientId: string): Observable<GlucoseReadingResponse | null> {
+        const to = new Date().toISOString();
+        const from = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+        const params = new HttpParams().set('from', from).set('to', to);
+        return this.http.get<GlucoseCorrelationResponse>(
+            `${this.baseUrl}/${patientId}/history`, { params }
+        ).pipe(
+            map(res => {
+                if (!res.readings.length) return null;
+                return [...res.readings].sort(
+                    (a, b) => new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime()
+                )[0];
+            })
+        );
     }
 }

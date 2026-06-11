@@ -36,6 +36,46 @@
     flex: 1;
   }
 
+  &__glucose-chip {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 14px 5px 10px;
+    border-radius: var(--radius-full);
+    border: 1px solid;
+    margin-right: var(--space-2);
+    text-decoration: none;
+    transition: opacity var(--transition-fast);
+    cursor: pointer;
+    white-space: nowrap;
+
+    &:hover {
+      opacity: 0.85;
+      text-decoration: none;
+    }
+  }
+
+  &__chip-icon {
+    font-size: 15px;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+  }
+
+  &__chip-value {
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  &__chip-unit {
+    font-size: 11px;
+    font-weight: 400;
+    opacity: 0.85;
+    margin-left: 1px;
+  }
+
   .mat-icon-button {
     color: var(--color-text-inverse);
     opacity: 0.85;

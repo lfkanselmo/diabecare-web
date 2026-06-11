@@ -8,6 +8,7 @@ import { NutritionService } from '../../../nutrition/services/nutrition.service'
 import { VitalsService } from '../../../vitals/services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { GlucoseStateService } from '../../../../core/services/glucose-state.service';
 import { GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
 import { DailySummaryResponse } from '../../../../shared/models/nutrition.model';
 import { VitalSignResponse } from '../../../../shared/models/vitals.model';
@@ -35,6 +36,7 @@ export class DashboardComponent implements OnInit {
     private readonly vitalsService = inject(VitalsService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
+    private readonly glucoseStateService = inject(GlucoseStateService);
 
     readonly today = new Date();
     readonly patientId = this.authService.getPatientId();
@@ -61,22 +63,35 @@ export class DashboardComponent implements OnInit {
         const todayStr = now.toISOString().split('T')[0];
 
         this.glucoseService.getStats(this.patientId, from, to).subscribe({
-            next: (stats) => this.glucoseStats.set(stats),
+            next: stats => this.glucoseStats.set(stats),
+            error: () => { }
+        });
+
+        // Carga historial y extrae la lectura más reciente para el navbar
+        this.glucoseService.getHistory(this.patientId, from, to).subscribe({
+            next: correlation => {
+                if (correlation.readings.length > 0) {
+                    const latest = [...correlation.readings].sort(
+                        (a, b) => new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime()
+                    )[0];
+                    this.glucoseStateService.setLatestReading(latest);
+                }
+            },
             error: () => { }
         });
 
         this.nutritionService.getDailySummary(this.patientId, todayStr).subscribe({
-            next: (summary) => this.dailySummary.set(summary),
+            next: summary => this.dailySummary.set(summary),
             error: () => { }
         });
 
         this.vitalsService.getLatest(this.patientId).subscribe({
-            next: (vitals) => this.latestVitals.set(vitals),
+            next: vitals => this.latestVitals.set(vitals),
             error: () => { }
         });
 
         this.alertService.getAlerts(this.patientId).subscribe({
-            next: (data) => this.alerts.set(data),
+            next: data => this.alerts.set(data),
             error: () => { }
         });
 

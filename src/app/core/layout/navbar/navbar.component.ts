@@ -8,6 +8,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../auth/auth.service';
 import { ThemeService } from '../../services/theme.service';
+import { GlucoseStateService } from '../../services/glucose-state.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -32,6 +33,7 @@ export class NavbarComponent {
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
     readonly themeService = inject(ThemeService);
+    readonly glucoseState = inject(GlucoseStateService);
 
     onMenuToggle(): void {
         this.menuToggle.emit();

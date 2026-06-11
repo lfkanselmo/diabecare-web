@@ -12,6 +12,21 @@
 
   <span class="navbar__spacer"></span>
 
+  @if (glucoseState.latestReading()) {
+  <a class="navbar__glucose-chip" routerLink="/app/glucose"
+    [style.background]="glucoseState.getChipBg(glucoseState.latestReading()!.status)"
+    [style.border-color]="glucoseState.getChipColor(glucoseState.latestReading()!.status)"
+    [matTooltip]="glucoseState.getStatusLabel(glucoseState.latestReading()!.status)">
+    <mat-icon class="navbar__chip-icon" [style.color]="glucoseState.getChipColor(glucoseState.latestReading()!.status)">
+      water_drop
+    </mat-icon>
+    <span class="navbar__chip-value" [style.color]="glucoseState.getChipColor(glucoseState.latestReading()!.status)">
+      {{ glucoseState.latestReading()!.value }}
+      <span class="navbar__chip-unit">mg/dL</span>
+    </span>
+  </a>
+  }
+
   <button mat-icon-button [matTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
     (click)="themeService.toggleTheme()">
     <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>

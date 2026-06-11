@@ -2,7 +2,7 @@
 @use 'styles/mixins';
 @use 'styles/theme';
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
 @import url('https://fonts.googleapis.com/icon?family=Material+Icons');
 
 *,
@@ -16,6 +16,7 @@
 html {
   font-size: 16px;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -37,11 +38,10 @@ a {
 
 h1, h2, h3, h4, h5, h6 {
   line-height: var(--line-height-tight);
-  font-weight: var(--font-weight-semibold);
+  font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
 
-// Utilitarios globales
 .text-muted    { color: var(--color-text-secondary); }
 .text-success  { color: var(--color-success); }
 .text-warning  { color: var(--color-warning); }
@@ -49,8 +49,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .card {
   background: var(--color-surface);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--color-border);
   padding: var(--space-6);
 }
 
@@ -60,10 +60,28 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
-// Scrollbar personalizada
-::-webkit-scrollbar        { width: 6px; }
-::-webkit-scrollbar-track  { background: var(--color-background); }
+::-webkit-scrollbar        { width: 5px; }
+::-webkit-scrollbar-track  { background: transparent; }
 ::-webkit-scrollbar-thumb  {
   background: var(--color-border);
   border-radius: var(--radius-full);
+}
+
+// ── Alertas modo oscuro
+[data-theme="dark"] {
+  .alerts-panel__item--warning {
+    background-color: rgba(232, 160, 32, 0.12) !important;
+  }
+
+  .alerts-panel__item--info {
+    background-color: rgba(14, 165, 160, 0.12) !important;
+  }
+
+  .alerts-panel__item--success {
+    background-color: rgba(34, 169, 106, 0.12) !important;
+  }
+
+  .alerts-panel__item--danger {
+    background-color: rgba(224, 75, 75, 0.12) !important;
+  }
 }

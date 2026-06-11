@@ -5,19 +5,31 @@
   background-color: var(--color-primary) !important;
   color: var(--color-text-inverse) !important;
   height: var(--navbar-height);
-  box-shadow: var(--shadow-md);
+  box-shadow: none !important;
+  border-bottom: 0.5px solid rgba(255, 255, 255, 0.1);
 
   &__brand {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
     margin-left: var(--space-2);
+    letter-spacing: 0.01em;
+  }
+
+  &__logo-wrap {
+    width: 30px;
+    height: 30px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   &__logo {
-    font-size: 28px;
+    font-size: 18px;
   }
 
   &__spacer {
@@ -26,5 +38,15 @@
 
   .mat-icon-button {
     color: var(--color-text-inverse);
+    opacity: 0.85;
+
+    &:hover {
+      opacity: 1;
+    }
   }
+}
+
+[data-theme="dark"] .navbar {
+  background-color: #2A2060 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
 }

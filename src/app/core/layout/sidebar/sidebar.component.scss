@@ -1,27 +1,35 @@
 .sidebar {
-  background-color: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+  height: calc(100vh - var(--navbar-height) - var(--space-4));
+  margin: var(--space-2) 0 var(--space-2) var(--space-2);
   overflow: hidden;
   transition: width var(--transition-normal);
   flex-shrink: 0;
+  align-self: flex-start;
+  border-radius: var(--radius-lg);
+  border: 0.5px solid var(--color-border);
+  background: var(--color-surface);
+  position: sticky;
+  top: var(--space-2);
 
-  &--open  { width: var(--sidebar-width); }
-  &--closed { width: 64px; }
+  &--open  { width: calc(var(--sidebar-width) - var(--space-2)); }
+  &--closed { width: 56px; }
 
   &__nav {
     list-style: none;
-    padding: var(--space-4) 0;
+    padding: var(--space-3) var(--space-2);
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    height: 100%;
   }
 
-  &__item {
-    margin: var(--space-1) var(--space-2);
-  }
+  &__item { margin: 0; }
 
   &__link {
     display: flex;
     align-items: center;
     gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
+    padding: 9px var(--space-3);
     border-radius: var(--radius-md);
     color: var(--color-text-secondary);
     text-decoration: none;
@@ -29,27 +37,26 @@
     font-weight: var(--font-weight-medium);
     transition: background-color var(--transition-fast),
                 color var(--transition-fast);
+    white-space: nowrap;
 
     &:hover {
-      background-color: var(--color-surface-variant);
+      background-color: var(--color-primary-light);
       color: var(--color-primary);
       text-decoration: none;
     }
 
     &--active {
-      background-color: rgba(21, 101, 192, 0.1);
+      background-color: var(--color-primary-light);
       color: var(--color-primary);
-      font-weight: var(--font-weight-semibold);
     }
   }
 
   &__icon {
-    font-size: 22px;
+    font-size: 20px;
     flex-shrink: 0;
   }
 
   &__label {
-    white-space: nowrap;
     overflow: hidden;
   }
 }

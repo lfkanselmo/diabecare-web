@@ -6,12 +6,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
   }
 
   &__title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
     margin-bottom: var(--space-1);
   }
@@ -24,20 +24,26 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: var(--space-6);
-    margin-bottom: var(--space-8);
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-4);
+    margin-bottom: var(--space-6);
   }
 
   &__card {
     background: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
+    padding: var(--space-5);
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
-    border-left: 4px solid transparent;
+    border-left: 3px solid transparent;
+    box-shadow: none;
+    transition: box-shadow var(--transition-fast);
+
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
 
     &--glucose  { border-left-color: var(--color-primary); }
     &--calories { border-left-color: var(--color-success); }
@@ -53,7 +59,7 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
 
-    mat-icon { font-size: 20px; }
+    mat-icon { font-size: 18px; width: 18px; height: 18px; }
   }
 
   &__metric {
@@ -63,8 +69,8 @@
   }
 
   &__metric-value {
-    font-size: var(--font-size-metric);
-    font-weight: var(--font-weight-bold);
+    font-size: 32px;
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
     line-height: 1;
 
@@ -94,12 +100,18 @@
     font-weight: var(--font-weight-medium);
     color: var(--color-primary);
     margin-top: auto;
+    cursor: pointer;
+
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__badge {
+    display: inline-block;
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
-    padding: var(--space-1) var(--space-2);
+    font-weight: var(--font-weight-medium);
+    padding: 3px var(--space-2);
     border-radius: var(--radius-full);
 
     &--success {
@@ -134,7 +146,7 @@
 
   &__vital-value {
     font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
   }
 

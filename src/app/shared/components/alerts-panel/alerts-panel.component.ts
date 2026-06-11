@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, ViewEncapsulation } from '@angular/core';
 import { LowerCasePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
 import { AlertResponse, AlertSeverity } from '../../../shared/models/alert.model';
@@ -8,7 +8,8 @@ import { AlertResponse, AlertSeverity } from '../../../shared/models/alert.model
     standalone: true,
     imports: [MatIconModule, LowerCasePipe],
     templateUrl: './alerts-panel.component.html',
-    styleUrl: './alerts-panel.component.scss'
+    styleUrl: './alerts-panel.component.scss',
+    encapsulation: ViewEncapsulation.None
 })
 export class AlertsPanelComponent {
 

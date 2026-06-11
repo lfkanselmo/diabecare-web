@@ -82,10 +82,12 @@
                                     }
                                 </mat-select>
                             </mat-form-field>
-                            <button mat-raised-button color="primary" type="submit"
-                                [disabled]="form.invalid || saving()">
-                                @if (saving()) { Guardando... } @else { Guardar cambios }
-                            </button>
+                            <div class="profile__submit">
+                                <button mat-raised-button color="primary" type="submit"
+                                    [disabled]="form.invalid || saving()">
+                                    @if (saving()) { Guardando... } @else { Guardar cambios }
+                                </button>
+                            </div>
                         </form>
                     </div>
 

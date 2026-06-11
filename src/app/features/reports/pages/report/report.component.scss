@@ -3,25 +3,27 @@
   margin: 0 auto;
 
   &__title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    margin-bottom: var(--space-2);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    margin-bottom: var(--space-1);
+    color: var(--color-text-primary);
   }
 
   &__subtitle {
     color: var(--color-text-secondary);
-    font-size: var(--font-size-md);
-    margin-bottom: var(--space-8);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-6);
   }
 
   &__card {
     background: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
+    padding: var(--space-6);
+    box-shadow: none;
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: var(--space-5);
   }
 
   &__section {
@@ -31,14 +33,19 @@
   }
 
   &__section-title {
-    font-size: var(--font-size-lg);
-    font-weight: var(--font-weight-semibold);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
   }
 
   &__quick-ranges {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
+
+    button {
+      border-radius: var(--radius-md) !important;
+    }
   }
 
   &__date-form {
@@ -58,16 +65,17 @@
     align-items: center;
     gap: var(--space-4);
     padding: var(--space-4);
-    background: var(--color-surface-variant);
+    background: var(--color-primary-light);
     border-radius: var(--radius-md);
-    border: 1px solid var(--color-border);
+    border: 0.5px solid var(--color-border);
   }
 
   &__preview-icon {
-    font-size: 40px;
-    width: 40px;
-    height: 40px;
+    font-size: 36px;
+    width: 36px;
+    height: 36px;
     color: var(--color-danger);
+    flex-shrink: 0;
   }
 
   &__preview-info {
@@ -77,8 +85,9 @@
   }
 
   &__preview-name {
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     font-size: var(--font-size-md);
+    color: var(--color-text-primary);
   }
 
   &__preview-detail {
@@ -90,6 +99,7 @@
     width: 100%;
     height: 48px;
     font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
+    border-radius: var(--radius-md) !important;
   }
 }

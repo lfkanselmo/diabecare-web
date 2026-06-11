@@ -6,28 +6,27 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    margin-bottom: var(--space-6);
+    margin-bottom: var(--space-5);
   }
 
   &__title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
   }
 
   &__card {
     background: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
-    padding: var(--space-8);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
+    padding: var(--space-6);
+    box-shadow: none;
 
     form {
       display: flex;
       flex-direction: column;
       gap: var(--space-2);
-
-      mat-form-field {
-        width: 100%;
-      }
+      mat-form-field { width: 100%; }
     }
   }
 
@@ -42,5 +41,7 @@
     justify-content: flex-end;
     gap: var(--space-3);
     margin-top: var(--space-4);
+
+    button { border-radius: var(--radius-md) !important; }
   }
 }

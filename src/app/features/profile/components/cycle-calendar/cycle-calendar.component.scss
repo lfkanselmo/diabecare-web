@@ -1,7 +1,7 @@
 .cycle-cal {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space-6);
+  gap: var(--space-5);
   align-items: start;
 
   @media (max-width: 768px) {
@@ -10,7 +10,7 @@
 
   &__subtitle {
     font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
     margin-bottom: var(--space-3);
   }
@@ -34,8 +34,8 @@
   }
 
   &__legend-dot {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     border-radius: 50%;
     flex-shrink: 0;
   }
@@ -63,7 +63,7 @@
   &__weekday {
     text-align: center;
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     color: var(--color-text-secondary);
     padding: var(--space-1);
   }
@@ -81,13 +81,13 @@
     align-items: center;
     justify-content: center;
     border-radius: var(--radius-sm);
-    border: 2px solid transparent;
+    border: 1.5px solid transparent;
     position: relative;
     cursor: default;
-    transition: transform 0.1s;
+    transition: transform var(--transition-fast);
 
     &:hover:not(&--empty) {
-      transform: scale(1.1);
+      transform: scale(1.08);
       z-index: 1;
     }
 
@@ -97,8 +97,8 @@
     }
 
     &--today {
-      box-shadow: 0 0 0 3px var(--color-primary);
-      font-weight: var(--font-weight-bold);
+      box-shadow: 0 0 0 2px var(--color-primary);
+      font-weight: var(--font-weight-medium);
     }
 
     &--predicted {
@@ -147,7 +147,74 @@
     }
 
     &--predicted {
-      background: #FFEBEE;
+      background: var(--color-danger-light);
+    }
+  }
+}
+
+// Contenedor del ciclo menstrual
+.menstrual-cycle {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-5);
+  align-items: start;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+
+  &__card {
+    background: var(--color-surface);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
+    padding: var(--space-6);
+    box-shadow: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &__section-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  &__history-item {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-3);
+    background: var(--color-surface-variant);
+    border-radius: var(--radius-md);
+    border: 0.5px solid var(--color-border);
+  }
+
+  &__history-date {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  &__history-detail {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+  }
+
+  &__symptoms {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  &__actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--space-2);
+
+    button {
+      border-radius: var(--radius-md) !important;
+      width: 100%;
     }
   }
 }

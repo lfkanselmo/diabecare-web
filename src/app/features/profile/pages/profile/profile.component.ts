@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectorRef, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -34,7 +34,8 @@ import { MetadataService } from '@core/services/metadata.service';
         MenstrualCycleComponent
     ],
     templateUrl: './profile.component.html',
-    styleUrl: './profile.component.scss'
+    styleUrl: './profile.component.scss',
+    encapsulation: ViewEncapsulation.None
 })
 export class ProfileComponent implements OnInit {
 

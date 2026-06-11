@@ -1,36 +1,37 @@
 :root {
-  // ── Colores primarios
-  --color-primary:          #1565C0;
-  --color-primary-light:    #1976D2;
-  --color-primary-dark:     #0D47A1;
+  // ── Colores primarios — Índigo
+  --color-primary:          #5B4FCF;
+  --color-primary-mid:      #7B6FE0;
+  --color-primary-light:    #EEF0FF;
+  --color-primary-dark:     #3D3399;
 
   // ── Colores semánticos
-  --color-success:          #2E7D32;
-  --color-success-light:    #E8F5E9;
-  --color-warning:          #F57F17;
-  --color-warning-light:    #FFF8E1;
-  --color-danger:           #C62828;
-  --color-danger-light:     #FFEBEE;
-  --color-info:             #00695C;
-  --color-info-light:       #E0F2F1;
+  --color-success:          #22A96A;
+  --color-success-light:    #E3F7EE;
+  --color-warning:          #E8A020;
+  --color-warning-light:    #FEF5E0;
+  --color-danger:           #E04B4B;
+  --color-danger-light:     #FEECEC;
+  --color-info:             #0EA5A0;
+  --color-info-light:       #E0F5F4;
 
   // ── Estados de glucosa
-  --glucose-critically-low:  #880E4F;
-  --glucose-low:             #C62828;
-  --glucose-normal:          #2E7D32;
-  --glucose-high:            #F57F17;
+  --glucose-critically-low:  #9B1D6A;
+  --glucose-low:             #E04B4B;
+  --glucose-normal:          #22A96A;
+  --glucose-high:            #E8A020;
   --glucose-critically-high: #BF360C;
 
   // ── Superficies
-  --color-background:       #F5F7FA;
+  --color-background:       #F7F6FC;
   --color-surface:          #FFFFFF;
-  --color-surface-variant:  #F0F4F8;
-  --color-border:           #E0E0E0;
+  --color-surface-variant:  #F0EFF9;
+  --color-border:           rgba(91, 79, 207, 0.12);
 
   // ── Texto
-  --color-text-primary:     #1C2833;
-  --color-text-secondary:   #546E7A;
-  --color-text-disabled:    #9E9E9E;
+  --color-text-primary:     #1A1730;
+  --color-text-secondary:   #6E6A8A;
+  --color-text-disabled:    #A9A6C0;
   --color-text-inverse:     #FFFFFF;
 
   // ── Tipografía
@@ -45,8 +46,8 @@
 
   --font-weight-regular:    400;
   --font-weight-medium:     500;
-  --font-weight-semibold:   600;
-  --font-weight-bold:       700;
+  --font-weight-semibold:   500;
+  --font-weight-bold:       500;
 
   --line-height-tight:      1.2;
   --line-height-normal:     1.5;
@@ -65,19 +66,20 @@
   --space-16: 64px;
 
   // ── Bordes
-  --radius-sm:  6px;
-  --radius-md:  12px;
-  --radius-lg:  20px;
+  --radius-sm:   6px;
+  --radius-md:   10px;
+  --radius-lg:   14px;
+  --radius-xl:   20px;
   --radius-full: 9999px;
 
-  // ── Sombras
-  --shadow-sm:  0 1px 4px rgba(0, 0, 0, 0.08);
-  --shadow-md:  0 4px 16px rgba(0, 0, 0, 0.10);
-  --shadow-lg:  0 8px 32px rgba(0, 0, 0, 0.12);
+  // ── Sombras — más sutiles
+  --shadow-sm:  0 1px 3px rgba(91, 79, 207, 0.06);
+  --shadow-md:  0 4px 12px rgba(91, 79, 207, 0.08);
+  --shadow-lg:  0 8px 24px rgba(91, 79, 207, 0.10);
 
   // ── Layout
-  --sidebar-width:        260px;
-  --navbar-height:        64px;
+  --sidebar-width:        220px;
+  --navbar-height:        60px;
   --content-max-width:    1280px;
 
   // ── Transiciones
@@ -87,36 +89,37 @@
 }
 
 [data-theme="dark"] {
-  --color-primary:          #90CAF9;
-  --color-primary-light:    #BBDEFB;
-  --color-primary-dark:     #42A5F5;
+  --color-primary:          #8B82E0;
+  --color-primary-mid:      #A99EF0;
+  --color-primary-light:    rgba(91, 79, 207, 0.12);
+  --color-primary-dark:     #5B4FCF;
 
-  --color-success:          #81C784;
-  --color-success-light:    rgba(129, 199, 132, 0.15);
-  --color-warning:          #FFB74D;
-  --color-warning-light:    rgba(255, 183, 77, 0.15);
-  --color-danger:           #EF9A9A;
-  --color-danger-light:     rgba(239, 154, 154, 0.15);
-  --color-info:             #80CBC4;
-  --color-info-light:       rgba(128, 203, 196, 0.15);
+  --color-success:          #4ADE98;
+  --color-success-light:    rgba(34, 169, 106, 0.12);
+  --color-warning:          #FABD4A;
+  --color-warning-light:    rgba(232, 160, 32, 0.12);
+  --color-danger:           #F07070;
+  --color-danger-light:     rgba(224, 75, 75, 0.12);
+  --color-info:             #2DD4CF;
+  --color-info-light:       rgba(14, 165, 160, 0.12);
 
   --glucose-critically-low:  #F48FB1;
-  --glucose-low:             #EF9A9A;
-  --glucose-normal:          #81C784;
-  --glucose-high:            #FFB74D;
+  --glucose-low:             #F07070;
+  --glucose-normal:          #4ADE98;
+  --glucose-high:            #FABD4A;
   --glucose-critically-high: #FF8A65;
 
-  --color-background:       #121212;
-  --color-surface:          #1E1E1E;
-  --color-surface-variant:  #2C2C2C;
-  --color-border:           #3A3A3A;
+  --color-background:       #16142A;
+  --color-surface:          #1F1D36;
+  --color-surface-variant:  #2A2845;
+  --color-border:           rgba(139, 130, 224, 0.18);
 
-  --color-text-primary:     #E0E0E0;
-  --color-text-secondary:   #9E9E9E;
-  --color-text-disabled:    #616161;
-  --color-text-inverse:     #121212;
+  --color-text-primary:     #EAE8F8;
+  --color-text-secondary:   #9B97C0;
+  --color-text-disabled:    #5C5980;
+  --color-text-inverse:     #1A1730;
 
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
 }

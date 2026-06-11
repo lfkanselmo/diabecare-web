@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,7 +22,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
         MatProgressSpinnerModule
     ],
     templateUrl: './login.component.html',
-    styleUrl: './login.component.scss'
+    styleUrl: './login.component.scss',
+    encapsulation: ViewEncapsulation.None
 })
 export class LoginComponent {
 

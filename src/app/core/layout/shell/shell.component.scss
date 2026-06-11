@@ -4,20 +4,18 @@
   height: 100vh;
   overflow: hidden;
 
-  &__body {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
+&__body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background-color: var(--color-background);
+  padding: var(--space-2) 0;
+}
 
   &__content {
     flex: 1;
     overflow-y: auto;
     background-color: var(--color-background);
     padding: var(--space-6);
-  }
-
-  &.sidebar-collapsed .shell__content {
-    margin-left: 0;
   }
 }

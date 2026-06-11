@@ -1,8 +1,8 @@
 @use '@angular/material' as mat;
 
-$diabecare-primary: mat.m2-define-palette(mat.$m2-blue-palette, 800, 600, 900);
-$diabecare-accent:  mat.m2-define-palette(mat.$m2-teal-palette, 700);
-$diabecare-warn:    mat.m2-define-palette(mat.$m2-red-palette, 800);
+$diabecare-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette, 600, 400, 800);
+$diabecare-accent:  mat.m2-define-palette(mat.$m2-teal-palette, 600);
+$diabecare-warn:    mat.m2-define-palette(mat.$m2-red-palette, 700);
 
 $diabecare-light-theme: mat.m2-define-light-theme((
   color: (
@@ -18,7 +18,7 @@ $diabecare-light-theme: mat.m2-define-light-theme((
 
 $diabecare-dark-theme: mat.m2-define-dark-theme((
   color: (
-    primary: mat.m2-define-palette(mat.$m2-blue-palette, 200),
+    primary: mat.m2-define-palette(mat.$m2-deep-purple-palette, 200),
     accent:  mat.m2-define-palette(mat.$m2-teal-palette, 200),
     warn:    mat.m2-define-palette(mat.$m2-red-palette, 200),
   ),

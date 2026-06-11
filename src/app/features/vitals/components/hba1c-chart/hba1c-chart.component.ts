@@ -17,13 +17,24 @@ export class Hba1cChartComponent implements OnChanges {
     chartOptions: EChartsOption = {};
 
     ngOnChanges(): void {
-        if (this.trend.length > 0) this.buildChart();
+        if (this.trend.length > 0) {
+            const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+            this.buildChart(dark);
+        }
     }
 
-    private buildChart(): void {
+    private buildChart(dark: boolean): void {
         const months = this.trend.map(t => t.month);
         const hba1c = this.trend.map(t => t.estimatedHba1c ?? null);
         const glucose = this.trend.map(t => t.averageGlucose ?? null);
+
+        const labelColor = dark ? '#9B97C0' : '#546E7A';
+        const gridColor = dark ? 'rgba(139,130,224,0.1)' : '#F0F0F0';
+        const axisColor = dark ? 'rgba(139,130,224,0.2)' : '#E0E0E0';
+        const primaryColor = dark ? '#8B82E0' : '#5B4FCF';
+        const tealColor = dark ? '#2DD4CF' : '#0EA5A0';
+        const barColor = dark ? 'rgba(14,165,160,0.35)' : '#A2D9CE';
+        const goalColor = dark ? '#4ADE98' : '#22A96A';
 
         this.chartOptions = {
             backgroundColor: 'transparent',
@@ -31,10 +42,13 @@ export class Hba1cChartComponent implements OnChanges {
             legend: {
                 data: ['HbA1c estimada (%)', 'Glucosa promedio (mg/dL)'],
                 top: 0,
-                textStyle: { fontSize: 11, color: '#546E7A' }
+                textStyle: { fontSize: 11, color: labelColor }
             },
             tooltip: {
                 trigger: 'axis',
+                backgroundColor: dark ? '#1F1D36' : '#FFFFFF',
+                borderColor: dark ? 'rgba(139,130,224,0.2)' : '#E8E6F5',
+                textStyle: { color: dark ? '#EAE8F8' : '#1A1730', fontSize: 12 },
                 formatter: (params: any) => {
                     let html = `<strong>${params[0].name}</strong><br/>`;
                     params.forEach((p: any) => {
@@ -48,24 +62,25 @@ export class Hba1cChartComponent implements OnChanges {
             xAxis: {
                 type: 'category',
                 data: months,
-                axisLabel: { fontSize: 11, color: '#546E7A' },
-                axisLine: { lineStyle: { color: '#E0E0E0' } }
+                axisLabel: { fontSize: 11, color: labelColor },
+                axisLine: { lineStyle: { color: axisColor } },
+                axisTick: { lineStyle: { color: axisColor } }
             },
             yAxis: [
                 {
                     type: 'value',
                     name: 'HbA1c (%)',
-                    nameTextStyle: { color: '#1565C0', fontSize: 10 },
-                    axisLabel: { color: '#1565C0', fontSize: 10 },
-                    splitLine: { lineStyle: { color: '#F0F0F0' } },
+                    nameTextStyle: { color: primaryColor, fontSize: 10 },
+                    axisLabel: { color: primaryColor, fontSize: 10 },
+                    splitLine: { lineStyle: { color: gridColor } },
                     min: 4,
                     max: 12
                 },
                 {
                     type: 'value',
                     name: 'mg/dL',
-                    nameTextStyle: { color: '#00695C', fontSize: 10 },
-                    axisLabel: { color: '#00695C', fontSize: 10 },
+                    nameTextStyle: { color: tealColor, fontSize: 10 },
+                    axisLabel: { color: tealColor, fontSize: 10 },
                     splitLine: { show: false }
                 }
             ],
@@ -78,17 +93,15 @@ export class Hba1cChartComponent implements OnChanges {
                     smooth: true,
                     symbol: 'circle',
                     symbolSize: 8,
-                    lineStyle: { color: '#1565C0', width: 2.5 },
-                    itemStyle: { color: '#1565C0' },
+                    lineStyle: { color: primaryColor, width: 2.5 },
+                    itemStyle: { color: primaryColor },
                     markLine: {
                         silent: true,
-                        data: [
-                            {
-                                yAxis: 7.0,
-                                label: { formatter: 'Meta 7%', fontSize: 9, color: '#2E7D32' },
-                                lineStyle: { color: '#2E7D32', type: 'dashed', opacity: 0.6 }
-                            }
-                        ]
+                        data: [{
+                            yAxis: 7.0,
+                            label: { formatter: 'Meta 7%', fontSize: 9, color: goalColor },
+                            lineStyle: { color: goalColor, type: 'dashed', opacity: 0.6 }
+                        }]
                     }
                 },
                 {
@@ -97,10 +110,7 @@ export class Hba1cChartComponent implements OnChanges {
                     yAxisIndex: 1,
                     data: glucose,
                     barMaxWidth: 30,
-                    itemStyle: {
-                        color: '#A2D9CE',
-                        borderRadius: [4, 4, 0, 0]
-                    }
+                    itemStyle: { color: barColor, borderRadius: [4, 4, 0, 0] }
                 }
             ]
         };

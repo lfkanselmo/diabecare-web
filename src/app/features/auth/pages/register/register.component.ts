@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,7 +31,8 @@ import { MetadataService } from '@core/services/metadata.service';
         MatStepperModule
     ],
     templateUrl: './register.component.html',
-    styleUrl: './register.component.scss'
+    styleUrl: './register.component.scss',
+    encapsulation: ViewEncapsulation.None
 })
 export class RegisterComponent {
 

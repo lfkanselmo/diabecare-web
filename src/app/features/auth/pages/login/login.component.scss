@@ -3,13 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: var(--color-background);
+  background: linear-gradient(145deg, #2D1B6B 0%, #1A1730 100%);
   padding: var(--space-4);
 
   &__card {
-    background: var(--color-surface);
+    background: rgba(255, 255, 255, 0.06);
     border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-lg);
+    border: 0.5px solid rgba(255, 255, 255, 0.1);
     padding: var(--space-10);
     width: 100%;
     max-width: 420px;
@@ -22,21 +22,31 @@
     margin-bottom: var(--space-8);
   }
 
+  &__logo-wrap {
+    width: 52px;
+    height: 52px;
+    background: rgba(91, 79, 207, 0.35);
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--space-3);
+  }
+
   &__logo {
-    font-size: 48px;
-    color: var(--color-primary);
-    margin-bottom: var(--space-2);
+    font-size: 28px;
+    color: #C4BBFF;
   }
 
   &__title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-primary);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
+    color: #F0EEF8;
     margin-bottom: var(--space-1);
   }
 
   &__subtitle {
-    color: var(--color-text-secondary);
+    color: #8A85B0;
     font-size: var(--font-size-sm);
   }
 
@@ -48,36 +58,106 @@
     mat-form-field {
       width: 100%;
     }
+
+    .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: rgba(255, 255, 255, 0.15) !important;
+      }
+
+      &:hover {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: rgba(169, 158, 240, 0.5) !important;
+        }
+      }
+
+      &.mdc-text-field--focused {
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border-color: #A99EF0 !important;
+        }
+      }
+    }
+
+    .mdc-text-field--outlined {
+      background-color: rgba(255, 255, 255, 0.05) !important;
+      border-radius: var(--radius-md) !important;
+    }
+
+    .mdc-floating-label {
+      color: #8A85B0 !important;
+    }
+
+    .mdc-text-field--focused .mdc-floating-label {
+      color: #A99EF0 !important;
+    }
+
+    .mat-mdc-input-element,
+    .mdc-text-field__input {
+      color: #EAE8F8 !important;
+      caret-color: #A99EF0 !important;
+    }
+
+    .mat-mdc-form-field-icon-suffix .mat-icon,
+    .mat-mdc-form-field-icon-suffix button .mat-icon {
+      color: #6B6590 !important;
+    }
+
+    .mat-mdc-form-field-error {
+      color: #F07070 !important;
+    }
   }
 
   &__error {
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    color: var(--color-danger);
+    color: #F07070;
     font-size: var(--font-size-sm);
-    background-color: var(--color-danger-light);
+    background-color: rgba(224, 75, 75, 0.15);
     padding: var(--space-3);
     border-radius: var(--radius-sm);
+    border: 0.5px solid rgba(224, 75, 75, 0.25);
   }
 
   &__submit {
     width: 100%;
     height: 48px;
     font-size: var(--font-size-md);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
     margin-top: var(--space-2);
+    border-radius: var(--radius-md) !important;
+    background-color: #5B4FCF !important;
+    color: #FFFFFF !important;
+
+    &:hover {
+      background-color: #4A3FBF !important;
+    }
+
+    &:disabled {
+      background-color: rgba(91, 79, 207, 0.4) !important;
+      color: rgba(255, 255, 255, 0.5) !important;
+    }
   }
 
   &__footer {
     text-align: center;
     margin-top: var(--space-6);
     font-size: var(--font-size-sm);
-    color: var(--color-text-secondary);
+    color: #8A85B0;
 
     a {
-      color: var(--color-primary);
+      color: #A99EF0;
       font-weight: var(--font-weight-medium);
+
+      &:hover {
+        color: #C4BBFF;
+        text-decoration: none;
+      }
     }
   }
 }

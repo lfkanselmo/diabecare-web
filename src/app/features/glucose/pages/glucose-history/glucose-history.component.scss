@@ -6,7 +6,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
     flex-wrap: wrap;
     gap: var(--space-4);
   }
@@ -15,12 +15,15 @@
     display: flex;
     align-items: center;
     gap: var(--space-3);
+
+    button { border-radius: var(--radius-md) !important; }
   }
 
   &__title {
-    font-size: var(--font-size-2xl);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-medium);
     margin-bottom: var(--space-1);
+    color: var(--color-text-primary);
   }
 
   &__subtitle {
@@ -42,38 +45,56 @@
       font-size: 48px;
       width: 48px;
       height: 48px;
+      opacity: 0.4;
     }
   }
 
   &__card {
     background: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
     padding: var(--space-6);
+    box-shadow: none;
+    margin-bottom: var(--space-5);
   }
 
   &__table-container {
     background: var(--color-surface);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--color-border);
+    box-shadow: none;
     overflow: hidden;
 
     table { width: 100%; }
   }
 
   &__value {
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
   }
 
   &__status {
-    padding: var(--space-1) var(--space-3);
+    display: inline-block;
+    padding: 3px var(--space-3);
     border-radius: var(--radius-full);
     font-size: var(--font-size-xs);
-    font-weight: var(--font-weight-semibold);
+    font-weight: var(--font-weight-medium);
 
-    &.status--normal   { background: var(--color-success-light); color: var(--color-success); }
-    &.status--low      { background: var(--color-danger-light);  color: var(--color-danger);  }
-    &.status--high     { background: var(--color-warning-light); color: var(--color-warning); }
-    &.status--critical { background: #880E4F20; color: #880E4F; }
+    &.status--normal   {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+    &.status--low      {
+      background: var(--color-danger-light);
+      color: var(--color-danger);
+    }
+    &.status--high     {
+      background: var(--color-warning-light);
+      color: var(--color-warning);
+    }
+    &.status--critical {
+      background: rgba(224, 75, 75, 0.12);
+      color: #C0392B;
+    }
   }
 }

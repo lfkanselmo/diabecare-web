@@ -27,6 +27,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "sw-push-handler.js",
+                "input": "src",
+                "output": "/"
               }
             ],
             "styles": [

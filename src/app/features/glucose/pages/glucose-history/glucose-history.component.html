@@ -37,7 +37,7 @@
   } @else {
   @if (view() === 'chart') {
   <div class="glucose-history__card">
-    <app-glucose-chart [readings]="readings()" [mealMarkers]="mealMarkers()" />
+    <app-glucose-chart [readings]="readings()" [mealMarkers]="mealMarkers()" [exerciseLogs]="exerciseLogs()" />
   </div>
   } @else {
   <div class="glucose-history__table-container">

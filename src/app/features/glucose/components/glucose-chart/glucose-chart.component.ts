@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { GlucoseReadingResponse, MealMarkerResponse } from '../../../../shared/models/glucose.model';
+import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 
 @Component({
     selector: 'app-glucose-chart',
@@ -14,6 +15,7 @@ export class GlucoseChartComponent implements OnChanges {
 
     @Input() readings: GlucoseReadingResponse[] = [];
     @Input() mealMarkers: MealMarkerResponse[] = [];
+    @Input() exerciseLogs: ExerciseLogResponse[] = [];
     @Input() targetMin = 70;
     @Input() targetMax = 180;
 
@@ -24,6 +26,20 @@ export class GlucoseChartComponent implements OnChanges {
         LUNCH: 'Almuerzo',
         DINNER: 'Cena',
         SNACK: 'Merienda'
+    };
+
+    private readonly exerciseTypeLabels: Record<string, string> = {
+        WALKING: 'Caminata',
+        RUNNING: 'Trote',
+        CYCLING: 'Ciclismo',
+        SWIMMING: 'Natación',
+        WEIGHT_TRAINING: 'Pesas',
+        YOGA: 'Yoga',
+        FOOTBALL: 'Fútbol',
+        BASKETBALL: 'Baloncesto',
+        DANCING: 'Baile',
+        HIKING: 'Senderismo',
+        OTHER: 'Otro'
     };
 
     ngOnChanges(): void {
@@ -44,7 +60,9 @@ export class GlucoseChartComponent implements OnChanges {
             })
         );
         const values = sorted.map(r => r.value);
+
         const mealMarkLines = this.buildMealMarkLines(sorted, dark);
+        const exerciseMarkLines = this.buildExerciseMarkLines(sorted, dark);
 
         const labelColor = dark ? '#9B97C0' : '#546E7A';
         const gridColor = dark ? 'rgba(139,130,224,0.1)' : '#F0F0F0';
@@ -100,39 +118,38 @@ export class GlucoseChartComponent implements OnChanges {
                     { gt: 250, color: dark ? '#FF8A65' : '#BF360C' }
                 ]
             },
-            series: [
-                {
-                    name: 'Glucosa',
-                    type: 'line',
-                    data: values,
-                    smooth: true,
-                    symbol: 'circle',
-                    symbolSize: 8,
-                    lineStyle: { width: 2.5 },
-                    markLine: {
-                        silent: true,
-                        lineStyle: { type: 'dashed' },
-                        data: [
-                            {
-                                yAxis: this.targetMin,
-                                label: { formatter: `Mín ${this.targetMin}`, position: 'end', fontSize: 10, color: minLine },
-                                lineStyle: { color: minLine, opacity: 0.6 }
-                            },
-                            {
-                                yAxis: this.targetMax,
-                                label: { formatter: `Máx ${this.targetMax}`, position: 'end', fontSize: 10, color: maxLine },
-                                lineStyle: { color: maxLine, opacity: 0.6 }
-                            },
-                            ...mealMarkLines
-                        ]
-                    },
-                    markArea: {
-                        silent: true,
-                        itemStyle: { color: areaColor },
-                        data: [[{ yAxis: this.targetMin }, { yAxis: this.targetMax }]]
-                    }
+            series: [{
+                name: 'Glucosa',
+                type: 'line',
+                data: values,
+                smooth: true,
+                symbol: 'circle',
+                symbolSize: 8,
+                lineStyle: { width: 2.5 },
+                markLine: {
+                    silent: true,
+                    lineStyle: { type: 'dashed' },
+                    data: [
+                        {
+                            yAxis: this.targetMin,
+                            label: { formatter: `Mín ${this.targetMin}`, position: 'end', fontSize: 10, color: minLine },
+                            lineStyle: { color: minLine, opacity: 0.6 }
+                        },
+                        {
+                            yAxis: this.targetMax,
+                            label: { formatter: `Máx ${this.targetMax}`, position: 'end', fontSize: 10, color: maxLine },
+                            lineStyle: { color: maxLine, opacity: 0.6 }
+                        },
+                        ...mealMarkLines,
+                        ...exerciseMarkLines
+                    ]
+                },
+                markArea: {
+                    silent: true,
+                    itemStyle: { color: areaColor },
+                    data: [[{ yAxis: this.targetMin }, { yAxis: this.targetMax }]]
                 }
-            ]
+            }]
         };
     }
 
@@ -158,6 +175,34 @@ export class GlucoseChartComponent implements OnChanges {
                     color: mealColor
                 },
                 lineStyle: { color: mealColor, type: 'dashed', opacity: 0.5, width: 1 }
+            };
+        });
+    }
+
+    private buildExerciseMarkLines(sorted: GlucoseReadingResponse[], dark: boolean): any[] {
+        if (!this.exerciseLogs.length || !sorted.length) return [];
+
+        const exerciseColor = dark ? '#A99EF0' : '#5B4FCF';
+
+        return this.exerciseLogs.map(log => {
+            const logTime = new Date(log.performedAt).getTime();
+            const closestIndex = sorted.reduce((bestIdx, r, idx) => {
+                const diff = Math.abs(new Date(r.measuredAt).getTime() - logTime);
+                const bestDiff = Math.abs(new Date(sorted[bestIdx].measuredAt).getTime() - logTime);
+                return diff < bestDiff ? idx : bestIdx;
+            }, 0);
+
+            const label = this.exerciseTypeLabels[log.exerciseType] ?? log.exerciseType;
+
+            return {
+                xAxis: closestIndex,
+                label: {
+                    formatter: `🏃 ${label}\n${log.durationMinutes} min`,
+                    position: 'insideEndBottom',
+                    fontSize: 9,
+                    color: exerciseColor
+                },
+                lineStyle: { color: exerciseColor, type: 'dotted', opacity: 0.6, width: 1.5 }
             };
         });
     }

@@ -15,6 +15,23 @@
           Tabla
         </mat-button-toggle>
       </mat-button-toggle-group>
+
+      <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
+        <mat-icon>download</mat-icon>
+        Exportar
+      </button>
+
+      <mat-menu #exportMenu="matMenu">
+        <button mat-menu-item (click)="onExportCsv()">
+          <mat-icon>table_chart</mat-icon>
+          <span>Descargar CSV</span>
+        </button>
+        <button mat-menu-item (click)="onExportJson()">
+          <mat-icon>data_object</mat-icon>
+          <span>Descargar JSON</span>
+        </button>
+      </mat-menu>
+
       <a mat-raised-button color="primary" routerLink="/app/glucose/register">
         <mat-icon>add</mat-icon>
         Nueva lectura

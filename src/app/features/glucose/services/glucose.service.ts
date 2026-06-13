@@ -50,4 +50,16 @@ export class GlucoseService {
             })
         );
     }
+
+    exportCsv(patientId: string, from: string, to: string): Observable<Blob> {
+        const params = new HttpParams().set('from', from).set('to', to);
+        return this.http.get(`${this.baseUrl}/${patientId}/export/csv`,
+            { params, responseType: 'blob' });
+    }
+
+    exportJson(patientId: string, from: string, to: string): Observable<Blob> {
+        const params = new HttpParams().set('from', from).set('to', to);
+        return this.http.get(`${this.baseUrl}/${patientId}/export/json`,
+            { params, responseType: 'blob' });
+    }
 }

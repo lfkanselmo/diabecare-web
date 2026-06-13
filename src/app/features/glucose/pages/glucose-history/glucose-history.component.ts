@@ -18,6 +18,7 @@ import {
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
 import { MetadataService } from '@core/services/metadata.service';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
     selector: 'app-glucose-history',
@@ -32,6 +33,7 @@ import { MetadataService } from '@core/services/metadata.service';
         MatTableModule,
         MatButtonToggleModule,
         MatSnackBarModule,
+        MatMenuModule,
         GlucoseChartComponent
     ],
     templateUrl: './glucose-history.component.html',
@@ -119,5 +121,42 @@ export class GlucoseHistoryComponent implements OnInit {
             },
             error: () => this.loading.set(false)
         });
+    }
+
+    onExportCsv(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
+        const to = new Date().toISOString();
+        const from = new Date();
+        from.setDate(from.getDate() - 30);
+
+        this.glucoseService.exportCsv(patientId, from.toISOString(), to).subscribe({
+            next: blob => this.downloadFile(blob, 'glucosa.csv', 'text/csv'),
+            error: () => { }
+        });
+    }
+
+    onExportJson(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
+        const to = new Date().toISOString();
+        const from = new Date();
+        from.setDate(from.getDate() - 30);
+
+        this.glucoseService.exportJson(patientId, from.toISOString(), to).subscribe({
+            next: blob => this.downloadFile(blob, 'glucosa.json', 'application/json'),
+            error: () => { }
+        });
+    }
+
+    private downloadFile(blob: Blob, filename: string, type: string): void {
+        const url = URL.createObjectURL(new Blob([blob], { type }));
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(url);
     }
 }

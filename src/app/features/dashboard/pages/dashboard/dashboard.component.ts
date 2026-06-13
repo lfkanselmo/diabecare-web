@@ -3,14 +3,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
-import { GlucoseService } from '../../../glucose/services/glucose.service';
+import { Store } from '@ngrx/store';
 import { NutritionService } from '../../../nutrition/services/nutrition.service';
 import { VitalsService } from '../../../vitals/services/vitals.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { MenstrualCycleService } from '../../../profile/services/menstrual-cycle.service';
+import { GlucoseService } from '../../../glucose/services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { GlucoseStateService } from '../../../../core/services/glucose-state.service';
+import { GlucoseActions } from '../../../../store/glucose/glucose.actions';
+import { selectStats } from '../../../../store/glucose/glucose.selectors';
 import { GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
 import { DailySummaryResponse } from '../../../../shared/models/nutrition.model';
 import { VitalSignResponse } from '../../../../shared/models/vitals.model';
@@ -34,14 +37,15 @@ import { AlertsPanelComponent } from '../../../../shared/components/alerts-panel
 })
 export class DashboardComponent implements OnInit {
 
-    private readonly glucoseService = inject(GlucoseService);
     private readonly nutritionService = inject(NutritionService);
     private readonly vitalsService = inject(VitalsService);
     private readonly profileService = inject(ProfileService);
     private readonly cycleService = inject(MenstrualCycleService);
+    private readonly glucoseService = inject(GlucoseService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly glucoseStateService = inject(GlucoseStateService);
+    private readonly store = inject(Store);
 
     readonly today = new Date();
     readonly patientId = this.authService.getPatientId();
@@ -69,6 +73,17 @@ export class DashboardComponent implements OnInit {
         const to = now.toISOString();
         const todayStr = now.toISOString().split('T')[0];
 
+        // NgRx — despacha la acción y suscribe al store
+        this.store.dispatch(GlucoseActions.loadStats({
+            patientId: this.patientId,
+            from,
+            to
+        }));
+
+        this.store.select(selectStats).subscribe({
+            next: stats => this.glucoseStats.set(stats)
+        });
+
         this.profileService.getById(this.patientId).subscribe({
             next: patient => {
                 const female = patient.biologicalSex === 'FEMALE';
@@ -80,11 +95,6 @@ export class DashboardComponent implements OnInit {
                     });
                 }
             },
-            error: () => { }
-        });
-
-        this.glucoseService.getStats(this.patientId, from, to).subscribe({
-            next: stats => this.glucoseStats.set(stats),
             error: () => { }
         });
 

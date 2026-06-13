@@ -12,6 +12,9 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
+import { glucoseFeature } from './store/glucose/glucose.reducer';
+import { GlucoseEffects } from './store/glucose/glucose.effects';
+
 
 registerLocaleData(localeEs);
 
@@ -21,9 +24,9 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideHttpClient(withInterceptors([jwtInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
-    provideStore({}),
-    provideEffects([]),
-    provideStoreDevtools({ maxAge: 25, logOnly: false }),
+    provideStore({ glucose: glucoseFeature.reducer }),
+    provideEffects([GlucoseEffects]),
+    provideStoreDevtools({ maxAge: 25, logOnly: !isDevMode() }),
     { provide: LOCALE_ID, useValue: 'es' },
     provideEchartsCore({ echarts: () => import('echarts') }),
     provideServiceWorker('ngsw-worker.js', {

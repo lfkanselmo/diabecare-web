@@ -76,6 +76,21 @@ export class MenstrualCycleComponent implements OnInit {
         'Sensibilidad en senos', 'Dificultad para dormir'
     ];
 
+    readonly symptomLabels: Record<string, string> = {
+        CRAMPS: 'Cólicos',
+        HEADACHE: 'Dolor de cabeza',
+        FATIGUE: 'Fatiga',
+        MOOD_CHANGES: 'Cambios de humor',
+        BLOATING: 'Hinchazón',
+        CRAVINGS: 'Antojos',
+        BREAST_TENDERNESS: 'Sensibilidad en senos',
+        SLEEP_DIFFICULTY: 'Dificultad para dormir',
+        BACK_PAIN: 'Dolor de espalda',
+        NAUSEA: 'Náuseas',
+        ACNE: 'Acné',
+        SPOTTING: 'Sangrado leve'
+    };
+
     selectedSymptoms = signal<string[]>([]);
 
     ngOnInit(): void {
@@ -123,6 +138,17 @@ export class MenstrualCycleComponent implements OnInit {
 
     getPhaseIcon(phase: CyclePhase): string {
         return this.phaseIcons[phase] ?? 'circle';
+    }
+
+    getSymptomLabel(symptom: string): string {
+        return this.symptomLabels[symptom.trim()] ?? symptom;
+    }
+
+    getSymptomsList(symptoms: string): string {
+        return symptoms
+            .split(',')
+            .map(s => this.getSymptomLabel(s.trim()))
+            .join(', ');
     }
 
     private loadStatus(): void {

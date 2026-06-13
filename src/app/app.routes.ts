@@ -57,6 +57,12 @@ export const routes: Routes = [
                         .then(m => m.ProfileComponent)
             },
             {
+                path: 'cycle',
+                loadComponent: () =>
+                    import('./features/profile/pages/cycle/cycle.component')
+                        .then(m => m.CycleComponent)
+            },
+            {
                 path: '',
                 redirectTo: 'dashboard',
                 pathMatch: 'full'

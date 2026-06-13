@@ -1,7 +1,44 @@
 <div class="glucose-chart">
-  <div
-    echarts
-    [options]="chartOptions"
-    class="glucose-chart__canvas"
-  ></div>
+  <div echarts [options]="chartOptions" class="glucose-chart__canvas"></div>
+</div>
+
+<div class="glucose-chart__legend">
+  <div class="glucose-chart__legend-group">
+    <span class="glucose-chart__legend-title">Glucosa</span>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-dot" style="background:#22A96A"></span>
+      <span>En rango (70–180 mg/dL)</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-dot" style="background:#E8A020"></span>
+      <span>Alto (&gt;180 mg/dL)</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-dot" style="background:#E04B4B"></span>
+      <span>Bajo (&lt;70 mg/dL)</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-dot" style="background:#880E4F"></span>
+      <span>Crítico (&lt;54 mg/dL)</span>
+    </div>
+  </div>
+  <div class="glucose-chart__legend-group">
+    <span class="glucose-chart__legend-title">Marcadores</span>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-line glucose-chart__legend-line--meal"></span>
+      <span>🍽 Comida registrada</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-line glucose-chart__legend-line--exercise"></span>
+      <span>🏃 Ejercicio registrado</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-line glucose-chart__legend-line--min"></span>
+      <span>Límite mínimo objetivo</span>
+    </div>
+    <div class="glucose-chart__legend-item">
+      <span class="glucose-chart__legend-line glucose-chart__legend-line--max"></span>
+      <span>Límite máximo objetivo</span>
+    </div>
+  </div>
 </div>

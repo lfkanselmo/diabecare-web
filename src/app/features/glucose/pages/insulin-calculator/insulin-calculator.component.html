@@ -1,0 +1,101 @@
+<div class="page-container">
+    <div class="calc__header">
+        <div>
+            <h1 class="calc__title">Calculadora de insulina</h1>
+            <p class="calc__subtitle">Estima tu dosis de insulina basada en tu glucosa actual y carbohidratos</p>
+        </div>
+        <a mat-stroked-button routerLink="/app/glucose/register">
+            <mat-icon>water_drop</mat-icon>
+            Registrar glucosa
+        </a>
+    </div>
+
+    <div class="calc__layout">
+        <div class="calc__card">
+            <h2 class="calc__section-title">Datos para el cálculo</h2>
+
+            <form [formGroup]="form" (ngSubmit)="onCalculate()">
+                <div class="calc__disclaimer">
+                    <mat-icon>info</mat-icon>
+                    <span>Esta calculadora es solo orientativa. Consulta siempre con tu médico antes de ajustar tu dosis
+                        de insulina.</span>
+                </div>
+
+                <div class="calc__row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Glucosa actual (mg/dL)</mat-label>
+                        <input matInput formControlName="currentGlucose" type="number" />
+                        <mat-icon matSuffix>water_drop</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Glucosa objetivo (mg/dL)</mat-label>
+                        <input matInput formControlName="targetGlucose" type="number" />
+                        <mat-icon matSuffix>my_location</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <mat-divider />
+
+                <h3 class="calc__subsection">Dosis de corrección</h3>
+                <mat-form-field appearance="outline">
+                    <mat-label>Factor de sensibilidad a insulina (mg/dL por unidad)</mat-label>
+                    <input matInput formControlName="insulinSensitivity" type="number" />
+                    <mat-hint>Cuánto reduce tu glucosa 1 unidad de insulina</mat-hint>
+                </mat-form-field>
+
+                <mat-divider />
+
+                <h3 class="calc__subsection">Dosis para comida (opcional)</h3>
+                <div class="calc__row">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Carbohidratos a consumir (g)</mat-label>
+                        <input matInput formControlName="carbsGrams" type="number" />
+                        <mat-icon matSuffix>restaurant</mat-icon>
+                    </mat-form-field>
+                    <mat-form-field appearance="outline">
+                        <mat-label>Ratio insulina:carbohidratos (g por unidad)</mat-label>
+                        <input matInput formControlName="insulinToCarbRatio" type="number" />
+                        <mat-hint>Cuántos gramos de carbohidratos cubre 1 unidad</mat-hint>
+                    </mat-form-field>
+                </div>
+
+                <div class="calc__actions">
+                    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+                        <mat-icon>calculate</mat-icon>
+                        Calcular
+                    </button>
+                    <button mat-stroked-button type="button" (click)="onReset()">
+                        Limpiar
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        @if (result()) {
+        <div class="calc__result-card">
+            <h2 class="calc__section-title">Resultado</h2>
+            <div class="calc__results">
+                <div class="calc__result-item">
+                    <span class="calc__result-label">Dosis de corrección</span>
+                    <span class="calc__result-value">{{ result()!.correctionDose | number:'1.0-1' }} U</span>
+                </div>
+                <div class="calc__result-item">
+                    <span class="calc__result-label">Dosis para comida</span>
+                    <span class="calc__result-value">{{ result()!.mealDose | number:'1.0-1' }} U</span>
+                </div>
+                <mat-divider />
+                <div class="calc__result-item calc__result-item--total">
+                    <span class="calc__result-label">Dosis total estimada</span>
+                    <span class="calc__result-value calc__result-value--total">
+                        {{ result()!.totalDose | number:'1.0-1' }} U
+                    </span>
+                </div>
+            </div>
+            <div class="calc__warning">
+                <mat-icon>warning</mat-icon>
+                <span>Verifica siempre con tu médico antes de administrar insulina.</span>
+            </div>
+        </div>
+        }
+    </div>
+</div>

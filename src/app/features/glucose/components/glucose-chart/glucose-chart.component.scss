@@ -6,3 +6,54 @@
     height: 320px;
   }
 }
+
+.glucose-chart__legend {
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-2) var(--space-2);
+  border-top: 0.5px solid var(--color-border);
+  margin-top: var(--space-3);
+}
+
+.glucose-chart__legend-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.glucose-chart__legend-title {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-1);
+}
+
+.glucose-chart__legend-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-secondary);
+}
+
+.glucose-chart__legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.glucose-chart__legend-line {
+  width: 24px;
+  height: 2px;
+  flex-shrink: 0;
+  border-radius: 1px;
+
+  &--meal     { background: #0EA5A0; border-top: 2px dashed #0EA5A0; height: 0; }
+  &--exercise { background: #5B4FCF; border-top: 2px dotted #5B4FCF; height: 0; }
+  &--min      { background: #C62828; border-top: 2px dashed #C62828; height: 0; }
+  &--max      { background: #E8A020; border-top: 2px dashed #E8A020; height: 0; }
+}

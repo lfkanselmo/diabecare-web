@@ -118,7 +118,7 @@
                         {{ item.periodLengthDays ?? 5 }} días de período
                     </span>
                     @if (item.symptoms) {
-                    <span class="cycle__history-symptoms">{{ item.symptoms }}</span>
+                    <span class="cycle__history-symptoms">{{ getSymptomsList(item.symptoms) }}</span>
                     }
                 </div>
                 }

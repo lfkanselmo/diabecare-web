@@ -1,15 +1,15 @@
 # DiabeCare — Frontend Architecture & Technical Documentation
 
-> **Angular 17+ | Arquitectura Modular | Design System**
+> **Angular 21 | Arquitectura Feature-Based | Design System "Calm Health"**
 
 | Campo | Valor |
 |---|---|
-| Versión | 1.0.0 |
-| Framework | Angular 17+ (Standalone Components) |
-| UI Library | Angular Material + ECharts |
-| State Mgmt | NgRx + Angular Signals |
-| Estilos | SCSS + Design Tokens |
-| Estado | Documento Base — Proyecto de Práctica |
+| Versión | 2.0.0 |
+| Framework | Angular 21 (Standalone Components) |
+| UI Library | Angular Material 21 + ECharts 6 |
+| State Mgmt | NgRx 21 + Angular Signals |
+| Estilos | SCSS + Design Tokens "Calm Health" |
+| PWA | @angular/service-worker 21 |
 
 ---
 
@@ -20,11 +20,11 @@
 3. [Sistema de Diseño](#3-sistema-de-diseño)
 4. [Pantallas y Navegación](#4-pantallas-y-navegación)
 5. [Componentes Reutilizables Clave](#5-componentes-reutilizables-clave)
-6. [State Management con NgRx](#6-state-management-con-ngrx)
-7. [Capa HTTP y Comunicación](#7-capa-http-y-comunicación)
-8. [Estándares Técnicos y de Código](#8-estándares-técnicos-y-de-código)
-9. [Rendimiento y Optimización](#9-rendimiento-y-optimización)
-10. [Estrategia de Testing](#10-estrategia-de-testing)
+6. [State Management](#6-state-management)
+7. [PWA y Notificaciones Push](#7-pwa-y-notificaciones-push)
+8. [Capa HTTP y Comunicación](#8-capa-http-y-comunicación)
+9. [Estándares Técnicos y de Código](#9-estándares-técnicos-y-de-código)
+10. [Rendimiento y Optimización](#10-rendimiento-y-optimización)
 11. [Accesibilidad](#11-accesibilidad)
 
 ---
@@ -34,28 +34,30 @@
 ### 1.1 Objetivos de la Interfaz
 
 - Interfaz intuitiva para registro rápido de glucosa (máximo 3 taps/clics)
-- Dashboard centralizado con métricas visuales y tendencias
+- Dashboard centralizado con métricas visuales, alertas de patrón y accesos rápidos
+- Correlación visual entre glucosa, comidas y ejercicio en una sola gráfica
+- Sistema de alertas clínicas inteligentes (7 tipos + alertas de patrón + ciclo menstrual)
+- Notificaciones push nativas para alertas y resumen semanal
 - Diseño responsive: funcional en desktop, tablet y mobile
-- Sistema de alertas visuales para valores fuera de rango
-- Generación y descarga de reportes para consultas médicas
 - Modo oscuro opcional para uso nocturno (mediciones de madrugada)
+- Instalable como PWA en dispositivos móviles y desktop
 
 ### 1.2 Stack Tecnológico
 
 | Componente | Tecnología |
 |---|---|
-| Framework | Angular 17+ con Standalone Components |
+| Framework | Angular 21 con Standalone Components |
 | Lenguaje | TypeScript 5.x (strict mode) |
 | Estilos | SCSS con Design Tokens + CSS Custom Properties |
-| UI Components | Angular Material 17 |
-| Gráficas | Apache ECharts (ngx-echarts) |
-| State Management | NgRx 17 + Angular Signals |
+| UI Components | Angular Material 21 |
+| Gráficas | Apache ECharts 6 (ngx-echarts 21) |
+| State Management | NgRx 21 + Angular Signals |
 | HTTP Client | Angular HttpClient con Interceptors |
 | Formularios | Reactive Forms con validadores personalizados |
-| Routing | Angular Router con Guards y Resolvers |
-| Testing | Jest + Angular Testing Library + Cypress |
-| Build | Angular CLI + esbuild |
-| Linting | ESLint + Angular ESLint + Prettier |
+| Routing | Angular Router con Guards y lazy loading |
+| PWA | @angular/service-worker 21 |
+| Push Notifications | Web Push API nativa |
+| Build | Angular CLI 21 + esbuild |
 
 ---
 
@@ -63,7 +65,7 @@
 
 ### 2.1 Patrón: Feature-Based Architecture
 
-La aplicación se organiza por **features** (dominio funcional) en lugar de por tipo técnico. Cada feature es un módulo autocontenido con sus propios componentes, servicios, estado y rutas.
+La aplicación se organiza por **features** (dominio funcional). Cada feature es autocontenida con sus propios componentes, servicios y rutas.
 
 ### 2.2 Estructura de Carpetas
 
@@ -72,33 +74,36 @@ src/
 ├── app/
 │   ├── core/                      # Singleton: guards, interceptors, servicios globales
 │   │   ├── auth/                  # AuthService, AuthGuard, JwtInterceptor
-│   │   ├── http/                  # ApiService base, ErrorInterceptor, LoadingInterceptor
-│   │   ├── layout/                # AppShell, Navbar, Sidebar, Footer
-│   │   └── services/              # StorageService, NotificationService, ThemeService
+│   │   ├── interceptors/          # JwtInterceptor, ErrorInterceptor
+│   │   ├── layout/                # Shell, Navbar, Sidebar
+│   │   └── services/              # ThemeService, MetadataService,
+│   │                              # GlucoseStateService, PushNotificationService,
+│   │                              # AlertService
 │   ├── shared/
-│   │   ├── components/            # Componentes reutilizables (cards, charts-wrapper, badges)
-│   │   ├── directives/            # Directivas personalizadas
-│   │   ├── pipes/                 # GlucoseStatusPipe, CaloriesPipe, DateLocalePipe
-│   │   ├── models/                # Interfaces TypeScript del dominio
-│   │   ├── validators/            # Validadores reactivos personalizados
-│   │   └── utils/                 # Funciones utilitarias puras
-│   ├── features/
-│   │   ├── auth/                  # Login, registro, forgot-password
-│   │   ├── dashboard/             # Vista principal con métricas
-│   │   ├── glucose/               # Registro y historial de glucosa
-│   │   ├── nutrition/             # Registro de comidas y calorías
-│   │   ├── vitals/                # Signos vitales (peso, PA, FC)
-│   │   ├── medications/           # Medicamentos e insulina
-│   │   ├── reports/               # Reportes y exportación PDF
-│   │   └── profile/               # Perfil del paciente y configuración
-│   └── app.config.ts              # Standalone bootstrap config
-├── assets/
-│   ├── i18n/                      # Archivos de traducción (es.json)
-│   └── icons/                     # SVG icons set
+│   │   ├── components/            # AlertsPanel
+│   │   └── models/                # Interfaces TypeScript del dominio
+│   ├── store/
+│   │   └── glucose/               # NgRx store de glucosa
+│   │       ├── glucose.actions.ts
+│   │       ├── glucose.reducer.ts
+│   │       ├── glucose.effects.ts
+│   │       └── glucose.selectors.ts
+│   └── features/
+│       ├── auth/                  # Login, Register
+│       ├── dashboard/             # Vista principal con métricas
+│       ├── glucose/               # Registro, historial, calculadora de insulina
+│       ├── nutrition/             # Registro de comidas
+│       ├── vitals/                # Signos vitales, ejercicio
+│       ├── medications/           # Medicamentos
+│       ├── reports/               # Reportes PDF
+│       └── profile/               # Perfil del paciente, ciclo menstrual
+├── public/
+│   ├── manifest.webmanifest       # PWA manifest
+│   └── icons/                     # Íconos PWA (72px a 512px)
 └── styles/
-    ├── _tokens.scss               # Design tokens (colores, tipografía, espaciado)
-    ├── _mixins.scss               # Mixins SCSS globales
-    └── _themes.scss               # Tema claro y oscuro
+    ├── tokens.scss                # Design tokens "Calm Health"
+    ├── mixins.scss                # Mixins SCSS globales
+    └── theme.scss                 # Tema Angular Material (deep-purple)
 ```
 
 ### 2.3 Estructura Interna de un Feature
@@ -106,372 +111,342 @@ src/
 ```
 features/glucose/
 ├── components/
-│   ├── glucose-register/          # Formulario de registro rápido
-│   ├── glucose-history/           # Tabla/lista con historial
-│   ├── glucose-chart/             # Gráfica de tendencia
-│   └── glucose-stats-card/        # Cards con TIR, promedio, CV
+│   ├── glucose-chart/             # Gráfica ECharts con marcadores
+│   └── hba1c-chart/               # Gráfica de tendencia HbA1c
+├── pages/
+│   ├── glucose-register/          # Formulario de registro
+│   ├── glucose-history/           # Historial con gráfica y tabla
+│   └── insulin-calculator/        # Calculadora de dosis de insulina
 ├── services/
-│   └── glucose.service.ts         # HTTP calls al backend
-├── store/                         # NgRx: actions, reducers, effects, selectors
-│   ├── glucose.actions.ts
-│   ├── glucose.reducer.ts
-│   ├── glucose.effects.ts
-│   └── glucose.selectors.ts
-├── models/
-│   └── glucose.model.ts           # Interfaces: GlucoseReading, GlucoseStats
-├── guards/
-│   └── glucose-data.resolver.ts   # Precarga datos antes de activar ruta
-└── glucose.routes.ts              # Rutas lazy-loaded del feature
+│   └── glucose.service.ts         # HTTP calls + exportación CSV/JSON
+└── glucose.routes.ts              # Rutas lazy-loaded
 ```
 
 ---
 
-## 3. Sistema de Diseño
+## 3. Sistema de Diseño "Calm Health"
 
-### 3.1 Paleta de Colores
+### 3.1 Filosofía
 
-| Nombre | Hex | Uso Principal | Contexto DiabeCare |
-|---|---|---|---|
-| Primary Blue | `#1565C0` | Acciones principales, nav | Botones CTA, header |
-| Success Green | `#2E7D32` | Valores en rango normal | Glucosa en rango, metas cumplidas |
-| Warning Amber | `#F57F17` | Valores límite o alertas | Glucosa alta, calorías al límite |
-| Danger Red | `#C62828` | Valores críticos, errores | Hipoglucemia, hiperglucemia severa |
-| Info Teal | `#00695C` | Información secundaria | Estadísticas, datos históricos |
-| Neutral Gray | `#546E7A` | Texto secundario, bordes | Labels, separadores, iconos |
-| Background | `#F5F7FA` | Fondo principal | Fondo de pantallas |
-| Surface White | `#FFFFFF` | Superficies elevadas | Cards, modales, panels |
+El sistema de diseño "Calm Health" prioriza la claridad y la calma visual — sin sombras agresivas, sin pesos tipográficos pesados, con colores semánticos suaves y bordes finos. Diseñado para que el paciente pueda leer sus métricas clínicas sin ansiedad visual.
 
-### 3.2 Tipografía
+### 3.2 Paleta de Colores
 
-| Estilo | Especificación | Uso |
+| Nombre | Hex | Uso |
 |---|---|---|
-| Font Family | Inter (Google Fonts) | Fuente principal — alta legibilidad en pantallas |
-| H1 Títulos | 28px / 700 Bold | Títulos de sección principales |
-| H2 Subtítulos | 22px / 600 SemiBold | Títulos de cards y módulos |
-| H3 Terciario | 18px / 600 SemiBold | Subtítulos internos |
-| Body Large | 16px / 400 Regular | Texto principal de lectura |
-| Body Small | 14px / 400 Regular | Labels, descripciones secundarias |
-| Caption | 12px / 400 Regular | Timestamps, notas, ayudas |
-| Metric Numbers | 36px / 700 Bold | Valores de glucosa y calorías |
+| Primary Índigo | `#5B4FCF` | Acciones principales, nav, botones |
+| Primary Light | `#EEF0FF` | Fondos de preview, estados hover |
+| Success | `#22A96A` | Glucosa en rango, metas cumplidas |
+| Warning | `#E8A020` | Glucosa alta, variabilidad alta |
+| Danger | `#E04B4B` | Hipoglucemia, errores |
+| Info Teal | `#0EA5A0` | Información secundaria, marcadores comida |
+| Surface | `#F7F6FC` | Fondo principal |
+| Card | `#FFFFFF` | Cards y paneles |
+| Border | `rgba(91,79,207,0.12)` | Bordes de cards |
 
-### 3.3 Design Tokens (SCSS)
+**Modo oscuro:**
+| Token | Valor |
+|---|---|
+| Background | `#16142A` |
+| Surface | `#1F1D36` |
+| Primary (dark) | `#8B82E0` |
+
+### 3.3 Tipografía
+
+- **Fuente**: Inter (Google Fonts) — pesos 400 y 500 únicamente
+- **Font weight**: 500 para todos los headings (nunca 600/700)
+- **Escala**: xs (11px), sm (13px), md (15px), lg (18px), xl (22px), 2xl (28px)
+
+### 3.4 Design Tokens Principales
 
 ```scss
-// styles/_tokens.scss
 :root {
-  // Colores semánticos
-  --color-primary:    #1565C0;
-  --color-success:    #2E7D32;
-  --color-warning:    #F57F17;
-  --color-danger:     #C62828;
-  --color-info:       #00695C;
-  --color-surface:    #FFFFFF;
-  --color-background: #F5F7FA;
-  --color-text:       #1C2833;
-  --color-text-muted: #546E7A;
+  --color-primary:       #5B4FCF;
+  --color-primary-light: #EEF0FF;
+  --color-success:       #22A96A;
+  --color-warning:       #E8A020;
+  --color-danger:        #E04B4B;
+  --color-info:          #0EA5A0;
+  --color-surface:       #FFFFFF;
+  --color-background:    #F7F6FC;
+  --color-border:        rgba(91, 79, 207, 0.12);
 
-  // Estados de glucosa
-  --glucose-low:      #C62828;   // < 70 mg/dL     → hipoglucemia
-  --glucose-normal:   #2E7D32;   // 70–180 mg/dL   → en rango
-  --glucose-high:     #F57F17;   // 180–250 mg/dL  → elevado
-  --glucose-critical: #880E4F;   // > 250 mg/dL    → crítico
+  --radius-lg:  14px;   // Cards
+  --radius-md:  10px;   // Inputs, chips
+  --radius-full: 999px; // Pills, badges
 
-  // Espaciado
-  --space-xs:  4px;
-  --space-sm:  8px;
-  --space-md:  16px;
-  --space-lg:  24px;
-  --space-xl:  32px;
-  --space-2xl: 48px;
-
-  // Bordes y sombras
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 20px;
-  --shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.08);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+  --font-weight-medium: 500;
+  --transition-fast:    150ms ease;
+  --transition-normal:  250ms ease;
 }
 ```
+
+### 3.5 Reglas de Estilo
+
+- Cards: `border: 0.5px solid var(--color-border)` — sin box-shadow
+- Sidebar: `position: sticky` — nunca `fixed` (causa loop Angular)
+- ECharts modo oscuro: leer `data-theme` UNA vez en `ngOnChanges`, nunca en getter
+- `ViewEncapsulation.None` solo donde es necesario: login, register, profile, alerts-panel
+- Alertas: colores via `[style]` binding inline — no clases CSS (evita conflictos con Material)
 
 ---
 
 ## 4. Pantallas y Navegación
 
-### 4.1 Estructura de Rutas
+### 4.1 Rutas
 
 ```
-/ (root)
-├── /auth
-│   ├── /login                # Inicio de sesión
-│   ├── /register             # Registro de cuenta
-│   └── /forgot-password      # Recuperación de contraseña
-└── /app  (AuthGuard requerido)
-    ├── /dashboard             # Vista principal: métricas del día
-    ├── /glucose
-    │   ├── /register          # Formulario rápido de registro
-    │   └── /history           # Historial con filtros y gráficas
-    ├── /nutrition
-    │   ├── /log               # Registro de comida del día
-    │   └── /history           # Historial nutricional
-    ├── /vitals                # Registro de peso, PA, FC, HbA1c
-    ├── /medications           # Lista y registro de medicamentos
-    ├── /reports               # Generación de reportes PDF
-    └── /profile               # Configuración del perfil paciente
+/auth/login
+/auth/register
+/app/dashboard
+/app/glucose/register
+/app/glucose/history
+/app/glucose/insulin-calculator
+/app/nutrition/log
+/app/nutrition/history
+/app/vitals
+/app/vitals/exercise
+/app/medications
+/app/reports
+/app/profile
+/app/cycle                        ← Solo pacientes femeninas
 ```
 
-### 4.2 Inventario de Pantallas
+### 4.2 Sidebar
 
-| Pantalla | Feature | Contenido Principal |
+| Ítem | Ruta | Ícono |
 |---|---|---|
-| Dashboard | `dashboard` | Resumen del día: glucosa actual, calorías, medicamentos pendientes, TIR semanal |
-| Registrar Glucosa | `glucose` | Formulario: valor, tipo medición, fecha/hora, notas. Indicador de rango inmediato |
-| Historial de Glucosa | `glucose` | Tabla filtrable + gráfica de líneas por período. Stats: promedio, CV, TIR |
-| Registrar Comida | `nutrition` | Buscador de alimentos + lista de items + totales macro/calóricos en tiempo real |
-| Historial Nutricional | `nutrition` | Gráfica de calorías diarias, distribución de macros por semana |
-| Signos Vitales | `vitals` | Formulario de peso/PA/FC + gráficas de tendencia para cada signo |
-| Medicamentos | `medications` | Lista de medicamentos activos, historial de tomas, checklist diario |
-| Reportes | `reports` | Selector de rango de fechas + tipo de reporte + preview + descarga PDF |
-| Perfil / Configuración | `profile` | Datos personales, objetivos de glucosa, notificaciones, tema, unidades |
+| Dashboard | `/app/dashboard` | `dashboard` |
+| Glucosa | `/app/glucose` | `water_drop` |
+| Nutrición | `/app/nutrition` | `restaurant` |
+| Signos vitales | `/app/vitals` | `favorite` |
+| Medicamentos | `/app/medications` | `medication` |
+| Reportes | `/app/reports` | `description` |
+| Mi perfil | `/app/profile` | `person` |
+
+### 4.3 Navbar
+
+- Logo + nombre de la app
+- **Chip de glucosa**: última lectura con color semántico (verde/ámbar/rojo), actualizado via `GlucoseStateService`
+- **Campana de notificaciones**: activa/desactiva push notifications
+- Toggle modo oscuro/claro
+- Menú de usuario (perfil, cerrar sesión)
 
 ---
 
 ## 5. Componentes Reutilizables Clave
 
-### 5.1 `GlucoseStatusBadge`
+### 5.1 `AlertsPanelComponent`
 
-Recibe un valor de glucosa y renderiza un badge con color y etiqueta según el estado clínico:
+Panel de alertas clínicas con 4 severidades:
 
-```typescript
-@Component({
-  selector: 'dc-glucose-status-badge',
-  standalone: true,
-  template: `
-    <span class="badge" [ngClass]="statusClass">
-      {{ value }} {{ unit }} — {{ statusLabel }}
-    </span>
-  `
-})
-export class GlucoseStatusBadgeComponent {
-  @Input() value!: number;
-  @Input() unit: 'mg/dL' | 'mmol/L' = 'mg/dL';
-  @Input() targetMin = 70;
-  @Input() targetMax = 180;
+- `SUCCESS` — verde: racha positiva de TIR
+- `INFO` — teal: avisos nutricionales, fases del ciclo
+- `WARNING` — ámbar: glucosa alta, HbA1c elevada, patrones
+- `DANGER` — rojo: hipoglucemia, hipoglucemias frecuentes
 
-  get statusClass(): string { /* 'low' | 'normal' | 'high' | 'critical' */ }
-  get statusLabel(): string { /* 'Hipoglucemia' | 'En rango' | 'Elevado' | 'Crítico' */ }
-}
-```
+Colores aplicados via `[style]` binding inline para compatibilidad con modo oscuro. `ViewEncapsulation.None` habilitado.
 
-### 5.2 `MetricCard`
+**Alertas de patrón detectadas:**
+- Glucosa alta en ayuno (>60% de ayunos >130 mg/dL, mín 3 lecturas)
+- Picos postprandiales frecuentes (>50% >180 mg/dL, mín 3 lecturas)
+- Hipoglucemias frecuentes (≥3 episodios en 14 días)
+- Alta variabilidad glucémica (CV ≥36%, mín 7 lecturas)
 
-Card genérica para mostrar una métrica con valor, unidad, tendencia y estado:
+### 5.2 `GlucoseChartComponent`
 
-```html
-<dc-metric-card
-  title="Glucosa Promedio (7 días)"
-  [value]="135"
-  unit="mg/dL"
-  [trend]="-5"
-  trendLabel="vs semana anterior"
-  status="normal"
-/>
-```
+Gráfica ECharts con:
+- Línea de glucosa con `visualMap` por rangos semánticos
+- Marcadores de comidas (líneas discontinuas teal) via `MealMarkerResponse[]`
+- Marcadores de ejercicio (líneas punteadas índigo) via `ExerciseLogResponse[]`
+- Líneas de límite mínimo y máximo objetivo
+- Zona verde de rango objetivo (markArea)
+- Leyenda explicativa de colores y marcadores
+- Tooltips con contexto clínico
+- Paleta adaptativa modo oscuro/claro (lectura única en `ngOnChanges`)
 
-### 5.3 `GlucoseLineChart`
+### 5.3 `CycleCalendarComponent`
 
-Gráfica de línea temporal de lecturas de glucosa con banda del rango objetivo:
+Calendario del ciclo menstrual con:
+- Rueda ECharts de 5 fases (menstruación, folicular, ovulación, lútea temprana, lútea tardía)
+- Calendario mensual con colores por fase
+- Colores adaptativos: `lightColor` (modo claro) / `darkColor` rgba baja opacidad (modo oscuro)
+- Flag `dark` leído una vez en `ngOnChanges` y pasado a `CalendarDay`
 
-- Banda verde horizontal: rango objetivo del paciente (configurable)
-- Líneas de referencia: umbral de hipoglucemia (70) e hiperglucemia (180)
-- Puntos coloreados según estado (rojo / verde / naranja)
-- Tooltip detallado: valor, tipo de medición, fecha y hora
-- Zoom y pan en el eje temporal
+### 5.4 `InsulinCalculatorComponent`
 
-### 5.4 `FoodSearchInput`
-
-Input con autocompletado para búsqueda de alimentos:
-
-- Debounce de 300ms para evitar exceso de llamadas al API
-- Muestra calorías y macros al seleccionar un alimento
-- Permite ingresar gramaje personalizado con recalculo en tiempo real
-- Caché local de últimos 20 alimentos usados (búsqueda sin conexión)
-
-### 5.5 `AlertsBanner`
-
-Banner contextual que aparece cuando hay valores que requieren atención:
-
-- 🔴 **Hipoglucemia detectada**: alerta roja con botón de acción
-- 🟠 **Medicamento sin tomar**: alerta naranja con recordatorio
-- 🟡 **Meta calórica superada**: alerta amarilla informativa
-- 🟢 **Streak positivo** (7 días en rango): alerta verde de felicitación
+Calculadora de dosis de insulina:
+- Dosis de corrección: `(glucosaActual - objetivo) / factorSensibilidad`
+- Dosis para comida: `carbohidratos / ratioCarbos`
+- Disclaimer médico prominente
+- Resultado con advertencia de verificar con médico
 
 ---
 
-## 6. State Management con NgRx
+## 6. State Management
 
-### 6.1 Estructura del Store Global
-
-```typescript
-interface AppState {
-  auth:        AuthState;        // usuario, token, loading, error
-  glucose:     GlucoseState;     // readings[], stats, filters, loading
-  nutrition:   NutritionState;   // meals[], dailySummary, foods[], loading
-  vitals:      VitalsState;      // vitals[], latest, loading
-  medications: MedicationState;  // medications[], todayLog, loading
-  ui:          UiState;          // theme, sidebarOpen, notifications[]
-}
-```
-
-### 6.2 Cuándo Usar NgRx vs Signals
+### 6.1 Cuándo usar NgRx vs Signals
 
 | Escenario | Solución | Razón |
 |---|---|---|
-| Datos del servidor (lecturas de glucosa) | NgRx + Effects | Compartido entre múltiples componentes, cacheable |
-| Estado de un formulario local | Component Signal | Solo vive dentro del componente |
-| Tema (claro/oscuro) | NgRx + localStorage | Persiste entre sesiones, afecta toda la app |
-| Apertura de un modal | Component Signal | Estado completamente local |
-| Lista de alertas activas | NgRx | Generadas por efectos, leídas en varios lugares |
+| Estadísticas de glucosa (dashboard) | NgRx + Effects | Cacheable, compartido entre componentes |
+| Estado local de formulario | Signal | Solo vive dentro del componente |
+| Tema claro/oscuro | ThemeService + localStorage | Global pero simple |
+| Última lectura de glucosa (navbar) | GlucoseStateService (Signal) | Singleton sin HTTP adicional |
+| Alertas, resúmenes, otros datos | Signal en componente | Sin necesidad de caché global |
 
-### 6.3 Convención de Nomenclatura NgRx
-
-```typescript
-// Actions  → [Feature] Descripción del evento
-export const loadGlucoseReadings     = createAction('[Glucose] Load Readings', props<{ filters: GlucoseFilters }>());
-export const loadGlucoseReadingsOk   = createAction('[Glucose] Load Readings Success', props<{ readings: GlucoseReading[] }>());
-export const loadGlucoseReadingsFail = createAction('[Glucose] Load Readings Failure', props<{ error: string }>());
-
-// Selectors → select + Feature + Property
-export const selectGlucoseReadings = createSelector(selectGlucoseState, s => s.readings);
-export const selectGlucoseLoading  = createSelector(selectGlucoseState, s => s.loading);
-export const selectGlucoseTIR      = createSelector(selectGlucoseState, s => s.stats?.tir);
-```
-
----
-
-## 7. Capa HTTP y Comunicación
-
-### 7.1 Interceptores
-
-| Interceptor | Responsabilidad |
-|---|---|
-| `JwtInterceptor` | Adjunta `Authorization: Bearer <token>` a todas las peticiones al API |
-| `ErrorInterceptor` | Captura 401 (refresca token o redirige a login), 403, 404, 500 con mensajes en español |
-| `LoadingInterceptor` | Controla el estado global de carga (spinner) en el `UiState` del store |
-| `LoggingInterceptor` | Solo en `dev`: loguea requests/responses en consola con timing |
-
-### 7.2 Servicio Base
+### 6.2 NgRx Glucose Store
 
 ```typescript
-@Injectable({ providedIn: 'root' })
-export class ApiService {
-  private readonly baseUrl = environment.apiUrl; // '/api/v1'
-
-  get<T>(path: string, params?: HttpParams): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}${path}`, { params });
-  }
-
-  post<T>(path: string, body: unknown): Observable<T> {
-    return this.http.post<T>(`${this.baseUrl}${path}`, body);
-  }
-
-  put<T>(path: string, body: unknown): Observable<T> {
-    return this.http.put<T>(`${this.baseUrl}${path}`, body);
-  }
-
-  delete<T>(path: string): Observable<T> {
-    return this.http.delete<T>(`${this.baseUrl}${path}`);
-  }
+interface GlucoseState {
+  stats:      GlucoseStatsResponse | null;
+  loading:    boolean;
+  error:      string | null;
+  lastLoaded: number | null;  // timestamp para TTL de caché
 }
 ```
 
+**Acciones:**
+- `[Glucose] Load Stats` — despacha con patientId, from, to
+- `[Glucose] Load Stats Success` — puebla stats y actualiza lastLoaded
+- `[Glucose] Load Stats Failure` — almacena el error
+- `[Glucose] Invalidate Cache` — resetea lastLoaded para forzar recarga
+
+**TTL de caché:** 5 minutos. El effect verifica `selectIsStale()` antes de hacer la llamada HTTP.
+
+### 6.3 GlucoseStateService
+
+Singleton con signal `latestReading` para compartir la última lectura entre el dashboard y el navbar sin peticiones HTTP adicionales. El dashboard lo actualiza al cargar el historial; el navbar solo lo lee.
+
 ---
 
-## 8. Estándares Técnicos y de Código
+## 7. PWA y Notificaciones Push
 
-### 8.1 Convenciones de Nomenclatura
+### 7.1 Service Worker
+
+Configurado con `@angular/service-worker`. Solo activo en build de producción.
+
+**Estrategia de caché (`ngsw-config.json`):**
+| Grupo | Endpoints | TTL |
+|---|---|---|
+| `metadata-api` | `/api/v1/metadata/**` | 7 días |
+| `foods-api` | `/api/v1/foods/**` | 24 horas |
+| `api-data` | `/api/v1/**` | 1 hora |
+| `assets` | Fuentes Google, imágenes | Indefinido (lazy) |
+
+### 7.2 Notificaciones Push
+
+**Flujo de suscripción:**
+1. Usuario hace clic en campana → `PushNotificationService.requestPermissionAndSubscribe()`
+2. Se solicita permiso al navegador
+3. Se obtiene la clave VAPID del backend (`GET /api/v1/push/vapid-public-key`)
+4. Se suscribe al `PushManager` del Service Worker
+5. Se envía `{ endpoint, p256dh, auth }` al backend (`POST /api/v1/push/subscribe`)
+
+**Handler de push (`sw-push-handler.js`):**
+- Escucha eventos `push` y muestra notificación con título, cuerpo e ícono
+- Escucha `notificationclick` y abre/enfoca la app
+
+**Nota:** Requiere HTTPS en producción. En localhost funciona como excepción del navegador.
+
+---
+
+## 8. Capa HTTP y Comunicación
+
+### 8.1 Interceptores
+
+| Interceptor | Responsabilidad |
+|---|---|
+| `JwtInterceptor` | Adjunta `Authorization: Bearer <token>` a todas las peticiones |
+| `ErrorInterceptor` | Captura 401 (redirige a login), 403, 404, 500 con mensajes en español |
+
+### 8.2 Servicios HTTP por Feature
+
+| Servicio | Endpoints |
+|---|---|
+| `GlucoseService` | register, getHistory, getStats, delete, exportCsv, exportJson |
+| `NutritionService` | registerMeal, getDailySummary, getHistory, searchFoods |
+| `VitalsService` | register, getLatest, getHistory, getHba1cTrend |
+| `ExerciseService` | register, getHistory |
+| `MedicationService` | register, getAll, deactivate |
+| `AlertService` | getAlerts |
+| `ProfileService` | getById, update |
+| `MenstrualCycleService` | register, getStatus |
+| `PushNotificationService` | requestPermissionAndSubscribe, unsubscribe |
+
+### 8.3 Exportación de datos
+
+`GlucoseService` incluye métodos de exportación:
+```typescript
+exportCsv(patientId, from, to): Observable<Blob>
+exportJson(patientId, from, to): Observable<Blob>
+```
+
+La descarga se maneja con `URL.createObjectURL` y un `<a>` element creado dinámicamente.
+
+---
+
+## 9. Estándares Técnicos y de Código
+
+### 9.1 Convenciones de Nomenclatura
 
 | Elemento | Convención | Ejemplo |
 |---|---|---|
 | Componentes | PascalCase + `Component` | `GlucoseRegisterComponent` |
 | Servicios | PascalCase + `Service` | `GlucoseService`, `AuthService` |
-| Interfaces / Modelos | PascalCase (sin prefijo `I`) | `GlucoseReading`, `Patient`, `MealEntry` |
-| Enums | PascalCase | `GlucoseStatus`, `MealType`, `DiabetesType` |
-| NgRx Actions | `[Feature] Verb Noun` | `[Glucose] Load Readings Success` |
-| NgRx Selectors | `select` + Feature + Property | `selectGlucoseReadings` |
-| Pipes | camelCase + `Pipe` | `glucoseStatusPipe`, `caloriesTotalPipe` |
+| Interfaces | PascalCase (sin prefijo `I`) | `GlucoseReading`, `Patient` |
+| Enums | PascalCase | `GlucoseStatus`, `MealType` |
+| NgRx Actions | `[Feature] Verb Noun` | `[Glucose] Load Stats Success` |
+| NgRx Selectors | `select` + Feature + Property | `selectStats`, `selectLoading` |
 | Archivos | kebab-case | `glucose-register.component.ts` |
-| CSS Classes | BEM: `block__element--modifier` | `glucose-card__value--critical` |
-| Rutas URL | kebab-case | `/glucose/register`, `/vital-signs` |
-| Constantes | UPPER_SNAKE_CASE | `MAX_GLUCOSE_VALUE`, `TOKEN_KEY` |
+| CSS Classes | BEM | `glucose-card__value--critical` |
+| Rutas URL | kebab-case | `/glucose/insulin-calculator` |
 
-### 8.2 Reglas TypeScript
+### 9.2 Reglas TypeScript
 
-- `strict: true` en `tsconfig` — sin `any` implícito, null checks habilitados
-- Nunca usar tipo `any`. Alternativa: `unknown` con type guards o generics
-- Interfaces para modelos de datos, no clases (salvo casos con lógica)
-- `readonly` en propiedades de modelos que no deben mutar
-- Funciones puras para transformaciones de datos (sin efectos secundarios)
-- Destructuring explícito al consumir observables y selectores
+- `strict: true` en `tsconfig` — sin `any` implícito
+- Nunca usar tipo `any`. Alternativa: `unknown` con type guards
+- Interfaces para modelos de datos
+- Funciones puras para transformaciones de datos
 
-### 8.3 Reglas de Componentes Angular
+### 9.3 Reglas de Componentes Angular
 
-- Todos los componentes son **Standalone Components** (sin NgModules)
-- `ChangeDetectionStrategy.OnPush` por defecto en todos los componentes
-- Usar `async pipe` en templates para manejar Observables (evitar `subscribe` manual)
-- `signal()` para inputs en componentes nuevos, `@Input()` para compatibilidad
-- Un componente por archivo; máximo 300 líneas por componente
-- Lógica de negocio en servicios o store, nunca directamente en el componente
+- Todos los componentes son **Standalone Components**
+- `inject()` para inyección de dependencias (no constructor)
+- Signals para estado local (`signal()`, `computed()`)
+- HTML, SCSS y TypeScript siempre en archivos separados — nunca `template` o `styles` inline
+- Un componente por archivo
+- Lógica de negocio en servicios, nunca directamente en el componente
+
+### 9.4 Reglas de ECharts
+
+- **Nunca** usar getters para leer el tema — causan loop infinito de detección de cambios
+- Leer `document.documentElement.getAttribute('data-theme')` una sola vez al inicio de `ngOnChanges`
+- Pasar el flag `dark` como parámetro a los métodos privados de construcción de opciones
 
 ---
 
-## 9. Rendimiento y Optimización
+## 10. Rendimiento y Optimización
 
-### 9.1 Lazy Loading
+### 10.1 Lazy Loading
 
 - Cada feature se carga de forma lazy mediante `loadComponent` / `loadChildren`
 - El bundle inicial incluye únicamente: core, auth y shell de layout
-- Preloading strategy: `PreloadAllModules` después del primer render
 
-### 9.2 Virtualización de Listas
+### 10.2 Caché
 
-- CDK Virtual Scroll para historial de lecturas con más de 50 registros
-- Paginación del lado del servidor en tablas de historial (`pageSize: 20`)
+- NgRx Store con TTL de 5 minutos para estadísticas de glucosa
+- Service Worker para caché de assets y respuestas de API en producción
+- `GlucoseStateService` como singleton para evitar peticiones HTTP adicionales en el navbar
 
-### 9.3 Caché y Datos
-
-- `shareReplay(1)` en HttpClient para evitar múltiples peticiones del mismo recurso
-- IndexedDB (via `@ngx-pwa/local-storage`) para caché de alimentos frecuentes
-- Expiración de caché: datos del día expiran al cambiar de día (midnight reset)
-
-### 9.4 Métricas Objetivo (Core Web Vitals)
+### 10.3 Métricas Objetivo
 
 | Métrica | Objetivo |
 |---|---|
-| LCP — Largest Contentful Paint | < 2.5 segundos |
-| FID — First Input Delay | < 100 ms |
-| CLS — Cumulative Layout Shift | < 0.1 |
-| Bundle inicial | < 200 KB (gzipped) |
-| Lighthouse Score | > 90 en Performance, Accessibility y Best Practices |
-
----
-
-## 10. Estrategia de Testing
-
-### 10.1 Niveles de Testing
-
-| Nivel | Herramienta | Objetivo | Qué se prueba |
-|---|---|---|---|
-| Unit | Jest | > 80% cobertura | Servicios, pipes, store (reducers, selectors) |
-| Component | Angular Testing Library | Componentes clave | Renderizado, inputs/outputs, interacciones |
-| Integration | Cypress Component | Flujos de feature | Registro de glucosa, búsqueda de alimentos |
-| E2E | Cypress | Flujos críticos | Login, registro de glucosa, ver dashboard |
-
-### 10.2 Casos E2E Prioritarios
-
-- **Happy path**: login exitoso → dashboard → registrar glucosa → ver en historial
-- **Registro de comida**: buscar alimento → agregar porción → calorías del día actualizadas
-- **Alerta de hipoglucemia**: registrar glucosa < 70 → verificar banner de alerta
-- **Generación de reporte**: seleccionar rango de fechas → descargar PDF
+| LCP | < 2.5 segundos |
+| FID | < 100 ms |
+| CLS | < 0.1 |
+| Bundle inicial | < 2 MB |
 
 ---
 
@@ -480,14 +455,14 @@ export class ApiService {
 > Objetivo: cumplimiento **WCAG 2.1 nivel AA**
 
 - Todos los íconos sin texto visible incluyen `aria-label` descriptivo
-- Contraste mínimo de colores: 4.5:1 para texto normal, 3:1 para texto grande
-- Navegación completa por teclado (Tab, Enter, Esc para modales)
-- ARIA live regions para alertas de glucosa (anuncio a lectores de pantalla)
+- Contraste mínimo de colores: 4.5:1 para texto normal
+- Navegación completa por teclado
+- ARIA live regions para alertas de glucosa
 - Focus visible en todos los elementos interactivos
-- Formularios con `<label>` asociados explícitamente (no solo `placeholder`)
+- Formularios con `<label>` asociados explícitamente
 - Mensajes de error asociados al campo con `aria-describedby`
-- Gráficas con tabla de datos equivalente como alternativa accesible
+- Gráficas con tooltips descriptivos como alternativa accesible
 
 ---
 
-*DiabeCare Frontend Documentation v1.0*
+*DiabeCare Frontend Documentation v2.0*

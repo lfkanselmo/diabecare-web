@@ -126,6 +126,94 @@
     font-weight: var(--font-weight-medium);
     color: var(--color-text-primary);
   }
+
+  &__card--account {
+    max-width: 680px;
+  }
+
+  &__account-action {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-4) 0;
+  }
+
+  &__account-action-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  &__account-info {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    flex: 1;
+  }
+
+  &__account-icon {
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    margin-top: 2px;
+    flex-shrink: 0;
+
+    &--warn   { color: var(--color-warning); }
+    &--danger { color: var(--color-danger);  }
+  }
+
+  &__account-label {
+    display: block;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-1);
+  }
+
+  &__account-desc {
+    display: block;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__account-confirm {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    background: var(--color-surface-variant);
+    border-radius: var(--radius-md);
+    border-left: 3px solid var(--color-danger);
+
+    span {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      flex: 1;
+    }
+  }
+
+  &__account-confirm-actions {
+    display: flex;
+    gap: var(--space-2);
+    flex-shrink: 0;
+
+    ::ng-deep button.mat-mdc-raised-button {
+      color: #FFFFFF !important;
+    }
+  }
+
+  &__account-action-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  ::ng-deep button.mat-mdc-outlined-button mat-icon {
+    color: var(--color-danger);
+  }
+}
 }
 
 .profile__tab-content {

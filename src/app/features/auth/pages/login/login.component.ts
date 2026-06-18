@@ -48,12 +48,19 @@ export class LoginComponent {
         this.errorMessage = '';
 
         this.authApiService.login(this.form.getRawValue()).subscribe({
-            next: (response) => {
+            next: response => {
                 this.authService.saveSession(response.accessToken, response.patient);
                 this.router.navigate(['/app/dashboard']);
             },
-            error: () => {
-                this.errorMessage = 'Correo o contraseña incorrectos';
+            error: err => {
+                const code = err?.error?.code;
+                if (code === 'ACCOUNT_SUSPENDED') {
+                    this.errorMessage = 'Tu cuenta está suspendida. Contacta soporte para reactivarla.';
+                } else if (code === 'INVALID_CREDENTIALS') {
+                    this.errorMessage = 'Correo o contraseña incorrectos.';
+                } else {
+                    this.errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+                }
                 this.loading = false;
             }
         });

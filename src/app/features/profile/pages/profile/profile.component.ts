@@ -8,13 +8,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTabsModule } from '@angular/material/tabs';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
+import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
+import { AccountService } from '../../../../core/services/account.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { MetadataService } from '@core/services/metadata.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
-import { MatTabsModule } from '@angular/material/tabs';
-import { MetadataService } from '@core/services/metadata.service';
 
 @Component({
     selector: 'app-profile',
@@ -31,6 +34,7 @@ import { MetadataService } from '@core/services/metadata.service';
         MatDividerModule,
         MatChipsModule,
         MatTabsModule,
+        MatDialogModule,
         MenstrualCycleComponent
     ],
     templateUrl: './profile.component.html',
@@ -41,13 +45,19 @@ export class ProfileComponent implements OnInit {
 
     private readonly fb = inject(FormBuilder);
     private readonly profileService = inject(ProfileService);
+    private readonly accountService = inject(AccountService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
-    readonly metadata = inject(MetadataService);
+    private readonly router = inject(Router);
     private readonly cdr = inject(ChangeDetectorRef);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     saving = signal(false);
+    suspending = signal(false);
+    deleting = signal(false);
+    confirmDelete = signal(false);
+    confirmSuspend = signal(false);
     patient = signal<PatientResponse | null>(null);
 
     form: FormGroup = this.fb.group({
@@ -72,12 +82,9 @@ export class ProfileComponent implements OnInit {
         this.saving.set(true);
 
         this.profileService.update(patientId, this.form.getRawValue()).subscribe({
-            next: (updated) => {
+            next: updated => {
                 this.patient.set(updated);
-                this.authService.saveSession(
-                    this.authService.getToken()!,
-                    updated
-                );
+                this.authService.saveSession(this.authService.getToken()!, updated);
                 this.snackBar.open('Perfil actualizado correctamente', 'Cerrar', { duration: 3000 });
                 this.saving.set(false);
             },
@@ -88,6 +95,72 @@ export class ProfileComponent implements OnInit {
         });
     }
 
+    onSuspendAccount(): void {
+        if (!this.confirmSuspend()) {
+            this.confirmSuspend.set(true);
+            return;
+        }
+
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+
+        this.suspending.set(true);
+
+        this.accountService.suspend(userId).subscribe({
+            next: () => {
+                this.snackBar.open('Cuenta suspendida. Cerrando sesión...', 'Cerrar', { duration: 3000 });
+                setTimeout(() => {
+                    this.authService.logout();
+                    this.router.navigate(['/auth/login']);
+                }, 2000);
+            },
+            error: () => {
+                this.snackBar.open('Error al suspender la cuenta', 'Cerrar', { duration: 3000 });
+                this.suspending.set(false);
+                this.confirmSuspend.set(false);
+            }
+        });
+    }
+
+    onDeleteAccount(): void {
+        if (!this.confirmDelete()) {
+            this.confirmDelete.set(true);
+            return;
+        }
+
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+
+        this.deleting.set(true);
+
+        this.accountService.delete(userId).subscribe({
+            next: () => {
+                this.snackBar.open('Cuenta eliminada. Hasta luego.', 'Cerrar', { duration: 3000 });
+                setTimeout(() => {
+                    this.authService.logout();
+                    this.router.navigate(['/auth/login']);
+                }, 2000);
+            },
+            error: () => {
+                this.snackBar.open('Error al eliminar la cuenta', 'Cerrar', { duration: 3000 });
+                this.deleting.set(false);
+                this.confirmDelete.set(false);
+            }
+        });
+    }
+
+    cancelSuspend(): void {
+        this.confirmSuspend.set(false);
+    }
+
+    cancelDelete(): void {
+        this.confirmDelete.set(false);
+    }
+
+    get isFemale(): boolean {
+        return this.patient()?.biologicalSex === 'FEMALE';
+    }
+
     private loadProfile(): void {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
@@ -95,7 +168,7 @@ export class ProfileComponent implements OnInit {
         this.loading.set(true);
 
         this.profileService.getById(patientId).subscribe({
-            next: (data) => {
+            next: data => {
                 this.patient.set(data);
                 this.form.patchValue({
                     heightCm: data.heightCm,
@@ -110,13 +183,5 @@ export class ProfileComponent implements OnInit {
             },
             error: () => this.loading.set(false)
         });
-    }
-
-    getActivityLabel(level: string): string {
-        return this.metadata.getLabelByValue(this.metadata.activityLevels(), level);
-    }
-
-    get isFemale(): boolean {
-        return this.patient()?.biologicalSex === 'FEMALE';
     }
 }

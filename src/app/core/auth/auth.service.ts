@@ -28,12 +28,27 @@ export class AuthService {
         this._isAuthenticated.set(false);
     }
 
+    logout(): void {
+        this.clearSession();
+    }
+
     getPatientId(): string | null {
         const raw = localStorage.getItem(PATIENT_KEY);
         if (!raw) return null;
         try {
             const patient = JSON.parse(raw);
             return patient?.patientId ?? null;
+        } catch {
+            return null;
+        }
+    }
+
+    getUserId(): string | null {
+        const token = this.getToken();
+        if (!token) return null;
+        try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            return payload?.userId ?? null;
         } catch {
             return null;
         }

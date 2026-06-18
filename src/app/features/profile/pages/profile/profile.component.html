@@ -6,6 +6,89 @@
     } @else if (patient()) {
 
     <mat-tab-group>
+        <mat-tab label="Cuenta">
+            <div class="profile__tab-content">
+                <div class="profile__card profile__card--account">
+
+                    <h2 class="profile__section-title">Gestión de cuenta</h2>
+
+                    <div class="profile__account-action">
+                        <div class="profile__account-action-top">
+                            <div class="profile__account-info">
+                                <mat-icon
+                                    class="profile__account-icon profile__account-icon--warn">pause_circle</mat-icon>
+                                <div>
+                                    <span class="profile__account-label">Suspender cuenta</span>
+                                    <span class="profile__account-desc">
+                                        Desactiva tu acceso temporalmente. Tus datos se conservan y puedes reactivarla
+                                        contactándonos.
+                                    </span>
+                                </div>
+                            </div>
+                            @if (!confirmSuspend()) {
+                            <button mat-stroked-button color="warn" (click)="onSuspendAccount()"
+                                [disabled]="suspending()">
+                                <mat-icon>pause_circle</mat-icon>
+                                Suspender
+                            </button>
+                            }
+                        </div>
+                        @if (confirmSuspend()) {
+                        <div class="profile__account-confirm">
+                            <span>¿Confirmas que deseas suspender tu cuenta?</span>
+                            <div class="profile__account-confirm-actions">
+                                <button mat-stroked-button (click)="cancelSuspend()" [disabled]="suspending()">
+                                    Cancelar
+                                </button>
+                                <button mat-raised-button color="warn" (click)="onSuspendAccount()"
+                                    [disabled]="suspending()">
+                                    @if (suspending()) { Suspendiendo... } @else { Sí, suspender }
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <mat-divider />
+
+                    <div class="profile__account-action">
+                        <div class="profile__account-action-top">
+                            <div class="profile__account-info">
+                                <mat-icon class="profile__account-icon profile__account-icon--danger">delete</mat-icon>
+                                <div>
+                                    <span class="profile__account-label">Eliminar cuenta</span>
+                                    <span class="profile__account-desc">
+                                        Elimina permanentemente tu cuenta y anonimiza tus datos. Esta acción no se puede
+                                        deshacer.
+                                    </span>
+                                </div>
+                            </div>
+                            @if (!confirmDelete()) {
+                            <button mat-stroked-button color="warn" (click)="onDeleteAccount()" [disabled]="deleting()">
+                                <mat-icon>delete</mat-icon>
+                                Eliminar
+                            </button>
+                            }
+                        </div>
+                        @if (confirmDelete()) {
+                        <div class="profile__account-confirm">
+                            <span>¿Confirmas que deseas eliminar tu cuenta? Esta acción es permanente.</span>
+                            <div class="profile__account-confirm-actions">
+                                <button mat-stroked-button (click)="cancelDelete()" [disabled]="deleting()">
+                                    Cancelar
+                                </button>
+                                <button mat-raised-button color="warn" (click)="onDeleteAccount()"
+                                    [disabled]="deleting()">
+                                    @if (deleting()) { Eliminando... } @else { Sí, eliminar }
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                </div>
+            </div>
+        </mat-tab>
         <mat-tab label="Datos del perfil">
             <div class="profile__tab-content">
                 <div class="profile__layout">

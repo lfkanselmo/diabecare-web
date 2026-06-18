@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { GlucoseReadingResponse, MealMarkerResponse } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
+import { MetadataService } from '../../../../core/services/metadata.service';
 
 @Component({
     selector: 'app-glucose-chart',
@@ -21,26 +22,7 @@ export class GlucoseChartComponent implements OnChanges {
 
     chartOptions: EChartsOption = {};
 
-    private readonly mealTypeLabels: Record<string, string> = {
-        BREAKFAST: 'Desayuno',
-        LUNCH: 'Almuerzo',
-        DINNER: 'Cena',
-        SNACK: 'Merienda'
-    };
-
-    private readonly exerciseTypeLabels: Record<string, string> = {
-        WALKING: 'Caminata',
-        RUNNING: 'Trote',
-        CYCLING: 'Ciclismo',
-        SWIMMING: 'Natación',
-        WEIGHT_TRAINING: 'Pesas',
-        YOGA: 'Yoga',
-        FOOTBALL: 'Fútbol',
-        BASKETBALL: 'Baloncesto',
-        DANCING: 'Baile',
-        HIKING: 'Senderismo',
-        OTHER: 'Otro'
-    };
+    private readonly metadata = inject(MetadataService);
 
     ngOnChanges(): void {
         if (this.readings.length > 0) {
@@ -87,7 +69,7 @@ export class GlucoseChartComponent implements OnChanges {
                         <div style="font-size:13px">
                             <strong>${p.name}</strong><br/>
                             Glucosa: <strong>${reading.value} ${reading.unit === 'MG_DL' ? 'mg/dL' : 'mmol/L'}</strong><br/>
-                            Tipo: ${this.getReadingTypeLabel(reading.readingType)}
+                            Tipo: ${this.metadata.getLabelByValue(this.metadata.readingTypes(), reading.readingType)}
                         </div>
                     `;
                 }
@@ -166,10 +148,14 @@ export class GlucoseChartComponent implements OnChanges {
                 return diff < bestDiff ? idx : bestIdx;
             }, 0);
 
+            const mealLabel = this.metadata.getLabelByValue(
+                this.metadata.mealTypes(), meal.mealType
+            );
+
             return {
                 xAxis: closestIndex,
                 label: {
-                    formatter: `🍽 ${this.mealTypeLabels[meal.mealType] ?? meal.mealType}\n${Math.round(meal.totalCalories)} kcal`,
+                    formatter: `🍽 ${mealLabel}\n${Math.round(meal.totalCalories)} kcal`,
                     position: 'insideStartTop',
                     fontSize: 9,
                     color: mealColor
@@ -192,12 +178,14 @@ export class GlucoseChartComponent implements OnChanges {
                 return diff < bestDiff ? idx : bestIdx;
             }, 0);
 
-            const label = this.exerciseTypeLabels[log.exerciseType] ?? log.exerciseType;
+            const exerciseLabel = this.metadata.getLabelByValue(
+                this.metadata.exerciseTypes(), log.exerciseType
+            );
 
             return {
                 xAxis: closestIndex,
                 label: {
-                    formatter: `🏃 ${label}\n${log.durationMinutes} min`,
+                    formatter: `🏃 ${exerciseLabel}\n${log.durationMinutes} min`,
                     position: 'insideEndBottom',
                     fontSize: 9,
                     color: exerciseColor
@@ -205,16 +193,5 @@ export class GlucoseChartComponent implements OnChanges {
                 lineStyle: { color: exerciseColor, type: 'dotted', opacity: 0.6, width: 1.5 }
             };
         });
-    }
-
-    private getReadingTypeLabel(type: string): string {
-        const labels: Record<string, string> = {
-            FASTING: 'Ayuno',
-            PRE_MEAL: 'Preprandial',
-            POST_MEAL: 'Postprandial',
-            BEDTIME: 'Antes de dormir',
-            RANDOM: 'Aleatoria'
-        };
-        return labels[type] ?? type;
     }
 }

@@ -10,10 +10,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
-import {
-    CyclePhase,
-    MenstrualCycleStatusResponse
-} from '../../../../shared/models/menstrual-cycle.model';
+import { SystemConfigService } from '../../../../core/services/system-config.service';
+import { CyclePhase, MenstrualCycleStatusResponse } from '../../../../shared/models/menstrual-cycle.model';
 import { CycleCalendarComponent } from '../cycle-calendar/cycle-calendar.component';
 
 @Component({
@@ -41,6 +39,7 @@ export class MenstrualCycleComponent implements OnInit {
     private readonly cycleService = inject(MenstrualCycleService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly systemConfig = inject(SystemConfigService);
 
     loading = signal(false);
     saving = signal(false);
@@ -54,42 +53,11 @@ export class MenstrualCycleComponent implements OnInit {
         notes: ['']
     });
 
-    readonly phaseColors: Record<CyclePhase, string> = {
-        MENSTRUATION: '#EF5350',
-        FOLLICULAR: '#66BB6A',
-        OVULATION: '#42A5F5',
-        LUTEAL_EARLY: '#FFA726',
-        LUTEAL_LATE: '#FF7043'
-    };
-
-    readonly phaseIcons: Record<CyclePhase, string> = {
-        MENSTRUATION: 'water_drop',
-        FOLLICULAR: 'local_florist',
-        OVULATION: 'egg',
-        LUTEAL_EARLY: 'trending_up',
-        LUTEAL_LATE: 'warning'
-    };
-
     readonly commonSymptoms = [
         'Cólicos', 'Dolor de cabeza', 'Fatiga',
         'Cambios de humor', 'Hinchazón', 'Antojos',
         'Sensibilidad en senos', 'Dificultad para dormir'
     ];
-
-    readonly symptomLabels: Record<string, string> = {
-        CRAMPS: 'Cólicos',
-        HEADACHE: 'Dolor de cabeza',
-        FATIGUE: 'Fatiga',
-        MOOD_CHANGES: 'Cambios de humor',
-        BLOATING: 'Hinchazón',
-        CRAVINGS: 'Antojos',
-        BREAST_TENDERNESS: 'Sensibilidad en senos',
-        SLEEP_DIFFICULTY: 'Dificultad para dormir',
-        BACK_PAIN: 'Dolor de espalda',
-        NAUSEA: 'Náuseas',
-        ACNE: 'Acné',
-        SPOTTING: 'Sangrado leve'
-    };
 
     selectedSymptoms = signal<string[]>([]);
 
@@ -117,7 +85,7 @@ export class MenstrualCycleComponent implements OnInit {
         this.saving.set(true);
 
         this.cycleService.register(patientId, this.form.getRawValue()).subscribe({
-            next: (data) => {
+            next: data => {
                 this.status.set(data);
                 this.noData.set(false);
                 this.selectedSymptoms.set([]);
@@ -133,21 +101,21 @@ export class MenstrualCycleComponent implements OnInit {
     }
 
     getPhaseColor(phase: CyclePhase): string {
-        return this.phaseColors[phase] ?? '#9E9E9E';
+        return this.systemConfig.getCyclePhaseColor(phase);
     }
 
     getPhaseIcon(phase: CyclePhase): string {
-        return this.phaseIcons[phase] ?? 'circle';
+        return this.systemConfig.getPhaseIcon(phase);
     }
 
     getSymptomLabel(symptom: string): string {
-        return this.symptomLabels[symptom.trim()] ?? symptom;
+        return this.systemConfig.getSymptomLabel(symptom);
     }
 
     getSymptomsList(symptoms: string): string {
         return symptoms
             .split(',')
-            .map(s => this.getSymptomLabel(s.trim()))
+            .map(s => this.systemConfig.getSymptomLabel(s.trim()))
             .join(', ');
     }
 
@@ -158,11 +126,11 @@ export class MenstrualCycleComponent implements OnInit {
         this.loading.set(true);
 
         this.cycleService.getStatus(patientId).subscribe({
-            next: (data) => {
+            next: data => {
                 this.status.set(data);
                 this.loading.set(false);
             },
-            error: (err) => {
+            error: err => {
                 if (err.status === 400) this.noData.set(true);
                 this.loading.set(false);
             }

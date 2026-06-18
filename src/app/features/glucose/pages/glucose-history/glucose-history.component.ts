@@ -10,6 +10,8 @@ import { forkJoin } from 'rxjs';
 import { GlucoseService } from '../../services/glucose.service';
 import { ExerciseService } from '../../../vitals/services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { MetadataService } from '@core/services/metadata.service';
+import { SystemConfigService } from '../../../../core/services/system-config.service';
 import {
     GlucoseReadingResponse,
     GlucoseStatus,
@@ -17,7 +19,6 @@ import {
 } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
-import { MetadataService } from '@core/services/metadata.service';
 import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
@@ -45,6 +46,7 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly systemConfig = inject(SystemConfigService);
     readonly metadata = inject(MetadataService);
 
     readings = signal<GlucoseReadingResponse[]>([]);
@@ -75,14 +77,7 @@ export class GlucoseHistoryComponent implements OnInit {
     }
 
     getStatusLabel(status: string): string {
-        const labels: Record<string, string> = {
-            CRITICALLY_LOW: 'Crítico bajo',
-            LOW: 'Bajo',
-            NORMAL: 'Normal',
-            HIGH: 'Alto',
-            CRITICALLY_HIGH: 'Crítico alto'
-        };
-        return labels[status] ?? status;
+        return this.systemConfig.getGlucoseStatusLabel(status);
     }
 
     getStatusClass(status: string): string {
@@ -98,29 +93,6 @@ export class GlucoseHistoryComponent implements OnInit {
 
     getReadingTypeLabel(type: string): string {
         return this.metadata.getLabelByValue(this.metadata.readingTypes(), type);
-    }
-
-    private loadHistory(): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
-
-        const to = new Date().toISOString();
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
-        const fromStr = from.toISOString();
-
-        forkJoin({
-            glucose: this.glucoseService.getHistory(patientId, fromStr, to),
-            exercise: this.exerciseService.getHistory(patientId, fromStr, to)
-        }).subscribe({
-            next: ({ glucose, exercise }) => {
-                this.readings.set(glucose.readings);
-                this.mealMarkers.set(glucose.mealMarkers);
-                this.exerciseLogs.set(exercise);
-                this.loading.set(false);
-            },
-            error: () => this.loading.set(false)
-        });
     }
 
     onExportCsv(): void {
@@ -148,6 +120,29 @@ export class GlucoseHistoryComponent implements OnInit {
         this.glucoseService.exportJson(patientId, from.toISOString(), to).subscribe({
             next: blob => this.downloadFile(blob, 'glucosa.json', 'application/json'),
             error: () => { }
+        });
+    }
+
+    private loadHistory(): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
+        const to = new Date().toISOString();
+        const from = new Date();
+        from.setDate(from.getDate() - 30);
+        const fromStr = from.toISOString();
+
+        forkJoin({
+            glucose: this.glucoseService.getHistory(patientId, fromStr, to),
+            exercise: this.exerciseService.getHistory(patientId, fromStr, to)
+        }).subscribe({
+            next: ({ glucose, exercise }) => {
+                this.readings.set(glucose.readings);
+                this.mealMarkers.set(glucose.mealMarkers);
+                this.exerciseLogs.set(exercise);
+                this.loading.set(false);
+            },
+            error: () => this.loading.set(false)
         });
     }
 

@@ -1,8 +1,9 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { DatePipe, KeyValuePipe, TitleCasePipe } from '@angular/common';
 import { MenstrualCycleStatusResponse, CyclePhase } from '../../../../shared/models/menstrual-cycle.model';
+import { SystemConfigService } from '../../../../core/services/system-config.service';
 
 @Component({
     selector: 'app-cycle-calendar',
@@ -15,17 +16,15 @@ export class CycleCalendarComponent implements OnChanges {
 
     @Input() status!: MenstrualCycleStatusResponse;
 
+    private readonly systemConfig = inject(SystemConfigService);
+
     wheelOptions: EChartsOption = {};
     calendarDays: CalendarDay[] = [];
     currentMonth = new Date();
 
-    readonly phaseConfig: Record<CyclePhase, PhaseConfig> = {
-        MENSTRUATION: { label: 'Menstruación', color: '#EF5350', lightColor: '#FFEBEE', darkColor: 'rgba(239,83,80,0.18)', days: '1-5', icon: '🩸' },
-        FOLLICULAR: { label: 'Fase folicular', color: '#66BB6A', lightColor: '#E8F5E9', darkColor: 'rgba(102,187,106,0.18)', days: '6-13', icon: '🌱' },
-        OVULATION: { label: 'Ovulación', color: '#42A5F5', lightColor: '#E3F2FD', darkColor: 'rgba(66,165,245,0.18)', days: '14', icon: '✨' },
-        LUTEAL_EARLY: { label: 'Lútea temprana', color: '#FFA726', lightColor: '#FFF3E0', darkColor: 'rgba(255,167,38,0.18)', days: '15-21', icon: '🌙' },
-        LUTEAL_LATE: { label: 'Lútea tardía', color: '#FF7043', lightColor: '#FBE9E7', darkColor: 'rgba(255,112,67,0.18)', days: '22-28', icon: '⚡' }
-    };
+    get phaseConfig() {
+        return this.systemConfig.phaseConfig;
+    }
 
     ngOnChanges(): void {
         if (this.status) {
@@ -41,13 +40,14 @@ export class CycleCalendarComponent implements OnChanges {
         const currentPhase = this.status.currentPhase;
         const labelColor = dark ? '#9B97C0' : '#546E7A';
         const borderColor = dark ? '#2A2845' : '#FFFFFF';
+        const cfg = this.systemConfig.phaseConfig;
 
         const phases = [
-            { name: 'Menstruación', value: 5, color: '#EF5350', phase: 'MENSTRUATION' },
-            { name: 'Folicular', value: 8, color: '#66BB6A', phase: 'FOLLICULAR' },
-            { name: 'Ovulación', value: 1, color: '#42A5F5', phase: 'OVULATION' },
-            { name: 'Lútea temprana', value: 7, color: '#FFA726', phase: 'LUTEAL_EARLY' },
-            { name: 'Lútea tardía', value: cycleLength - 21, color: '#FF7043', phase: 'LUTEAL_LATE' }
+            { name: cfg['MENSTRUATION'].label, value: 5, color: cfg['MENSTRUATION'].color, phase: 'MENSTRUATION' },
+            { name: cfg['FOLLICULAR'].label, value: 8, color: cfg['FOLLICULAR'].color, phase: 'FOLLICULAR' },
+            { name: cfg['OVULATION'].label, value: 1, color: cfg['OVULATION'].color, phase: 'OVULATION' },
+            { name: cfg['LUTEAL_EARLY'].label, value: 7, color: cfg['LUTEAL_EARLY'].color, phase: 'LUTEAL_EARLY' },
+            { name: cfg['LUTEAL_LATE'].label, value: cycleLength - 21, color: cfg['LUTEAL_LATE'].color, phase: 'LUTEAL_LATE' }
         ];
 
         this.wheelOptions = {
@@ -59,10 +59,10 @@ export class CycleCalendarComponent implements OnChanges {
                 textStyle: { color: dark ? '#EAE8F8' : '#1A1730' },
                 formatter: (p: any) => {
                     const phase = phases[p.dataIndex];
-                    const cfg = this.phaseConfig[phase.phase as CyclePhase];
+                    const pCfg = cfg[phase.phase];
                     return `<div style="font-size:13px">
-                        <strong>${cfg.icon} ${phase.name}</strong><br/>
-                        Días ${cfg.days}<br/>
+                        <strong>${pCfg.icon} ${phase.name}</strong><br/>
+                        Días ${pCfg.days}<br/>
                         ${p.percent.toFixed(0)}% del ciclo
                     </div>`;
                 }
@@ -73,7 +73,7 @@ export class CycleCalendarComponent implements OnChanges {
                 top: 'middle',
                 style: {
                     text: `Día\n${dayOfCycle}`,
-                    fill: this.phaseConfig[currentPhase].color,
+                    fill: cfg[currentPhase].color,
                     fontSize: 20,
                     fontWeight: 'bold',
                     lineHeight: 24,
@@ -87,11 +87,9 @@ export class CycleCalendarComponent implements OnChanges {
                 avoidLabelOverlap: false,
                 itemStyle: { borderRadius: 4, borderColor: 'transparent', borderWidth: 2 },
                 label: {
-                    show: true,
-                    position: 'outside',
+                    show: true, position: 'outside',
                     formatter: (p: any) => phases[p.dataIndex].name,
-                    fontSize: 11,
-                    color: labelColor
+                    fontSize: 11, color: labelColor
                 },
                 emphasis: {
                     itemStyle: { shadowBlur: 10, shadowOffsetX: 0, shadowColor: 'rgba(0,0,0,0.3)' }
@@ -150,14 +148,13 @@ export class CycleCalendarComponent implements OnChanges {
 
     getDayColor(day: CalendarDay): string {
         if (!day.phase) return 'transparent';
-        return day.dark
-            ? this.phaseConfig[day.phase].darkColor
-            : this.phaseConfig[day.phase].lightColor;
+        const cfg = this.systemConfig.phaseConfig[day.phase];
+        return day.dark ? cfg.darkColor : cfg.lightColor;
     }
 
     getDayBorderColor(day: CalendarDay): string {
         if (!day.phase) return 'transparent';
-        const base = this.phaseConfig[day.phase].color;
+        const base = this.systemConfig.phaseConfig[day.phase].color;
         return day.dark ? base + '60' : base + '40';
     }
 }
@@ -168,13 +165,4 @@ interface CalendarDay {
     isToday: boolean;
     isPredicted: boolean;
     dark: boolean;
-}
-
-interface PhaseConfig {
-    label: string;
-    color: string;
-    lightColor: string;
-    darkColor: string;
-    days: string;
-    icon: string;
 }

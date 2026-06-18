@@ -12,6 +12,7 @@ import { GlucoseService } from '../../../glucose/services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { GlucoseStateService } from '../../../../core/services/glucose-state.service';
+import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { GlucoseActions } from '../../../../store/glucose/glucose.actions';
 import { selectStats } from '../../../../store/glucose/glucose.selectors';
 import { GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
@@ -45,6 +46,7 @@ export class DashboardComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly glucoseStateService = inject(GlucoseStateService);
+    private readonly systemConfig = inject(SystemConfigService);
     private readonly store = inject(Store);
 
     readonly today = new Date();
@@ -73,12 +75,7 @@ export class DashboardComponent implements OnInit {
         const to = now.toISOString();
         const todayStr = now.toISOString().split('T')[0];
 
-        // NgRx — despacha la acción y suscribe al store
-        this.store.dispatch(GlucoseActions.loadStats({
-            patientId: this.patientId,
-            from,
-            to
-        }));
+        this.store.dispatch(GlucoseActions.loadStats({ patientId: this.patientId, from, to }));
 
         this.store.select(selectStats).subscribe({
             next: stats => this.glucoseStats.set(stats)
@@ -135,13 +132,6 @@ export class DashboardComponent implements OnInit {
     }
 
     getCyclePhaseColor(phase: string): string {
-        const colors: Record<string, string> = {
-            MENSTRUATION: '#EF5350',
-            FOLLICULAR: '#66BB6A',
-            OVULATION: '#42A5F5',
-            LUTEAL_EARLY: '#FFA726',
-            LUTEAL_LATE: '#FF7043'
-        };
-        return colors[phase] ?? '#9E9E9E';
+        return this.systemConfig.getCyclePhaseColor(phase);
     }
 }

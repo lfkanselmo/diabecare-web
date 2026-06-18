@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { MetadataService } from '../../services/metadata.service';
+import { SystemConfigService } from '../../services/system-config.service';
 
 @Component({
     selector: 'app-shell',
@@ -14,11 +15,13 @@ import { MetadataService } from '../../services/metadata.service';
 export class ShellComponent implements OnInit {
 
     private readonly metadataService = inject(MetadataService);
+    private readonly systemConfigService = inject(SystemConfigService);
 
     sidebarOpen = true;
 
     ngOnInit(): void {
         this.metadataService.loadAll();
+        this.systemConfigService.load();
     }
 
     toggleSidebar(): void {

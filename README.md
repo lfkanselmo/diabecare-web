@@ -19,11 +19,8 @@ npm install -g @angular/cli@21
 ## Instalación
 
 ```bash
-# Clonar el repositorio
 git clone <url-del-repositorio>
 cd diabecare-web
-
-# Instalar dependencias
 npm install --legacy-peer-deps
 ```
 
@@ -32,10 +29,7 @@ npm install --legacy-peer-deps
 ## Ejecución
 
 ```bash
-# Desarrollo
 ng serve
-
-# La aplicación estará disponible en:
 # http://localhost:4200
 ```
 
@@ -46,10 +40,8 @@ ng serve
 ## Build
 
 ```bash
-# Build de producción (incluye Service Worker PWA)
 ng build --configuration production
-
-# Los archivos generados quedan en dist/diabecare-web/browser/
+# dist/diabecare-web/browser/
 ```
 
 ### Servir build de producción localmente
@@ -62,8 +54,6 @@ npx http-server dist/diabecare-web/browser -p 8080
 ---
 
 ## Variables de entorno
-
-La URL del backend se configura en los archivos de entorno:
 
 **`src/environments/environment.ts`** (desarrollo)
 
@@ -91,26 +81,31 @@ export const environment = {
 src/
 ├── app/
 │   ├── core/
-│   │   ├── auth/               ← AuthService, AuthGuard, validación JWT
+│   │   ├── auth/               ← AuthService (getUserId, getPatientId, logout),
+│   │   │                          AuthGuard, validación JWT
 │   │   ├── interceptors/       ← JWT interceptor, Error interceptor
 │   │   ├── layout/             ← Shell, Navbar, Sidebar
-│   │   ├── guards/             ← authGuard
-│   │   └── services/           ← AlertService, ThemeService, MetadataService,
-│   │                              GlucoseStateService, PushNotificationService
+│   │   └── services/           ← AlertService (con detección de alertas nuevas),
+│   │                              ThemeService, MetadataService,
+│   │                              GlucoseStateService, PushNotificationService,
+│   │                              SystemConfigService, AccountService
 │   ├── shared/
 │   │   ├── components/         ← AlertsPanel
 │   │   └── models/             ← Interfaces TypeScript por dominio
 │   ├── store/
 │   │   └── glucose/            ← NgRx: actions, reducer, effects, selectors
 │   └── features/
-│       ├── auth/               ← Login, Register
+│       ├── auth/               ← Login (maneja ACCOUNT_SUSPENDED/INVALID_CREDENTIALS),
+│       │                          Register
 │       ├── dashboard/          ← Métricas, alertas, accesos rápidos
-│       ├── glucose/            ← Registro, historial, calculadora de insulina
-│       ├── nutrition/          ← Registro de comidas
-│       ├── vitals/             ← Signos vitales, ejercicio
+│       ├── glucose/            ← Registro (botón "Ahora"), historial (selector
+│       │                          de rango + gráfica rediseñada), calculadora
+│       ├── nutrition/          ← Registro de comidas (botón "Ahora")
+│       ├── vitals/             ← Signos vitales, ejercicio (botón "Ahora")
 │       ├── medications/        ← Medicamentos
 │       ├── reports/            ← Generación de reportes PDF
-│       └── profile/            ← Perfil del paciente, ciclo menstrual
+│       └── profile/            ← Perfil del paciente, ciclo menstrual,
+│                                  tab "Cuenta" (suspender/eliminar)
 ├── public/
 │   ├── manifest.webmanifest    ← PWA manifest
 │   └── icons/                  ← Íconos PWA (72px a 512px)
@@ -126,79 +121,65 @@ src/
 
 ### Dashboard
 
-- Chip de glucosa en tiempo real en el navbar (actualizado desde el historial)
+- Chip de glucosa en tiempo real en el navbar
 - Métricas glucémicas de los últimos 7 días via NgRx Store
-- Indicador visual de HbA1c estimada con barra de progreso y colores semánticos
-- Panel de alertas clínicas: 7 tipos incluyendo alertas de patrón y ciclo menstrual
-- Card de ciclo menstrual (solo pacientes femeninas) con fase actual y próximo período
+- Indicador visual de HbA1c estimada con barra de progreso
+- Panel de alertas clínicas: 7 tipos + alertas de patrón + ciclo menstrual
+- Card de ciclo menstrual (solo pacientes femeninas)
 - Accesos rápidos: Glucosa, Comida, Signos vitales, Medicamentos, Ejercicio, Calculadora, Ciclo menstrual
 
 ### Glucosa
 
-- Registro de lecturas con tipo y unidad
-- Historial con gráfica ECharts y correlación de comidas y ejercicio (marcadores diferenciados)
-- Leyenda explicativa de colores y marcadores en la gráfica
-- Estadísticas: TIR, HbA1c estimada, coeficiente de variación
-- Exportación de datos en CSV y JSON (últimos 30 días)
-- Estado gestionado con NgRx (caché TTL 5 minutos, invalidación manual)
+- Registro de lecturas con botón "Ahora" para fecha/hora actual (offset de timezone corregido)
+- **Historial con selector de rango de fechas**: menú desplegable con atajos (7/30/90/180 días) + rango personalizado con date pickers — aplica a gráfica, tabla y exportación
+- **Gráfica rediseñada**: sin texto incrustado (evita solapamiento); tooltip enriquecido al hover muestra glucosa + eventos cercanos (comida/ejercicio dentro de ±2h); lista "Eventos registrados" debajo, cronológica, sin filtrar
+- Exportación de datos en CSV y JSON respetando el rango seleccionado
+- Estado gestionado con NgRx (caché TTL 5 minutos)
+- **Notificación inmediata**: tras registrar, si se generó una alerta nueva, aparece un snackbar antes de navegar al historial
 
 ### Calculadora de insulina
 
-- Página independiente accesible desde el dashboard y el menú de glucosa
-- Cálculo de dosis de corrección y dosis para comida
-- Campos: glucosa actual, objetivo, factor de sensibilidad, carbohidratos, ratio insulina:carbs
-- Advertencia médica prominente en el resultado
+- Página independiente con dosis de corrección y dosis para comida
 
 ### Nutrición
 
+- Registro de comidas con botón "Ahora"
 - Buscador de alimentos con debounce 300ms
-- Cálculo automático de macronutrientes por gramaje
-- Historial de comidas con totales diarios
+- Notificación inmediata de alertas nuevas tras registrar
 
 ### Signos vitales y ejercicio
 
-- Registro de peso, presión arterial, frecuencia cardíaca y HbA1c medida
-- Gráfica de tendencia HbA1c estimada (3, 6 o 12 meses) con colores adaptativos al tema
-- Registro de actividad física como página independiente
+- Registro con botón "Ahora" (ejercicio; signos vitales ya lo tenía)
+- Gráfica de tendencia HbA1c con `connectNulls` para legibilidad con datos esparcidos
+- Notificación inmediata de alertas nuevas tras registrar ejercicio
 
 ### Medicamentos
 
-- CRUD completo de medicamentos
-- Configuración de perfil de insulina (ISF, ratio, objetivo)
+- CRUD completo, auditado en backend
 
 ### Reportes
 
-- Selector de rango de fechas con atajos (7, 30, 90, 180 días)
-- Descarga de reporte PDF enriquecido para el médico
+- Selector de rango de fechas con atajos, descarga de reporte PDF
 
 ### Perfil
 
-- Edición de datos médicos del paciente
-- Ciclo menstrual como página independiente (solo pacientes femeninas):
-  - Rueda circular con 5 fases y colores adaptativos al tema
-  - Calendario mensual con colores por fase
-  - Predicción del próximo ciclo
-  - Síntomas mostrados en español
-  - Historial de ciclos recientes
+- Edición de datos médicos
+- **Tab "Cuenta" (nuevo)**: suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
+- Ciclo menstrual como página independiente (solo pacientes femeninas)
+- Fix: `(selectedTabChange)` dispara `window.dispatchEvent(new Event('resize'))` para que ECharts se redimensione correctamente al cambiar de tab
 
 ### PWA
 
-- Instalable en dispositivos móviles y desktop
-- Service Worker con caché: metadatos (7 días), alimentos (24h), API general (1h)
-- Handler de notificaciones push (`sw-push-handler.js`)
+- Instalable, Service Worker con caché estratificado
 
 ### Notificaciones push
 
-- Activación via botón campana en el navbar
-- Suscripción Web Push API nativa (sin Firebase)
-- Notificaciones de resumen semanal automático (lunes 8am)
-- Estado de activación persistido en el backend
+- Activación vía campana en navbar, Web Push API nativa
+- **Notificaciones inmediatas (nuevo, sin WebSockets)**: `AlertService.getNewAlerts()` compara firma `título|mensaje` de las alertas actuales contra las últimas conocidas en la sesión, evitando falsos negativos cuando una alerta del mismo tipo persiste con datos actualizados (ej. "Patrón: hipoglucemias frecuentes" con conteo distinto)
 
 ### Modo oscuro
 
-- Toggle en navbar, persistido en `localStorage`
-- Gráficas ECharts con paleta adaptativa (lectura única en `ngOnChanges`)
-- Calendario del ciclo menstrual con opacidad reducida en modo oscuro
+- Toggle en navbar, gráficas adaptativas
 
 ---
 
@@ -237,16 +218,9 @@ src/
 ## Comandos útiles
 
 ```bash
-# Generar componente
 ng generate component features/modulo/components/nombre
-
-# Generar servicio
 ng generate service features/modulo/services/nombre
-
-# Build de producción
 ng build --configuration production
-
-# Ver tamaño de bundles
 ng build --stats-json
 npx webpack-bundle-analyzer dist/stats.json
 ```
@@ -255,8 +229,11 @@ npx webpack-bundle-analyzer dist/stats.json
 
 ## Notas importantes
 
-- El Service Worker solo se activa en build de producción (`ng build`), no en `ng serve`
-- Las notificaciones push requieren HTTPS en producción (localhost es excepción del navegador)
-- La card y el acceso rápido de ciclo menstrual solo aparecen para pacientes con `biologicalSex = FEMALE`
+- El Service Worker solo se activa en build de producción
+- Las notificaciones push requieren HTTPS en producción (localhost es excepción)
+- La card y el acceso rápido de ciclo menstrual solo aparecen para `biologicalSex = FEMALE`
 - Los getters en componentes ECharts causan loop infinito — usar variables locales en `ngOnChanges`
 - `ViewEncapsulation.None` aplicado solo donde es necesario: login, register, profile, alerts-panel
+- `nowAsLocalIso()` (helper repetido en formularios de registro) corrige el offset de timezone — **nunca** usar `new Date().toISOString().slice(0,16)` directamente para inputs `datetime-local`, produce la hora en UTC en vez de local
+- Las llamadas a `AlertService.getNewAlerts()` comparan por firma `título|mensaje`, no solo título — necesario porque alertas de patrón mantienen el mismo título con datos distintos en el mensaje
+- La gráfica de glucosa usa una ventana de tolerancia de 2 horas (`MAX_GAP_MS`) para vincular eventos de comida/ejercicio a una lectura — evita asociar eventos lejanos en el tiempo cuando hay pocos puntos de glucosa

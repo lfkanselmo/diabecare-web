@@ -45,6 +45,9 @@
       <mat-form-field appearance="outline">
         <mat-label>Fecha y hora</mat-label>
         <input matInput formControlName="measuredAt" type="datetime-local" />
+        <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual">
+          <mat-icon>schedule</mat-icon>
+        </button>
         @if (form.get('measuredAt')?.hasError('required')) {
         <mat-error>La fecha y hora son obligatorias</mat-error>
         }

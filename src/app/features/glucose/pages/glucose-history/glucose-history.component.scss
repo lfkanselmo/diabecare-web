@@ -97,4 +97,40 @@
       color: #C0392B;
     }
   }
+
+  &__custom-range {
+    padding: var(--space-3) var(--space-4);
+    cursor: default;
+  }
+
+  &__custom-range-label {
+    display: block;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: var(--space-2);
+  }
+
+  &__custom-range-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    width: 100%;
+
+    mat-form-field {
+      width: 100%;
+    }
+  }
+}
+
+// mat-menu se renderiza en un overlay fuera del árbol del componente,
+// por eso necesita ::ng-deep para que los estilos lo alcancen
+::ng-deep .glucose-history__range-menu .mat-mdc-menu-panel {
+  max-width: 320px !important;
+  width: 320px;
+}
+
+::ng-deep .glucose-history__range-menu .mat-mdc-menu-content {
+  padding: 0;
 }

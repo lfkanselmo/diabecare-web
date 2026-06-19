@@ -9,7 +9,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
-import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { MatDialogModule } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
@@ -71,6 +71,10 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadProfile();
+    }
+
+    onTabChange(): void {
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
     }
 
     onSave(): void {

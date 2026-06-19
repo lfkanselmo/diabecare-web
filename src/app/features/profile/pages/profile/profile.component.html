@@ -5,7 +5,7 @@
     <p class="profile__loading">Cargando...</p>
     } @else if (patient()) {
 
-    <mat-tab-group>
+    <mat-tab-group (selectedTabChange)="onTabChange()">
         <mat-tab label="Cuenta">
             <div class="profile__tab-content">
                 <div class="profile__card profile__card--account">

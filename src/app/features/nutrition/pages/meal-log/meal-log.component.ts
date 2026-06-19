@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
@@ -29,6 +30,7 @@ import { MetadataService } from '@core/services/metadata.service';
         MatSelectModule,
         MatSnackBarModule,
         MatDividerModule,
+        MatTooltipModule,
         FoodSearchComponent
     ],
     templateUrl: './meal-log.component.html',
@@ -49,7 +51,7 @@ export class MealLogComponent {
 
     mealForm: FormGroup = this.fb.group({
         mealType: ['', Validators.required],
-        consumedAt: [new Date().toISOString().slice(0, 16), Validators.required],
+        consumedAt: [this.nowAsLocalIso(), Validators.required],
         notes: ['']
     });
 
@@ -85,6 +87,10 @@ export class MealLogComponent {
             proteins: Math.round(food.proteinsPer100g * factor * 10) / 10,
             fats: Math.round(food.fatsPer100g * factor * 10) / 10
         };
+    }
+
+    setNow(): void {
+        this.mealForm.patchValue({ consumedAt: this.nowAsLocalIso() });
     }
 
     onFoodSelected(food: FoodResponse): void {
@@ -158,5 +164,11 @@ export class MealLogComponent {
 
     onCancel(): void {
         this.router.navigate(['/app/dashboard']);
+    }
+
+    private nowAsLocalIso(): string {
+        const now = new Date();
+        const offsetMs = now.getTimezoneOffset() * 60000;
+        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
     }
 }

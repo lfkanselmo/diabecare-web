@@ -1,6 +1,6 @@
 @if (alerts.length > 0) {
 <div class="alerts-panel">
-    @for (alert of alerts; track alert.type) {
+    @for (alert of alerts; track $index) {
     <div class="alerts-panel__item" [style.background-color]="getAlertBg(alert.severity)"
         [style.border-left-color]="getAlertColor(alert.severity)">
         <mat-icon class="alerts-panel__icon" [style.color]="getAlertColor(alert.severity)">

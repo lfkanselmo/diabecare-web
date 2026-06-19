@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { GlucoseUnit, ReadingType } from '../../../../shared/models/glucose.model';
@@ -22,7 +23,8 @@ import { MetadataService } from '@core/services/metadata.service';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule
+        MatSnackBarModule,
+        MatTooltipModule
     ],
     templateUrl: './glucose-register.component.html',
     styleUrl: './glucose-register.component.scss'
@@ -42,10 +44,14 @@ export class GlucoseRegisterComponent {
         value: [null, [Validators.required, Validators.min(20), Validators.max(600)]],
         unit: ['MG_DL', Validators.required],
         readingType: ['', Validators.required],
-        measuredAt: [new Date().toISOString().slice(0, 16), Validators.required],
+        measuredAt: [this.nowAsLocalIso(), Validators.required],
         notes: [''],
         deviceSource: ['']
     });
+
+    setNow(): void {
+        this.form.patchValue({ measuredAt: this.nowAsLocalIso() });
+    }
 
     onSubmit(): void {
         if (this.form.invalid) return;
@@ -76,5 +82,11 @@ export class GlucoseRegisterComponent {
 
     onCancel(): void {
         this.router.navigate(['/app/dashboard']);
+    }
+
+    private nowAsLocalIso(): string {
+        const now = new Date();
+        const offsetMs = now.getTimezoneOffset() * 60000;
+        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
     }
 }

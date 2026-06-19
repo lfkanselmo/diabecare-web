@@ -91,6 +91,7 @@ export class Hba1cChartComponent implements OnChanges {
                     yAxisIndex: 0,
                     data: hba1c,
                     smooth: true,
+                    connectNulls: true,
                     symbol: 'circle',
                     symbolSize: 8,
                     lineStyle: { color: primaryColor, width: 2.5 },

@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
@@ -26,7 +27,8 @@ import { MetadataService } from '../../../../core/services/metadata.service';
         MatIconModule,
         MatSelectModule,
         MatSnackBarModule,
-        MatDividerModule
+        MatDividerModule,
+        MatTooltipModule
     ],
     templateUrl: './exercise-log.component.html',
     styleUrl: './exercise-log.component.scss'
@@ -47,11 +49,15 @@ export class ExerciseLogComponent implements OnInit {
         intensity: ['MODERATE', Validators.required],
         durationMinutes: [null, [Validators.required, Validators.min(1)]],
         notes: [''],
-        performedAt: [new Date().toISOString().slice(0, 16)]
+        performedAt: [this.nowAsLocalIso()]
     });
 
     ngOnInit(): void {
         this.loadHistory();
+    }
+
+    setNow(): void {
+        this.form.patchValue({ performedAt: this.nowAsLocalIso() });
     }
 
     onSubmit(): void {
@@ -70,9 +76,9 @@ export class ExerciseLogComponent implements OnInit {
             : undefined;
 
         this.exerciseService.register(patientId, { ...value, performedAt }).subscribe({
-            next: (log) => {
+            next: log => {
                 this.history.update(list => [log, ...list]);
-                this.form.patchValue({ durationMinutes: null, notes: '' });
+                this.form.patchValue({ durationMinutes: null, notes: '', performedAt: this.nowAsLocalIso() });
                 this.snackBar.open('Ejercicio registrado', 'Cerrar', { duration: 3000 });
                 this.loading.set(false);
             },
@@ -100,8 +106,14 @@ export class ExerciseLogComponent implements OnInit {
         from.setDate(from.getDate() - 30);
 
         this.exerciseService.getHistory(patientId, from.toISOString(), to).subscribe({
-            next: (data) => this.history.set(data),
+            next: data => this.history.set(data),
             error: () => { }
         });
+    }
+
+    private nowAsLocalIso(): string {
+        const now = new Date();
+        const offsetMs = now.getTimezoneOffset() * 60000;
+        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
     }
 }

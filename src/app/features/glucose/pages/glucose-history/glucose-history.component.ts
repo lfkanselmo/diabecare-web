@@ -1,11 +1,17 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { forkJoin } from 'rxjs';
 import { GlucoseService } from '../../services/glucose.service';
 import { ExerciseService } from '../../../vitals/services/exercise.service';
@@ -19,7 +25,7 @@ import {
 } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
-import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
     selector: 'app-glucose-history',
@@ -29,12 +35,18 @@ import { MatMenuModule } from '@angular/material/menu';
         DatePipe,
         DecimalPipe,
         NgClass,
+        ReactiveFormsModule,
         MatButtonModule,
         MatIconModule,
         MatTableModule,
         MatButtonToggleModule,
         MatSnackBarModule,
         MatMenuModule,
+        MatDatepickerModule,
+        MatNativeDateModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatDividerModule,
         GlucoseChartComponent
     ],
     templateUrl: './glucose-history.component.html',
@@ -42,6 +54,7 @@ import { MatMenuModule } from '@angular/material/menu';
 })
 export class GlucoseHistoryComponent implements OnInit {
 
+    private readonly fb = inject(FormBuilder);
     private readonly glucoseService = inject(GlucoseService);
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
@@ -57,7 +70,35 @@ export class GlucoseHistoryComponent implements OnInit {
 
     readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
 
+    readonly quickRanges = [
+        { label: 'Últimos 7 días', days: 7 },
+        { label: 'Últimos 30 días', days: 30 },
+        { label: 'Últimos 90 días', days: 90 },
+        { label: 'Últimos 6 meses', days: 180 }
+    ];
+
+    rangeForm: FormGroup = this.fb.group({
+        from: [this.daysAgo(30), Validators.required],
+        to: [new Date(), Validators.required]
+    });
+
+    selectedRangeLabel = signal('Últimos 30 días');
+
     ngOnInit(): void {
+        this.loadHistory();
+    }
+
+    applyQuickRange(label: string, days: number): void {
+        const to = new Date();
+        const from = this.daysAgo(days);
+        this.rangeForm.patchValue({ from, to });
+        this.selectedRangeLabel.set(label);
+        this.loadHistory();
+    }
+
+    applyCustomRange(): void {
+        if (this.rangeForm.invalid) return;
+        this.selectedRangeLabel.set(this.formatCustomLabel());
         this.loadHistory();
     }
 
@@ -99,11 +140,9 @@ export class GlucoseHistoryComponent implements OnInit {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
 
-        const to = new Date().toISOString();
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
+        const { from, to } = this.getRangeIso();
 
-        this.glucoseService.exportCsv(patientId, from.toISOString(), to).subscribe({
+        this.glucoseService.exportCsv(patientId, from, to).subscribe({
             next: blob => this.downloadFile(blob, 'glucosa.csv', 'text/csv'),
             error: () => { }
         });
@@ -113,11 +152,9 @@ export class GlucoseHistoryComponent implements OnInit {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
 
-        const to = new Date().toISOString();
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
+        const { from, to } = this.getRangeIso();
 
-        this.glucoseService.exportJson(patientId, from.toISOString(), to).subscribe({
+        this.glucoseService.exportJson(patientId, from, to).subscribe({
             next: blob => this.downloadFile(blob, 'glucosa.json', 'application/json'),
             error: () => { }
         });
@@ -127,14 +164,12 @@ export class GlucoseHistoryComponent implements OnInit {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
 
-        const to = new Date().toISOString();
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
-        const fromStr = from.toISOString();
+        const { from, to } = this.getRangeIso();
+        this.loading.set(true);
 
         forkJoin({
-            glucose: this.glucoseService.getHistory(patientId, fromStr, to),
-            exercise: this.exerciseService.getHistory(patientId, fromStr, to)
+            glucose: this.glucoseService.getHistory(patientId, from, to),
+            exercise: this.exerciseService.getHistory(patientId, from, to)
         }).subscribe({
             next: ({ glucose, exercise }) => {
                 this.readings.set(glucose.readings);
@@ -144,6 +179,27 @@ export class GlucoseHistoryComponent implements OnInit {
             },
             error: () => this.loading.set(false)
         });
+    }
+
+    private getRangeIso(): { from: string; to: string } {
+        const fromDate: Date = this.rangeForm.get('from')?.value;
+        const toDate: Date = this.rangeForm.get('to')?.value;
+        return {
+            from: fromDate.toISOString(),
+            to: toDate.toISOString()
+        };
+    }
+
+    private daysAgo(days: number): Date {
+        const date = new Date();
+        date.setDate(date.getDate() - days);
+        return date;
+    }
+
+    private formatCustomLabel(): string {
+        const from: Date = this.rangeForm.get('from')?.value;
+        const to: Date = this.rangeForm.get('to')?.value;
+        return `${from.toLocaleDateString('es-CO')} — ${to.toLocaleDateString('es-CO')}`;
     }
 
     private downloadFile(blob: Blob, filename: string, type: string): void {

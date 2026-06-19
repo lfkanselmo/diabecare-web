@@ -2,9 +2,44 @@
   <div class="glucose-history__header">
     <div>
       <h1 class="glucose-history__title">Historial de glucosa</h1>
-      <p class="glucose-history__subtitle">Últimos 30 días</p>
+      <p class="glucose-history__subtitle">{{ selectedRangeLabel() }}</p>
     </div>
     <div class="glucose-history__header-actions">
+      <button mat-stroked-button [matMenuTriggerFor]="rangeMenu">
+        <mat-icon>date_range</mat-icon>
+        {{ selectedRangeLabel() }}
+      </button>
+
+      <mat-menu #rangeMenu="matMenu" class="glucose-history__range-menu">
+        @for (range of quickRanges; track range.days) {
+        <button mat-menu-item (click)="applyQuickRange(range.label, range.days)">
+          {{ range.label }}
+        </button>
+        }
+        <mat-divider />
+        <div class="glucose-history__custom-range" (click)="$event.stopPropagation()">
+          <span class="glucose-history__custom-range-label">Rango personalizado</span>
+          <form [formGroup]="rangeForm" class="glucose-history__custom-range-form">
+            <mat-form-field appearance="outline">
+              <mat-label>Desde</mat-label>
+              <input matInput [matDatepicker]="fromPicker" formControlName="from">
+              <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
+              <mat-datepicker #fromPicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Hasta</mat-label>
+              <input matInput [matDatepicker]="toPicker" formControlName="to">
+              <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
+              <mat-datepicker #toPicker></mat-datepicker>
+            </mat-form-field>
+            <button mat-raised-button color="primary" type="button" [disabled]="rangeForm.invalid"
+              (click)="applyCustomRange()">
+              Aplicar
+            </button>
+          </form>
+        </div>
+      </mat-menu>
+
       <mat-button-toggle-group [value]="view()" (change)="view.set($event.value)">
         <mat-button-toggle value="chart">
           <mat-icon>show_chart</mat-icon>
@@ -46,7 +81,7 @@
   } @else if (readings().length === 0) {
   <div class="glucose-history__empty">
     <mat-icon>water_drop</mat-icon>
-    <p>No hay lecturas registradas en los últimos 30 días</p>
+    <p>No hay lecturas registradas en este rango de fechas</p>
     <a mat-raised-button color="primary" routerLink="/app/glucose/register">
       Registrar primera lectura
     </a>

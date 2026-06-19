@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AlertService } from '../../../../core/services/alert.service';
 import { GlucoseUnit, ReadingType } from '../../../../shared/models/glucose.model';
 import { MetadataService } from '@core/services/metadata.service';
 
@@ -34,6 +35,7 @@ export class GlucoseRegisterComponent {
     private readonly fb = inject(FormBuilder);
     private readonly glucoseService = inject(GlucoseService);
     private readonly authService = inject(AuthService);
+    private readonly alertService = inject(AlertService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
     readonly metadata = inject(MetadataService);
@@ -71,7 +73,7 @@ export class GlucoseRegisterComponent {
         this.glucoseService.register(patientId, request).subscribe({
             next: () => {
                 this.snackBar.open('Lectura registrada correctamente', 'Cerrar', { duration: 3000 });
-                this.router.navigate(['/app/glucose/history']);
+                this.checkAlertsThenNavigate(patientId);
             },
             error: () => {
                 this.snackBar.open('Error al registrar la lectura', 'Cerrar', { duration: 3000 });
@@ -82,6 +84,26 @@ export class GlucoseRegisterComponent {
 
     onCancel(): void {
         this.router.navigate(['/app/dashboard']);
+    }
+
+    private checkAlertsThenNavigate(patientId: string): void {
+        this.alertService.getNewAlerts(patientId).subscribe({
+            next: newAlerts => {
+                this.router.navigate(['/app/glucose/history']);
+
+                if (newAlerts.length > 0) {
+                    const first = newAlerts[0];
+                    setTimeout(() => {
+                        this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 })
+                            .onAction()
+                            .subscribe(() => this.router.navigate(['/app/dashboard']));
+                    }, 400);
+                }
+            },
+            error: () => {
+                this.router.navigate(['/app/glucose/history']);
+            }
+        });
     }
 
     private nowAsLocalIso(): string {

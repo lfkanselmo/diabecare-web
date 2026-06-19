@@ -12,6 +12,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AlertService } from '../../../../core/services/alert.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
 import { FoodResponse } from '../../../../shared/models/food.model';
 import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
@@ -41,6 +42,7 @@ export class MealLogComponent {
     private readonly fb = inject(FormBuilder);
     private readonly nutritionService = inject(NutritionService);
     private readonly authService = inject(AuthService);
+    private readonly alertService = inject(AlertService);
     private readonly router = inject(Router);
     private readonly snackBar = inject(MatSnackBar);
     readonly metadata = inject(MetadataService);
@@ -153,7 +155,7 @@ export class MealLogComponent {
         this.nutritionService.registerMeal(patientId, request).subscribe({
             next: () => {
                 this.snackBar.open('Comida registrada correctamente', 'Cerrar', { duration: 3000 });
-                this.router.navigate(['/app/dashboard']);
+                this.checkAlertsThenNavigate(patientId);
             },
             error: () => {
                 this.snackBar.open('Error al registrar la comida', 'Cerrar', { duration: 3000 });
@@ -164,6 +166,24 @@ export class MealLogComponent {
 
     onCancel(): void {
         this.router.navigate(['/app/dashboard']);
+    }
+
+    private checkAlertsThenNavigate(patientId: string): void {
+        this.alertService.getNewAlerts(patientId).subscribe({
+            next: newAlerts => {
+                this.router.navigate(['/app/dashboard']);
+
+                if (newAlerts.length > 0) {
+                    const first = newAlerts[0];
+                    setTimeout(() => {
+                        this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 });
+                    }, 400);
+                }
+            },
+            error: () => {
+                this.router.navigate(['/app/dashboard']);
+            }
+        });
     }
 
     private nowAsLocalIso(): string {

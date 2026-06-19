@@ -9,8 +9,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { Router } from '@angular/router';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AlertService } from '../../../../core/services/alert.service';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
 
@@ -38,7 +40,9 @@ export class ExerciseLogComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
+    private readonly alertService = inject(AlertService);
     private readonly snackBar = inject(MatSnackBar);
+    private readonly router = inject(Router);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -81,6 +85,7 @@ export class ExerciseLogComponent implements OnInit {
                 this.form.patchValue({ durationMinutes: null, notes: '', performedAt: this.nowAsLocalIso() });
                 this.snackBar.open('Ejercicio registrado', 'Cerrar', { duration: 3000 });
                 this.loading.set(false);
+                this.notifyIfNewAlert(patientId);
             },
             error: () => {
                 this.snackBar.open('Error al registrar el ejercicio', 'Cerrar', { duration: 3000 });
@@ -95,6 +100,22 @@ export class ExerciseLogComponent implements OnInit {
 
     getIntensityLabel(intensity: string): string {
         return this.metadata.getLabelByValue(this.metadata.exerciseIntensities(), intensity);
+    }
+
+    private notifyIfNewAlert(patientId: string): void {
+        this.alertService.getNewAlerts(patientId).subscribe({
+            next: newAlerts => {
+                if (newAlerts.length === 0) return;
+
+                const first = newAlerts[0];
+                setTimeout(() => {
+                    this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 })
+                        .onAction()
+                        .subscribe(() => this.router.navigate(['/app/dashboard']));
+                }, 400);
+            },
+            error: () => { }
+        });
     }
 
     private loadHistory(): void {

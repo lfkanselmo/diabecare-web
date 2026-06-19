@@ -122,6 +122,8 @@ export class DashboardComponent implements OnInit {
             error: () => { }
         });
 
+        this.alertService.primeKnownAlerts(this.patientId);
+
         this.loading.set(false);
     }
 

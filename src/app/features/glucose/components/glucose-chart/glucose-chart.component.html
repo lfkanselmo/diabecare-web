@@ -42,3 +42,22 @@
     </div>
   </div>
 </div>
+
+@if (timelineEvents.length > 0) {
+<div class="glucose-chart__timeline">
+  <span class="glucose-chart__timeline-title">Eventos registrados</span>
+  <div class="glucose-chart__timeline-list">
+    @for (event of timelineEvents; track event.time.getTime()) {
+    <div class="glucose-chart__timeline-item" [class.glucose-chart__timeline-item--meal]="event.type === 'meal'"
+      [class.glucose-chart__timeline-item--exercise]="event.type === 'exercise'">
+      <span class="glucose-chart__timeline-icon">{{ event.icon }}</span>
+      <div class="glucose-chart__timeline-info">
+        <span class="glucose-chart__timeline-name">{{ event.title }}</span>
+        <span class="glucose-chart__timeline-detail">{{ event.detail }}</span>
+      </div>
+      <span class="glucose-chart__timeline-time">{{ event.time | date:'dd/MM HH:mm' }}</span>
+    </div>
+    }
+  </div>
+</div>
+}

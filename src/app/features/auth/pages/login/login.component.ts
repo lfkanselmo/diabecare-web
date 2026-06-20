@@ -49,7 +49,7 @@ export class LoginComponent {
 
         this.authApiService.login(this.form.getRawValue()).subscribe({
             next: response => {
-                this.authService.saveSession(response.accessToken, response.patient);
+                this.authService.saveSession(response.accessToken, response.patient, response.refreshToken);
                 this.router.navigate(['/app/dashboard']);
             },
             error: err => {

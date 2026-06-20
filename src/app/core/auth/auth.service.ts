@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 const TOKEN_KEY = 'dc_access_token';
+const REFRESH_TOKEN_KEY = 'dc_refresh_token';
 const PATIENT_KEY = 'dc_patient';
 
 @Injectable({ providedIn: 'root' })
@@ -16,14 +17,30 @@ export class AuthService {
         return localStorage.getItem(TOKEN_KEY);
     }
 
-    saveSession(token: string, patient: unknown): void {
+    getRefreshToken(): string | null {
+        return localStorage.getItem(REFRESH_TOKEN_KEY);
+    }
+
+    saveSession(token: string, patient: unknown, refreshToken?: string): void {
         localStorage.setItem(TOKEN_KEY, token);
         localStorage.setItem(PATIENT_KEY, JSON.stringify(patient));
+
+        if (refreshToken) {
+            localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+        }
+
+        this._isAuthenticated.set(true);
+    }
+
+    saveAccessToken(token: string, refreshToken: string): void {
+        localStorage.setItem(TOKEN_KEY, token);
+        localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
         this._isAuthenticated.set(true);
     }
 
     clearSession(): void {
         localStorage.removeItem(TOKEN_KEY);
+        localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(PATIENT_KEY);
         this._isAuthenticated.set(false);
     }
@@ -54,13 +71,7 @@ export class AuthService {
         }
     }
 
-    private checkValidToken(): boolean {
-        const token = localStorage.getItem(TOKEN_KEY);
-        if (!token) return false;
-        return !this.isTokenExpired(token);
-    }
-
-    private isTokenExpired(token: string): boolean {
+    isTokenExpired(token: string): boolean {
         try {
             const payload = JSON.parse(atob(token.split('.')[1]));
             const expiryMs = payload.exp * 1000;
@@ -68,5 +79,11 @@ export class AuthService {
         } catch {
             return true;
         }
+    }
+
+    private checkValidToken(): boolean {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) return false;
+        return !this.isTokenExpired(token);
     }
 }

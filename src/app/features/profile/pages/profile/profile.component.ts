@@ -14,9 +14,11 @@ import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { AccountService } from '../../../../core/services/account.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
+import { ActiveSession } from '../../../../shared/models/auth.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
 
 @Component({
@@ -46,6 +48,7 @@ export class ProfileComponent implements OnInit {
     private readonly profileService = inject(ProfileService);
     private readonly accountService = inject(AccountService);
     private readonly authService = inject(AuthService);
+    private readonly authApiService = inject(AuthApiService);
     private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
     private readonly cdr = inject(ChangeDetectorRef);
@@ -59,6 +62,11 @@ export class ProfileComponent implements OnInit {
     confirmSuspend = signal(false);
     patient = signal<PatientResponse | null>(null);
 
+    sessions = signal<ActiveSession[]>([]);
+    loadingSessions = signal(false);
+    confirmLogoutAll = signal(false);
+    loggingOutAll = signal(false);
+
     form: FormGroup = this.fb.group({
         heightCm: [null, [Validators.min(50), Validators.max(250)]],
         targetGlucoseMin: [null, [Validators.required, Validators.min(50)]],
@@ -70,6 +78,7 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadProfile();
+        this.loadSessions();
     }
 
     onTabChange(): void {
@@ -160,8 +169,52 @@ export class ProfileComponent implements OnInit {
         this.confirmDelete.set(false);
     }
 
+    onLogoutAllDevices(): void {
+        if (!this.confirmLogoutAll()) {
+            this.confirmLogoutAll.set(true);
+            return;
+        }
+
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+
+        this.loggingOutAll.set(true);
+
+        this.authApiService.logoutAll(userId).subscribe({
+            next: () => {
+                this.notificationService.success('Sesión cerrada en todos los dispositivos.');
+                this.authService.clearSession();
+                this.router.navigate(['/auth/login']);
+            },
+            error: () => {
+                this.notificationService.danger('Error al cerrar sesión en los demás dispositivos');
+                this.loggingOutAll.set(false);
+                this.confirmLogoutAll.set(false);
+            }
+        });
+    }
+
+    cancelLogoutAll(): void {
+        this.confirmLogoutAll.set(false);
+    }
+
     get isFemale(): boolean {
         return this.patient()?.biologicalSex === 'FEMALE';
+    }
+
+    private loadSessions(): void {
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+
+        this.loadingSessions.set(true);
+
+        this.authApiService.getActiveSessions(userId).subscribe({
+            next: data => {
+                this.sessions.set(data);
+                this.loadingSessions.set(false);
+            },
+            error: () => this.loadingSessions.set(false)
+        });
     }
 
     private loadProfile(): void {

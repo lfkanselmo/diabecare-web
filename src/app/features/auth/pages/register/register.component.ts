@@ -91,7 +91,7 @@ export class RegisterComponent {
 
         this.authApiService.register(request).subscribe({
             next: (response) => {
-                this.authService.saveSession(response.accessToken, response.patient);
+                this.authService.saveSession(response.accessToken, response.patient, response.refreshToken);
                 this.router.navigate(['/app/dashboard']);
             },
             error: () => {

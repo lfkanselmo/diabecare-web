@@ -54,6 +54,63 @@
                     <div class="profile__account-action">
                         <div class="profile__account-action-top">
                             <div class="profile__account-info">
+                                <mat-icon class="profile__account-icon">devices</mat-icon>
+                                <div>
+                                    <span class="profile__account-label">Sesiones activas</span>
+                                    <span class="profile__account-desc">
+                                        Dispositivos donde tu cuenta sigue iniciada.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if (loadingSessions()) {
+                        <p class="profile__sessions-loading">Cargando sesiones...</p>
+                        } @else if (sessions().length > 0) {
+                        <ul class="profile__sessions-list">
+                            @for (session of sessions(); track session.id) {
+                            <li class="profile__sessions-item">
+                                <mat-icon class="profile__sessions-item-icon">smartphone</mat-icon>
+                                <div class="profile__sessions-item-info">
+                                    <span class="profile__sessions-item-label">{{ session.deviceLabel }}</span>
+                                    <span class="profile__sessions-item-date">
+                                        Último uso: {{ (session.lastUsedAt ?? session.createdAt) | date:'dd/MM/yyyy
+                                        HH:mm' }}
+                                    </span>
+                                </div>
+                            </li>
+                            }
+                        </ul>
+                        }
+
+                        @if (!confirmLogoutAll()) {
+                        <button mat-stroked-button color="warn" (click)="onLogoutAllDevices()"
+                            [disabled]="loggingOutAll()" class="profile__sessions-logout-btn">
+                            <mat-icon>logout</mat-icon>
+                            Cerrar sesión en todos los dispositivos
+                        </button>
+                        } @else {
+                        <div class="profile__account-confirm">
+                            <span>Se cerrará tu sesión aquí y en cualquier otro dispositivo donde hayas iniciado sesión.
+                                ¿Confirmas?</span>
+                            <div class="profile__account-confirm-actions">
+                                <button mat-stroked-button (click)="cancelLogoutAll()" [disabled]="loggingOutAll()">
+                                    Cancelar
+                                </button>
+                                <button mat-raised-button color="warn" (click)="onLogoutAllDevices()"
+                                    [disabled]="loggingOutAll()">
+                                    @if (loggingOutAll()) { Cerrando sesiones... } @else { Sí, cerrar todas }
+                                </button>
+                            </div>
+                        </div>
+                        }
+                    </div>
+
+                    <mat-divider />
+
+                    <div class="profile__account-action">
+                        <div class="profile__account-action-top">
+                            <div class="profile__account-info">
                                 <mat-icon class="profile__account-icon profile__account-icon--danger">delete</mat-icon>
                                 <div>
                                     <span class="profile__account-label">Eliminar cuenta</span>

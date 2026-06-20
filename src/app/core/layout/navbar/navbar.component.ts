@@ -7,6 +7,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../auth/auth.service';
+import { AuthApiService } from '../../auth/auth-api.service';
 import { ThemeService } from '../../services/theme.service';
 import { GlucoseStateService } from '../../services/glucose-state.service';
 import { PushNotificationService } from '../../services/push-notification.service';
@@ -33,6 +34,7 @@ export class NavbarComponent implements OnInit {
     @Output() menuToggle = new EventEmitter<void>();
 
     private readonly authService = inject(AuthService);
+    private readonly authApiService = inject(AuthApiService);
     private readonly router = inject(Router);
     private readonly notificationService = inject(NotificationService);
     private readonly pushService = inject(PushNotificationService);
@@ -70,7 +72,13 @@ export class NavbarComponent implements OnInit {
     }
 
     onLogout(): void {
+        const refreshToken = this.authService.getRefreshToken();
+
         this.authService.clearSession();
         this.router.navigate(['/auth/login']);
+
+        if (refreshToken) {
+            this.authApiService.logout(refreshToken).subscribe({ error: () => { } });
+        }
     }
 }

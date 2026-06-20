@@ -4,25 +4,26 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSelectModule } from '@angular/material/select';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatDividerModule } from '@angular/material/divider';
 import { DecimalPipe } from '@angular/common';
-import { RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
+import { InsulinCalculationResponse } from '../../../../shared/models/insulin.model';
+import { InsulinService } from '@features/medications/services/insulin.service';
 
 @Component({
     selector: 'app-insulin-calculator',
     standalone: true,
     imports: [
         ReactiveFormsModule,
+        DecimalPipe,
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        MatSelectModule,
-        MatDividerModule,
-        DecimalPipe,
-        RouterLink
+        MatCheckboxModule,
+        MatDividerModule
     ],
     templateUrl: './insulin-calculator.component.html',
     styleUrl: './insulin-calculator.component.scss'
@@ -30,37 +31,43 @@ import { AuthService } from '../../../../core/auth/auth.service';
 export class InsulinCalculatorComponent {
 
     private readonly fb = inject(FormBuilder);
+    private readonly insulinService = inject(InsulinService);
+    private readonly authService = inject(AuthService);
+    private readonly notificationService = inject(NotificationService);
+
+    loading = signal(false);
+    result = signal<InsulinCalculationResponse | null>(null);
 
     form: FormGroup = this.fb.group({
         currentGlucose: [null, [Validators.required, Validators.min(20)]],
-        targetGlucose: [100, [Validators.required, Validators.min(60)]],
-        carbsGrams: [null, Validators.min(0)],
-        insulinSensitivity: [null, [Validators.required, Validators.min(1)]],
-        insulinToCarbRatio: [null, Validators.min(1)]
+        carbsToEat: [null],
+        beforeMeal: [false]
     });
-
-    result = signal<CalculationResult | null>(null);
 
     onCalculate(): void {
         if (this.form.invalid) return;
 
-        const { currentGlucose, targetGlucose, carbsGrams, insulinSensitivity, insulinToCarbRatio } = this.form.getRawValue();
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
 
-        const correctionDose = Math.max(0, (currentGlucose - targetGlucose) / insulinSensitivity);
-        const mealDose = (carbsGrams && insulinToCarbRatio) ? carbsGrams / insulinToCarbRatio : 0;
-        const totalDose = correctionDose + mealDose;
+        this.loading.set(true);
+        this.result.set(null);
 
-        this.result.set({ correctionDose, mealDose, totalDose });
+        this.insulinService.calculate(patientId, this.form.getRawValue()).subscribe({
+            next: (res) => {
+                this.result.set(res);
+                this.loading.set(false);
+            },
+            error: (err) => {
+                const msg = err.error?.message ?? 'Error al calcular la dosis';
+                this.notificationService.danger(msg);
+                this.loading.set(false);
+            }
+        });
     }
 
     onReset(): void {
-        this.form.reset({ targetGlucose: 100 });
+        this.form.reset({ beforeMeal: false });
         this.result.set(null);
     }
-}
-
-interface CalculationResult {
-    correctionDose: number;
-    mealDose: number;
-    totalDose: number;
 }

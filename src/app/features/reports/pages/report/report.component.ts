@@ -6,10 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { ReportService } from '../../services/report.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-report',
@@ -22,7 +22,6 @@ import { AuthService } from '../../../../core/auth/auth.service';
         MatInputModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatSnackBarModule,
         MatChipsModule
     ],
     templateUrl: './report.component.html',
@@ -33,7 +32,7 @@ export class ReportComponent {
     private readonly fb = inject(FormBuilder);
     private readonly reportService = inject(ReportService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
 
     loading = signal(false);
 
@@ -83,10 +82,10 @@ export class ReportComponent {
                 a.click();
                 window.URL.revokeObjectURL(url);
                 this.loading.set(false);
-                this.snackBar.open('Reporte descargado', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Reporte descargado');
             },
             error: () => {
-                this.snackBar.open('Error al generar el reporte', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al generar el reporte');
                 this.loading.set(false);
             }
         });

@@ -5,11 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { VitalsService } from '../../services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { Hba1cTrendResponse, VitalSignResponse } from '../../../../shared/models/vitals.model';
 import { Hba1cChartComponent } from '../../components/hba1c-chart/hba1c-chart.component';
 import { ExerciseLogComponent } from '../../components/exercise-log/exercise-log.component';
@@ -26,7 +26,6 @@ import { MatTabsModule } from '@angular/material/tabs';
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        MatSnackBarModule,
         MatDividerModule,
         MatButtonToggleModule,
         MatTabsModule,
@@ -41,7 +40,7 @@ export class VitalsComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly vitalsService = inject(VitalsService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
 
     loading = signal(false);
     history = signal<VitalSignResponse[]>([]);
@@ -81,11 +80,11 @@ export class VitalsComponent implements OnInit {
                 this.history.update(list => [vital, ...list]);
                 this.form.reset();
                 this.loadTrend();
-                this.snackBar.open('Signos vitales registrados', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Signos vitales registrados');
                 this.loading.set(false);
             },
             error: () => {
-                this.snackBar.open('Error al registrar los signos vitales', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar los signos vitales');
                 this.loading.set(false);
             }
         });

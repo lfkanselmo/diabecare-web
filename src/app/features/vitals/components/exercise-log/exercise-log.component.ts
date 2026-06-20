@@ -6,13 +6,13 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
 
@@ -28,7 +28,6 @@ import { MetadataService } from '../../../../core/services/metadata.service';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule,
         MatDividerModule,
         MatTooltipModule
     ],
@@ -41,7 +40,7 @@ export class ExerciseLogComponent implements OnInit {
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
     readonly metadata = inject(MetadataService);
 
@@ -83,12 +82,12 @@ export class ExerciseLogComponent implements OnInit {
             next: log => {
                 this.history.update(list => [log, ...list]);
                 this.form.patchValue({ durationMinutes: null, notes: '', performedAt: this.nowAsLocalIso() });
-                this.snackBar.open('Ejercicio registrado', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Ejercicio registrado');
                 this.loading.set(false);
                 this.notifyIfNewAlert(patientId);
             },
             error: () => {
-                this.snackBar.open('Error al registrar el ejercicio', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar el ejercicio');
                 this.loading.set(false);
             }
         });
@@ -105,14 +104,10 @@ export class ExerciseLogComponent implements OnInit {
     private notifyIfNewAlert(patientId: string): void {
         this.alertService.getNewAlerts(patientId).subscribe({
             next: newAlerts => {
-                if (newAlerts.length === 0) return;
-
-                const first = newAlerts[0];
-                setTimeout(() => {
-                    this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 })
-                        .onAction()
-                        .subscribe(() => this.router.navigate(['/app/dashboard']));
-                }, 400);
+                newAlerts.forEach(alert => this.notificationService.showAlert(alert, undefined, {
+                    label: 'Ver',
+                    onClick: () => this.router.navigate(['/app/dashboard'])
+                }));
             },
             error: () => { }
         });

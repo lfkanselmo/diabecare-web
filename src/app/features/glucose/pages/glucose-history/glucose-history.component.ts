@@ -6,7 +6,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
@@ -18,6 +17,7 @@ import { ExerciseService } from '../../../vitals/services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import {
     GlucoseReadingResponse,
     GlucoseStatus,
@@ -40,7 +40,6 @@ import { MatDividerModule } from '@angular/material/divider';
         MatIconModule,
         MatTableModule,
         MatButtonToggleModule,
-        MatSnackBarModule,
         MatMenuModule,
         MatDatepickerModule,
         MatNativeDateModule,
@@ -58,7 +57,7 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly glucoseService = inject(GlucoseService);
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     private readonly systemConfig = inject(SystemConfigService);
     readonly metadata = inject(MetadataService);
 
@@ -109,10 +108,10 @@ export class GlucoseHistoryComponent implements OnInit {
         this.glucoseService.delete(patientId, readingId).subscribe({
             next: () => {
                 this.readings.update(list => list.filter(r => r.readingId !== readingId));
-                this.snackBar.open('Lectura eliminada', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Lectura eliminada');
             },
             error: () => {
-                this.snackBar.open('Error al eliminar la lectura', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al eliminar la lectura');
             }
         });
     }

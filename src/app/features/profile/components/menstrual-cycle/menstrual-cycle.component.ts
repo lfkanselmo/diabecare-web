@@ -5,11 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { CyclePhase, MenstrualCycleStatusResponse } from '../../../../shared/models/menstrual-cycle.model';
 import { CycleCalendarComponent } from '../cycle-calendar/cycle-calendar.component';
@@ -25,7 +25,6 @@ import { CycleCalendarComponent } from '../cycle-calendar/cycle-calendar.compone
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        MatSnackBarModule,
         MatDividerModule,
         MatChipsModule,
         CycleCalendarComponent
@@ -38,7 +37,7 @@ export class MenstrualCycleComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly cycleService = inject(MenstrualCycleService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     private readonly systemConfig = inject(SystemConfigService);
 
     loading = signal(false);
@@ -90,11 +89,11 @@ export class MenstrualCycleComponent implements OnInit {
                 this.noData.set(false);
                 this.selectedSymptoms.set([]);
                 this.form.patchValue({ symptoms: '', notes: '' });
-                this.snackBar.open('Ciclo registrado correctamente', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Ciclo registrado correctamente');
                 this.saving.set(false);
             },
             error: () => {
-                this.snackBar.open('Error al registrar el ciclo', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar el ciclo');
                 this.saving.set(false);
             }
         });

@@ -4,9 +4,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { InsulinService } from '../../services/insulin.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 
 @Component({
     selector: 'app-insulin-profile',
@@ -16,8 +16,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        MatIconModule,
-        MatSnackBarModule
+        MatIconModule
     ],
     templateUrl: './insulin-profile.component.html',
     styleUrl: './insulin-profile.component.scss'
@@ -27,7 +26,7 @@ export class InsulinProfileComponent {
     private readonly fb = inject(FormBuilder);
     private readonly insulinService = inject(InsulinService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
 
     loading = signal(false);
     saved = signal(false);
@@ -49,11 +48,11 @@ export class InsulinProfileComponent {
         this.insulinService.updateInsulinProfile(patientId, this.form.getRawValue()).subscribe({
             next: () => {
                 this.saved.set(true);
-                this.snackBar.open('Perfil de insulina guardado', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Perfil de insulina guardado');
                 this.loading.set(false);
             },
             error: () => {
-                this.snackBar.open('Error al guardar el perfil', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al guardar el perfil');
                 this.loading.set(false);
             }
         });

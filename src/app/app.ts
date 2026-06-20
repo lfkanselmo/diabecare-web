@@ -1,12 +1,16 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
+import { NotificationBannerComponent } from './shared/components/notification-banner/notification-banner.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet],
-  template: `<router-outlet />`,
+  imports: [RouterOutlet, NotificationBannerComponent],
+  template: `
+    <app-notification-banner />
+    <router-outlet />
+  `,
   styles: []
 })
 export class AppComponent implements OnInit {

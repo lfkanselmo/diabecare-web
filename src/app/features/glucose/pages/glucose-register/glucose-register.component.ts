@@ -6,11 +6,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { GlucoseUnit, ReadingType } from '../../../../shared/models/glucose.model';
 import { MetadataService } from '@core/services/metadata.service';
 
@@ -24,7 +24,6 @@ import { MetadataService } from '@core/services/metadata.service';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule,
         MatTooltipModule
     ],
     templateUrl: './glucose-register.component.html',
@@ -36,8 +35,8 @@ export class GlucoseRegisterComponent {
     private readonly glucoseService = inject(GlucoseService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
+    private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
-    private readonly snackBar = inject(MatSnackBar);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -72,11 +71,11 @@ export class GlucoseRegisterComponent {
 
         this.glucoseService.register(patientId, request).subscribe({
             next: () => {
-                this.snackBar.open('Lectura registrada correctamente', 'Cerrar', { duration: 3000 });
-                this.checkAlertsThenNavigate(patientId);
+                this.notificationService.success('Lectura registrada correctamente');
+                this.notifyNewAlertsThenNavigate(patientId);
             },
             error: () => {
-                this.snackBar.open('Error al registrar la lectura', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar la lectura');
                 this.loading.set(false);
             }
         });
@@ -86,23 +85,13 @@ export class GlucoseRegisterComponent {
         this.router.navigate(['/app/dashboard']);
     }
 
-    private checkAlertsThenNavigate(patientId: string): void {
+    private notifyNewAlertsThenNavigate(patientId: string): void {
         this.alertService.getNewAlerts(patientId).subscribe({
             next: newAlerts => {
+                newAlerts.forEach(alert => this.notificationService.showAlert(alert));
                 this.router.navigate(['/app/glucose/history']);
-
-                if (newAlerts.length > 0) {
-                    const first = newAlerts[0];
-                    setTimeout(() => {
-                        this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 })
-                            .onAction()
-                            .subscribe(() => this.router.navigate(['/app/dashboard']));
-                    }, 400);
-                }
             },
-            error: () => {
-                this.router.navigate(['/app/glucose/history']);
-            }
+            error: () => this.router.navigate(['/app/glucose/history'])
         });
     }
 

@@ -5,7 +5,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -15,6 +14,7 @@ import { Router } from '@angular/router';
 import { ProfileService } from '../../services/profile.service';
 import { AccountService } from '../../../../core/services/account.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
@@ -30,7 +30,6 @@ import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstr
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule,
         MatDividerModule,
         MatChipsModule,
         MatTabsModule,
@@ -47,7 +46,7 @@ export class ProfileComponent implements OnInit {
     private readonly profileService = inject(ProfileService);
     private readonly accountService = inject(AccountService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
     private readonly cdr = inject(ChangeDetectorRef);
     readonly metadata = inject(MetadataService);
@@ -89,11 +88,11 @@ export class ProfileComponent implements OnInit {
             next: updated => {
                 this.patient.set(updated);
                 this.authService.saveSession(this.authService.getToken()!, updated);
-                this.snackBar.open('Perfil actualizado correctamente', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Perfil actualizado correctamente');
                 this.saving.set(false);
             },
             error: () => {
-                this.snackBar.open('Error al actualizar el perfil', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al actualizar el perfil');
                 this.saving.set(false);
             }
         });
@@ -112,14 +111,14 @@ export class ProfileComponent implements OnInit {
 
         this.accountService.suspend(userId).subscribe({
             next: () => {
-                this.snackBar.open('Cuenta suspendida. Cerrando sesión...', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Cuenta suspendida. Cerrando sesión...');
                 setTimeout(() => {
                     this.authService.logout();
                     this.router.navigate(['/auth/login']);
                 }, 2000);
             },
             error: () => {
-                this.snackBar.open('Error al suspender la cuenta', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al suspender la cuenta');
                 this.suspending.set(false);
                 this.confirmSuspend.set(false);
             }
@@ -139,14 +138,14 @@ export class ProfileComponent implements OnInit {
 
         this.accountService.delete(userId).subscribe({
             next: () => {
-                this.snackBar.open('Cuenta eliminada. Hasta luego.', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Cuenta eliminada. Hasta luego.');
                 setTimeout(() => {
                     this.authService.logout();
                     this.router.navigate(['/auth/login']);
                 }, 2000);
             },
             error: () => {
-                this.snackBar.open('Error al eliminar la cuenta', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al eliminar la cuenta');
                 this.deleting.set(false);
                 this.confirmDelete.set(false);
             }

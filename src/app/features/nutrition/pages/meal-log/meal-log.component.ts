@@ -7,12 +7,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
 import { FoodResponse } from '../../../../shared/models/food.model';
 import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
@@ -29,7 +29,6 @@ import { MetadataService } from '@core/services/metadata.service';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule,
         MatDividerModule,
         MatTooltipModule,
         FoodSearchComponent
@@ -43,8 +42,8 @@ export class MealLogComponent {
     private readonly nutritionService = inject(NutritionService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
+    private readonly notificationService = inject(NotificationService);
     private readonly router = inject(Router);
-    private readonly snackBar = inject(MatSnackBar);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -154,11 +153,11 @@ export class MealLogComponent {
 
         this.nutritionService.registerMeal(patientId, request).subscribe({
             next: () => {
-                this.snackBar.open('Comida registrada correctamente', 'Cerrar', { duration: 3000 });
-                this.checkAlertsThenNavigate(patientId);
+                this.notificationService.success('Comida registrada correctamente');
+                this.notifyNewAlertsThenNavigate(patientId);
             },
             error: () => {
-                this.snackBar.open('Error al registrar la comida', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar la comida');
                 this.loading.set(false);
             }
         });
@@ -168,21 +167,13 @@ export class MealLogComponent {
         this.router.navigate(['/app/dashboard']);
     }
 
-    private checkAlertsThenNavigate(patientId: string): void {
+    private notifyNewAlertsThenNavigate(patientId: string): void {
         this.alertService.getNewAlerts(patientId).subscribe({
             next: newAlerts => {
+                newAlerts.forEach(alert => this.notificationService.showAlert(alert));
                 this.router.navigate(['/app/dashboard']);
-
-                if (newAlerts.length > 0) {
-                    const first = newAlerts[0];
-                    setTimeout(() => {
-                        this.snackBar.open(`⚠ ${first.title}`, 'Ver', { duration: 6000 });
-                    }, 400);
-                }
             },
-            error: () => {
-                this.router.navigate(['/app/dashboard']);
-            }
+            error: () => this.router.navigate(['/app/dashboard'])
         });
     }
 

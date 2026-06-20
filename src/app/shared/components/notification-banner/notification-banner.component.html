@@ -1,0 +1,28 @@
+@if (notifications().length > 0) {
+<div class="notification-banner">
+    @for (item of notifications(); track item.id) {
+    <div class="notification-banner__item" [style.background-color]="getAlertBg(item.severity)"
+        [style.border-left-color]="getAlertColor(item.severity)">
+        <mat-icon class="notification-banner__icon" [style.color]="getAlertColor(item.severity)">
+            {{ severityIcons[item.severity] }}
+        </mat-icon>
+        <div class="notification-banner__content">
+            <span class="notification-banner__title">{{ item.title }}</span>
+            @if (item.message) {
+            <span class="notification-banner__message">{{ item.message }}</span>
+            }
+        </div>
+        @if (item.action) {
+        <button mat-button class="notification-banner__action" [style.color]="getAlertColor(item.severity)"
+            (click)="runAction(item.id, item.action.onClick)">
+            {{ item.action.label }}
+        </button>
+        }
+        <button mat-icon-button class="notification-banner__close" (click)="close(item.id)"
+            aria-label="Cerrar notificación">
+            <mat-icon>close</mat-icon>
+        </button>
+    </div>
+    }
+</div>
+}

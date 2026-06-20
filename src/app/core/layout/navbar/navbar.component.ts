@@ -6,11 +6,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../auth/auth.service';
 import { ThemeService } from '../../services/theme.service';
 import { GlucoseStateService } from '../../services/glucose-state.service';
 import { PushNotificationService } from '../../services/push-notification.service';
+import { NotificationService } from '../../services/notification.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -23,8 +23,7 @@ import { Router } from '@angular/router';
         MatButtonModule,
         MatMenuModule,
         MatDividerModule,
-        MatTooltipModule,
-        MatSnackBarModule
+        MatTooltipModule
     ],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss'
@@ -35,7 +34,7 @@ export class NavbarComponent implements OnInit {
 
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     private readonly pushService = inject(PushNotificationService);
     readonly themeService = inject(ThemeService);
     readonly glucoseState = inject(GlucoseStateService);
@@ -54,14 +53,15 @@ export class NavbarComponent implements OnInit {
         if (this.notificationsEnabled()) {
             await this.pushService.unsubscribe();
             this.notificationsEnabled.set(false);
-            this.snackBar.open('Notificaciones desactivadas', '', { duration: 2500 });
+            this.notificationService.info('Notificaciones desactivadas');
         } else {
             const ok = await this.pushService.requestPermissionAndSubscribe();
             this.notificationsEnabled.set(ok);
-            this.snackBar.open(
-                ok ? '¡Notificaciones activadas!' : 'No se pudo activar las notificaciones',
-                '', { duration: 2500 }
-            );
+            if (ok) {
+                this.notificationService.success('¡Notificaciones activadas!');
+            } else {
+                this.notificationService.danger('No se pudo activar las notificaciones');
+            }
         }
     }
 

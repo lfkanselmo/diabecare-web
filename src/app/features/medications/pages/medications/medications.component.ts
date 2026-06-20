@@ -5,10 +5,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MedicationsService } from '../../services/medications.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import {
     DoseUnit,
     MedicationFrequency,
@@ -30,7 +30,6 @@ import { MetadataService } from '@core/services/metadata.service';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatSnackBarModule,
         MatChipsModule,
         MatTabsModule,
         InsulinCalculatorComponent,
@@ -44,7 +43,7 @@ export class MedicationsComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly medicationsService = inject(MedicationsService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -75,11 +74,11 @@ export class MedicationsComponent implements OnInit {
             next: (med) => {
                 this.medications.update(list => [med, ...list]);
                 this.form.reset();
-                this.snackBar.open('Medicamento registrado', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Medicamento registrado');
                 this.loading.set(false);
             },
             error: () => {
-                this.snackBar.open('Error al registrar el medicamento', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al registrar el medicamento');
                 this.loading.set(false);
             }
         });
@@ -92,10 +91,10 @@ export class MedicationsComponent implements OnInit {
         this.medicationsService.deactivate(patientId, medicationId).subscribe({
             next: () => {
                 this.medications.update(list => list.filter(m => m.medicationId !== medicationId));
-                this.snackBar.open('Medicamento desactivado', 'Cerrar', { duration: 3000 });
+                this.notificationService.success('Medicamento desactivado');
             },
             error: () => {
-                this.snackBar.open('Error al desactivar el medicamento', 'Cerrar', { duration: 3000 });
+                this.notificationService.danger('Error al desactivar el medicamento');
             }
         });
     }

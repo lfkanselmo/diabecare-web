@@ -81,22 +81,29 @@ export const environment = {
 src/
 ├── app/
 │   ├── core/
-│   │   ├── auth/               ← AuthService (getUserId, getPatientId, logout),
-│   │   │                          AuthGuard, validación JWT
-│   │   ├── interceptors/       ← JWT interceptor, Error interceptor
-│   │   ├── layout/             ← Shell, Navbar, Sidebar
+│   │   ├── auth/               ← AuthService (getUserId, getPatientId, getRefreshToken,
+│   │   │                          isTokenExpired público, logout), AuthApiService
+│   │   │                          (login/register/refresh/logout/logoutAll/getActiveSessions),
+│   │   │                          TokenRefreshCoordinator (evita refrescos concurrentes
+│   │   │                          duplicados), AuthGuard
+│   │   ├── interceptors/       ← JWT interceptor, Error interceptor (maneja 401 con
+│   │   │                          refresco automático + reintento; 403 con notificación)
+│   │   ├── layout/             ← Shell, Navbar (logout solo de la sesión actual), Sidebar
 │   │   └── services/           ← AlertService (con detección de alertas nuevas),
 │   │                              ThemeService, MetadataService,
 │   │                              GlucoseStateService, PushNotificationService,
-│   │                              SystemConfigService, AccountService
+│   │                              SystemConfigService, AccountService,
+│   │                              NotificationService (banner global, sin CdkOverlay)
 │   ├── shared/
-│   │   ├── components/         ← AlertsPanel
-│   │   └── models/             ← Interfaces TypeScript por dominio
+│   │   ├── components/         ← AlertsPanel, NotificationBanner (montado una vez
+│   │   │                          en AppComponent)
+│   │   └── models/             ← Interfaces TypeScript por dominio (incluye
+│   │                              ActiveSession, RefreshTokenRequest/Response)
 │   ├── store/
 │   │   └── glucose/            ← NgRx: actions, reducer, effects, selectors
 │   └── features/
-│       ├── auth/               ← Login (maneja ACCOUNT_SUSPENDED/INVALID_CREDENTIALS),
-│       │                          Register
+│       ├── auth/               ← Login (maneja ACCOUNT_SUSPENDED/INVALID_CREDENTIALS,
+│       │                          guarda refresh token), Register
 │       ├── dashboard/          ← Métricas, alertas, accesos rápidos
 │       ├── glucose/            ← Registro (botón "Ahora"), historial (selector
 │       │                          de rango + gráfica rediseñada), calculadora
@@ -105,7 +112,8 @@ src/
 │       ├── medications/        ← Medicamentos
 │       ├── reports/            ← Generación de reportes PDF
 │       └── profile/            ← Perfil del paciente, ciclo menstrual,
-│                                  tab "Cuenta" (suspender/eliminar)
+│                                  tab "Cuenta" (suspender/eliminar, sesiones activas,
+│                                  cerrar sesión en todos los dispositivos)
 ├── public/
 │   ├── manifest.webmanifest    ← PWA manifest
 │   └── icons/                  ← Íconos PWA (72px a 512px)
@@ -135,7 +143,7 @@ src/
 - **Gráfica rediseñada**: sin texto incrustado (evita solapamiento); tooltip enriquecido al hover muestra glucosa + eventos cercanos (comida/ejercicio dentro de ±2h); lista "Eventos registrados" debajo, cronológica, sin filtrar
 - Exportación de datos en CSV y JSON respetando el rango seleccionado
 - Estado gestionado con NgRx (caché TTL 5 minutos)
-- **Notificación inmediata**: tras registrar, si se generó una alerta nueva, aparece un snackbar antes de navegar al historial
+- **Notificación inmediata**: tras registrar, si se generó una alerta nueva, aparece en el banner global de notificaciones (ver sección dedicada) — ya no usa `MatSnackBar`
 
 ### Calculadora de insulina
 
@@ -144,14 +152,14 @@ src/
 ### Nutrición
 
 - Registro de comidas con botón "Ahora"
-- Buscador de alimentos con debounce 300ms
-- Notificación inmediata de alertas nuevas tras registrar
+- Buscador de alimentos con debounce 300ms sobre un catálogo de **635 alimentos** (colombianos, latinoamericanos e internacionales — ver sección dedicada)
+- Notificación inmediata de alertas nuevas tras registrar (banner global)
 
 ### Signos vitales y ejercicio
 
 - Registro con botón "Ahora" (ejercicio; signos vitales ya lo tenía)
 - Gráfica de tendencia HbA1c con `connectNulls` para legibilidad con datos esparcidos
-- Notificación inmediata de alertas nuevas tras registrar ejercicio
+- Notificación inmediata de alertas nuevas tras registrar ejercicio, con acción "Ver" que navega al dashboard
 
 ### Medicamentos
 
@@ -164,7 +172,8 @@ src/
 ### Perfil
 
 - Edición de datos médicos
-- **Tab "Cuenta" (nuevo)**: suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
+- **Tab "Cuenta"**: suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
+- **Sesiones activas (nuevo)**: lista de dispositivos con sesión iniciada (etiqueta de dispositivo + última actividad) y botón "Cerrar sesión en todos los dispositivos" con la misma confirmación de dos pasos — distinto del logout normal del navbar, que solo cierra la sesión actual
 - Ciclo menstrual como página independiente (solo pacientes femeninas)
 - Fix: `(selectedTabChange)` dispara `window.dispatchEvent(new Event('resize'))` para que ECharts se redimensione correctamente al cambiar de tab
 
@@ -175,7 +184,20 @@ src/
 ### Notificaciones push
 
 - Activación vía campana en navbar, Web Push API nativa
-- **Notificaciones inmediatas (nuevo, sin WebSockets)**: `AlertService.getNewAlerts()` compara firma `título|mensaje` de las alertas actuales contra las últimas conocidas en la sesión, evitando falsos negativos cuando una alerta del mismo tipo persiste con datos actualizados (ej. "Patrón: hipoglucemias frecuentes" con conteo distinto)
+
+### Sistema de notificaciones (banner global, sin WebSockets)
+
+- `NotificationService` (singleton `providedIn: 'root'`) + `NotificationBannerComponent` montado una sola vez en `AppComponent`, junto al `router-outlet` — sobrevive cualquier navegación, incluso entre `/app/**` y `/auth/**`
+- Reemplaza por completo `MatSnackBar` en los 11 lugares donde se usaba (registro de glucosa, comidas, ejercicio, signos vitales, ciclo menstrual, perfil, reportes, calculadora de insulina, medicamentos, navbar) — corrige un bug donde el `CdkOverlay` compartido por snackbar/menú/datepicker podía quedar huérfano tras una navegación rápida, bloqueando clics sin mostrarse visualmente
+- `AlertService.getNewAlerts()` sigue comparando por firma `título|mensaje` de las alertas actuales contra las últimas conocidas en la sesión, evitando falsos negativos cuando una alerta del mismo tipo persiste con datos actualizados (ej. "Patrón: hipoglucemias frecuentes" con conteo distinto) — solo cambió el canal de salida (banner en vez de snackbar)
+- Auto-dismiss configurable + cierre manual + acción opcional (ej. "Ver" → navega al dashboard)
+
+### Sesión persistente (refresh tokens)
+
+- El access token dura 15 minutos; al expirar, `error.interceptor.ts` lo refresca automáticamente en segundo plano (sin que el usuario lo note) y reintenta la petición que falló
+- Si varias peticiones fallan casi simultáneamente, `TokenRefreshCoordinator` evita disparar múltiples refrescos en paralelo — la primera dispara la llamada real, las demás esperan su resultado
+- Si el refresh token también es inválido/expiró (7 días de inactividad), recién ahí se cierra sesión y se redirige a login
+- Logout del navbar revoca solo la sesión actual; "Cerrar sesión en todos los dispositivos" (en el perfil) revoca todas
 
 ### Modo oscuro
 
@@ -237,3 +259,7 @@ npx webpack-bundle-analyzer dist/stats.json
 - `nowAsLocalIso()` (helper repetido en formularios de registro) corrige el offset de timezone — **nunca** usar `new Date().toISOString().slice(0,16)` directamente para inputs `datetime-local`, produce la hora en UTC en vez de local
 - Las llamadas a `AlertService.getNewAlerts()` comparan por firma `título|mensaje`, no solo título — necesario porque alertas de patrón mantienen el mismo título con datos distintos en el mensaje
 - La gráfica de glucosa usa una ventana de tolerancia de 2 horas (`MAX_GAP_MS`) para vincular eventos de comida/ejercicio a una lectura — evita asociar eventos lejanos en el tiempo cuando hay pocos puntos de glucosa
+- **`MatSnackBar` no se usa en ningún lugar del proyecto** — siempre usar `NotificationService` (success/info/warning/danger/showAlert). Reintroducir `MatSnackBar` reabriría el riesgo de overlays huérfanos en el `CdkOverlay` compartido
+- Mostrar un mensaje justo antes de `router.navigate(...)` con un servicio que dependa de `CdkOverlay` (snackbar, menú, tooltip persistente) es un patrón a evitar — el `NotificationBannerComponent` vive fuera del overlay precisamente para no tener este problema
+- El logout del navbar (`AuthService.getRefreshToken()` + `clearSession()`) limpia la sesión local **antes** de llamar al backend — nunca depender de la respuesta del servidor para que el usuario pueda cerrar sesión sin conexión
+- `error.interceptor.ts` excluye explícitamente `/api/v1/auth/**` de su lógica de refresco — un 401 en `/auth/login` (credenciales incorrectas) no debe disparar un intento de refresh ni redirigir, eso lo maneja el propio componente de login

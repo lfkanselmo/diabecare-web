@@ -4,7 +4,7 @@
 
 | Campo | Valor |
 |---|---|
-| Versión | 3.0.0 |
+| Versión | 4.0.0 |
 | Framework | Angular 21 (Standalone Components) |
 | UI Library | Angular Material 21 + ECharts 6 |
 | State Mgmt | NgRx 21 + Angular Signals |
@@ -21,14 +21,16 @@
 4. [Pantallas y Navegación](#4-pantallas-y-navegación)
 5. [Componentes Reutilizables Clave](#5-componentes-reutilizables-clave)
 6. [State Management](#6-state-management)
-7. [Notificaciones (Push + Inmediatas)](#7-notificaciones-push--inmediatas)
-8. [Gestión de Cuenta](#8-gestión-de-cuenta)
-9. [Selector de Rango de Fechas](#9-selector-de-rango-de-fechas)
-10. [UX de Formularios — Botón "Ahora"](#10-ux-de-formularios--botón-ahora)
-11. [Capa HTTP y Comunicación](#11-capa-http-y-comunicación)
-12. [Estándares Técnicos y de Código](#12-estándares-técnicos-y-de-código)
-13. [Rendimiento y Optimización](#13-rendimiento-y-optimización)
-14. [Accesibilidad](#14-accesibilidad)
+7. [Sistema de Notificaciones](#7-sistema-de-notificaciones)
+8. [Gestión de Cuenta y Sesiones](#8-gestión-de-cuenta-y-sesiones)
+9. [Refresh Tokens — Flujo en Frontend](#9-refresh-tokens--flujo-en-frontend)
+10. [Catálogo de Alimentos](#10-catálogo-de-alimentos)
+11. [Selector de Rango de Fechas](#11-selector-de-rango-de-fechas)
+12. [UX de Formularios — Botón "Ahora"](#12-ux-de-formularios--botón-ahora)
+13. [Capa HTTP y Comunicación](#13-capa-http-y-comunicación)
+14. [Estándares Técnicos y de Código](#14-estándares-técnicos-y-de-código)
+15. [Rendimiento y Optimización](#15-rendimiento-y-optimización)
+16. [Accesibilidad](#16-accesibilidad)
 
 ---
 
@@ -39,8 +41,9 @@
 - Registro rápido de glucosa con fecha/hora actual por defecto (máximo 3 taps/clics)
 - Dashboard centralizado con métricas visuales, alertas de patrón y accesos rápidos
 - Correlación visual entre glucosa, comidas y ejercicio sin saturar la gráfica
-- Sistema de alertas clínicas inteligentes con notificación inmediata tras cada registro
+- Sistema de alertas clínicas inteligentes con notificación inmediata tras cada registro, sin depender de overlays compartidos que puedan bloquear la interacción
 - Notificaciones push nativas para alertas asíncronas (resumen semanal)
+- Sesión persistente sin reautenticación constante — refresco automático de access token en segundo plano
 - Diseño responsive, modo oscuro, PWA instalable
 - Selección flexible de rangos de fecha donde el caso de uso lo justifica (historial de glucosa, reportes) — evaluado y descartado donde no aporta valor (tendencia HbA1c)
 
@@ -76,29 +79,36 @@ src/
 ├── app/
 │   ├── core/
 │   │   ├── auth/                  # AuthService (getUserId via JWT claim,
-│   │   │                          #   getPatientId, logout), JwtInterceptor
-│   │   ├── interceptors/          # JwtInterceptor, ErrorInterceptor
-│   │   ├── layout/                # Shell, Navbar, Sidebar
+│   │   │                          #   getPatientId, getRefreshToken, logout),
+│   │   │                          #   AuthApiService (login/register/refresh/
+│   │   │                          #   logout/logoutAll/getActiveSessions),
+│   │   │                          #   TokenRefreshCoordinator
+│   │   ├── interceptors/          # JwtInterceptor, ErrorInterceptor (401 → refresco
+│   │   │                          #   automático + reintento; 403 → notificación)
+│   │   ├── layout/                # Shell, Navbar (logout de sesión actual), Sidebar
 │   │   └── services/              # ThemeService, MetadataService,
 │   │                              # GlucoseStateService, PushNotificationService,
 │   │                              # AlertService, SystemConfigService,
-│   │                              # AccountService
+│   │                              # AccountService, NotificationService
 │   ├── shared/
-│   │   ├── components/            # AlertsPanel
-│   │   └── models/                # Interfaces TypeScript del dominio
+│   │   ├── components/            # AlertsPanel, NotificationBanner
+│   │   └── models/                # Interfaces TypeScript del dominio (incluye
+│   │                              # ActiveSession, RefreshTokenRequest/Response)
 │   ├── store/
 │   │   └── glucose/               # NgRx store de glucosa
 │   └── features/
 │       ├── auth/                  # Login (maneja códigos de error
-│       │                          #   ACCOUNT_SUSPENDED, INVALID_CREDENTIALS), Register
+│       │                          #   ACCOUNT_SUSPENDED, INVALID_CREDENTIALS,
+│       │                          #   guarda refresh token), Register
 │       ├── dashboard/              # Vista principal con métricas
 │       ├── glucose/                # Registro, historial (selector de rango +
 │       │                          #   gráfica rediseñada), calculadora de insulina
-│       ├── nutrition/               # Registro de comidas
+│       ├── nutrition/               # Registro de comidas (635 alimentos)
 │       ├── vitals/                  # Signos vitales, ejercicio
 │       ├── medications/              # Medicamentos
 │       ├── reports/                  # Reportes PDF
 │       └── profile/                  # Perfil, ciclo menstrual, tab "Cuenta"
+│                                     #   (sesiones activas, logout-all)
 ├── public/
 │   ├── manifest.webmanifest
 │   └── icons/
@@ -233,13 +243,51 @@ Cargado al inicio en `shell.component.ts` junto con `MetadataService.loadAll()`.
 
 ---
 
-## 7. Notificaciones (Push + Inmediatas)
+## 7. Sistema de Notificaciones
 
-### 7.1 Decisión: WebSockets descartado
+### 7.1 Bug de origen: overlay huérfano bloqueando clics
 
-Se evaluó implementar WebSockets para alertas en tiempo real y se **descartó** tras análisis: las alertas se calculan on-demand (`GetAlertsUseCase`), no hay eventos asíncronos espontáneos del servidor. El único caso de uso real — "tras registrar algo, quiero saber si se generó una alerta" — se resuelve completamente con una consulta HTTP normal inmediatamente después del registro, sin el costo de infraestructura de WebSockets (gestión de sesiones, reconexión, nuevo módulo backend).
+El mecanismo original usaba `MatSnackBar`. Tras registrar una lectura de glucosa: se abría un snackbar de éxito, se navegaba al historial, y ~400ms después (vía `setTimeout`) se abría un *segundo* snackbar si había una alerta nueva — todo en mitad de una transición de ruta. `MatSnackBar` comparte el mismo `CdkOverlay` que `mat-menu` y `mat-datepicker`; reemplazar overlays durante una navegación de ruta podía dejar el anterior "huérfano" (detached pero no destruido), bloqueando clics en la página de destino **sin mostrarse visualmente**. Síntoma reportado: tras registrar una lectura, el botón "Nueva lectura" en el historial dejaba de responder, sin verse deshabilitado.
 
-### 7.2 AlertService — detección de alertas nuevas
+### 7.2 Solución: NotificationService global, sin CdkOverlay
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class NotificationService {
+    private readonly notifications = signal<AppNotification[]>([]);
+    readonly visible = this.notifications.asReadonly();
+
+    success(title: string, message?: string, autoDismissMs = 4000): void;
+    info(title: string, message?: string, autoDismissMs = 4000): void;
+    warning(title: string, message?: string, autoDismissMs = 4000, action?: NotificationAction): void;
+    danger(title: string, message?: string, autoDismissMs = 4000): void;
+    showAlert(alert: AlertResponse, autoDismissMs = 4000, action?: NotificationAction): void;
+
+    dismiss(id: number): void;
+    clear(): void;
+}
+```
+
+```typescript
+// app.ts (componente raíz) — montado UNA SOLA VEZ
+@Component({
+    template: `
+        <app-notification-banner />
+        <router-outlet />
+    `
+})
+export class AppComponent { }
+```
+
+`NotificationBannerComponent` usa `position: fixed` y vive en el `AppComponent`, no en cada página — sobrevive cualquier navegación, incluso entre `/app/**` y `/auth/**` (rutas hermanas, no anidadas). Nunca toca `CdkOverlay`, así que no puede reproducir el bug original.
+
+Se migraron los **11 archivos** que usaban `MatSnackBar`: `glucose-register`, `glucose-history`, `meal-log`, `exercise-log`, `vitals`, `menstrual-cycle`, `profile`, `report`, `insulin-calculator`, `insulin-profile`, `medications`, `navbar`. Cero referencias a `MatSnackBar` en el proyecto tras la migración.
+
+### 7.3 Por qué un servicio global y no un banner por página
+
+La primera iteración pasó las notificaciones vía `Router.navigate(..., { state })` y un banner local en `glucose-history`. Funcionaba para ese caso puntual, pero no escalaba: cada flujo con navegación necesitaría su propio mecanismo de "consumir navigation state", y un mensaje no podía sobrevivir una navegación entre páginas hermanas como `/app/**` ↔ `/auth/**` (ej. "Cuenta eliminada, hasta luego" antes de ir a login). El diseño final es un único punto de entrada (`notificationService.success(...)`) sin que el caller necesite saber si va a navegar después o no.
+
+### 7.4 AlertService — detección de alertas nuevas (sin cambios de fondo)
 
 ```typescript
 @Injectable({ providedIn: 'root' })
@@ -247,12 +295,8 @@ export class AlertService {
     private readonly lastKnownSignatures = signal<Set<string>>(new Set());
 
     getAlerts(patientId: string): Observable<AlertResponse[]>;
-
-    // Llamado una vez al cargar el dashboard — sincroniza el set de "conocidas"
-    primeKnownAlerts(patientId: string): void;
-
-    // Llamado tras un registro exitoso — retorna SOLO las alertas nuevas
-    getNewAlerts(patientId: string): Observable<AlertResponse[]>;
+    primeKnownAlerts(patientId: string): void;        // sincroniza al cargar el dashboard
+    getNewAlerts(patientId: string): Observable<AlertResponse[]>;  // solo las nuevas
 
     private signatureOf(alert: AlertResponse): string {
         return `${alert.title}|${alert.message}`;  // no solo título
@@ -260,50 +304,30 @@ export class AlertService {
 }
 ```
 
-**Bug corregido durante implementación**: comparar solo por `title` producía falsos negativos — alertas de patrón (ej. "Patrón: hipoglucemias frecuentes") mantienen el mismo título indefinidamente mientras el conteo de episodios cambia en el `message` ("7 episodios" → "8 episodios"). La firma de comparación se cambió a `título|mensaje`.
+La lógica de detección no cambió (comparación por firma `título|mensaje`, necesaria porque alertas de patrón mantienen el mismo título con datos distintos en el mensaje). Lo único que cambió es el canal de salida:
 
-### 7.3 Patrón de uso en formularios de registro
-
-**Con navegación** (`glucose-register`, `meal-log` — navegan tras guardar):
 ```typescript
-private checkAlertsThenNavigate(patientId: string): void {
-    this.alertService.getNewAlerts(patientId).subscribe({
-        next: newAlerts => {
-            this.router.navigate([...]);
-            if (newAlerts.length > 0) {
-                setTimeout(() => {
-                    this.snackBar.open(`⚠ ${newAlerts[0].title}`, 'Ver', { duration: 6000 });
-                }, 400); // delay para no chocar con el snackbar de éxito / transición de ruta
-            }
-        },
-        error: () => this.router.navigate([...])
-    });
-}
+// Antes:
+this.snackBar.open(`⚠ ${newAlerts[0].title}`, 'Ver', { duration: 6000 });
+
+// Ahora:
+newAlerts.forEach(alert => this.notificationService.showAlert(alert));
+// o con acción:
+this.notificationService.showAlert(alert, undefined, {
+    label: 'Ver',
+    onClick: () => this.router.navigate(['/app/dashboard'])
+});
 ```
 
-**Sin navegación** (`exercise-log` — permanece en la misma vista):
-```typescript
-private notifyIfNewAlert(patientId: string): void {
-    this.alertService.getNewAlerts(patientId).subscribe({
-        next: newAlerts => {
-            if (newAlerts.length === 0) return;
-            setTimeout(() => {
-                this.snackBar.open(`⚠ ${newAlerts[0].title}`, 'Ver', { duration: 6000 })
-                    .onAction().subscribe(() => this.router.navigate(['/app/dashboard']));
-            }, 400);
-        },
-        error: () => {}
-    });
-}
-```
+Y, crucialmente, ya no hace falta el `setTimeout(400)` para "no chocar con el snackbar de éxito" ni separar el caso "con navegación" del caso "sin navegación" — el banner global no tiene ese problema de timing en ninguno de los dos casos.
 
-### 7.4 Push Notifications (sin cambios)
+### 7.5 Push Notifications (sin cambios)
 
-Web Push API con claves VAPID, suscripción vía `PushNotificationService`, usado para el resumen semanal automático. Ver versión anterior de esta documentación para el flujo completo.
+Web Push API con claves VAPID, suscripción vía `PushNotificationService`, usado para el resumen semanal automático. Sin relación con el `NotificationService` de banner — son dos sistemas distintos: uno entrega mensajes asíncronos del servidor al sistema operativo (push), el otro muestra mensajes síncronos dentro de la propia app (banner).
 
 ---
 
-## 8. Gestión de Cuenta
+## 8. Gestión de Cuenta y Sesiones
 
 ### 8.1 AccountService
 
@@ -336,13 +360,158 @@ getUserId(): string | null {
 
 Confirmación de dos pasos (`confirmSuspend`/`confirmDelete` signals) — primer clic muestra la confirmación, segundo clic ejecuta. La confirmación se renderiza en una banda separada debajo de la acción (no inline), con fondo `--color-surface-variant` y borde izquierdo rojo, evitando el problema de legibilidad de la versión inicial (texto y botones comprimidos por `justify-content: space-between`).
 
-Tras suspender/eliminar exitosamente: snackbar de confirmación → `setTimeout` de 2s → `authService.logout()` + redirección a `/auth/login`.
+Tras suspender/eliminar exitosamente: notificación de confirmación (`NotificationService.success`, ver sección 7) → `setTimeout` de 2s → `authService.logout()` + redirección a `/auth/login`.
+
+### 8.4 Sesiones activas (nuevo)
+
+Misma pestaña "Cuenta", nueva sección entre "Suspender" y "Eliminar" — misma jerarquía visual y mismas clases SCSS (`profile__account-*`) que las acciones existentes:
+
+```typescript
+sessions = signal<ActiveSession[]>([]);
+loadingSessions = signal(false);
+confirmLogoutAll = signal(false);
+loggingOutAll = signal(false);
+
+ngOnInit(): void {
+    this.loadProfile();
+    this.loadSessions();   // GET /api/v1/auth/sessions/{userId}
+}
+
+onLogoutAllDevices(): void {
+    if (!this.confirmLogoutAll()) { this.confirmLogoutAll.set(true); return; }
+    // segundo clic: POST /api/v1/auth/logout-all { userId }
+    // → limpia sesión local y redirige a login (esta acción SÍ cierra la sesión actual también)
+}
+```
+
+Cada sesión en la lista muestra `deviceLabel` (ej. "Chrome en Windows") y `lastUsedAt ?? createdAt` formateado con `DatePipe`. El botón "Cerrar sesión en todos los dispositivos" usa la misma confirmación de dos pasos que suspender/eliminar cuenta, por consistencia de patrón — es una acción de alto impacto (cierra la sesión propia también) aunque no sea irreversible como eliminar la cuenta.
 
 ---
 
-## 9. Selector de Rango de Fechas
+## 9. Refresh Tokens — Flujo en Frontend
 
-### 9.1 Patrón replicado de `ReportComponent`
+### 9.1 Por qué se necesitó
+
+El access token dura 15 minutos. Sin un mecanismo de refresco, cualquier sesión de uso normal (revisar el dashboard, registrar una comida, ver el historial) terminaba forzando un re-login. Esto se resolvió en conjunto con el backend (ver documentación de backend, sección 7.7) agregando refresh tokens; esta sección documenta exclusivamente la parte de frontend.
+
+### 9.2 TokenRefreshCoordinator
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class TokenRefreshCoordinator {
+    private refreshing = false;
+    private readonly refreshedToken$ = new BehaviorSubject<string | null>(null);
+
+    refreshAccessToken(): Observable<string> {
+        if (this.refreshing) {
+            // Ya hay un refresco en curso — esperar su resultado en vez de disparar otro
+            return this.refreshedToken$.pipe(
+                filter((token): token is string => token !== null),
+                take(1)
+            );
+        }
+
+        const refreshToken = this.authService.getRefreshToken();
+        if (!refreshToken) return throwError(() => new Error('NO_REFRESH_TOKEN'));
+
+        this.refreshing = true;
+        this.refreshedToken$.next(null);
+
+        return this.authApiService.refresh({ refreshToken }).pipe(
+            tap(response => {
+                this.authService.saveAccessToken(response.accessToken, response.refreshToken);
+                this.refreshing = false;
+                this.refreshedToken$.next(response.accessToken);
+            }),
+            map(response => response.accessToken)
+        );
+    }
+
+    onRefreshFailed(): void {
+        this.refreshing = false;
+        this.refreshedToken$.next(null);
+    }
+}
+```
+
+**Problema que resuelve**: un dashboard que dispara 5 peticiones en paralelo (`forkJoin`) y todas fallan con 401 al mismo tiempo no debe disparar 5 llamadas a `/refresh` — solo la primera dispara la llamada real; las siguientes 4 esperan el resultado vía el `BehaviorSubject` compartido.
+
+Se evaluó implementar esto con variables de módulo (`let isRefreshing = false` a nivel de archivo) en una primera iteración y se descartó: rompe la inyectabilidad/testeabilidad y no es idiomático en Angular. Un servicio `providedIn: 'root'` logra el mismo singleton compartido de forma correcta.
+
+### 9.3 error.interceptor.ts — orquestación completa
+
+```typescript
+const handleUnauthorized = () =>
+    tokenRefreshCoordinator.refreshAccessToken().pipe(
+        switchMap(newAccessToken =>
+            next(req.clone({ setHeaders: { Authorization: `Bearer ${newAccessToken}` } }))
+        ),
+        catchError(() => {
+            tokenRefreshCoordinator.onRefreshFailed();
+            return redirectToLogin();   // limpia sesión, notifica, redirige a /auth/login
+        })
+    );
+
+return next(req).pipe(
+    catchError((error: HttpErrorResponse) => {
+        if (error.status === 401 && !isAuthEndpoint) return handleUnauthorized();
+        if (error.status === 403 && !isAuthEndpoint) {
+            notificationService.danger(apiError?.message ?? 'No tienes permiso...');
+        }
+        return throwError(() => error);
+    })
+);
+```
+
+`isAuthEndpoint` excluye `/api/v1/auth/**` de esta lógica — un 401 al hacer login (credenciales incorrectas) no debe disparar un intento de refresh ni redirigir; ese caso lo maneja el propio `LoginComponent`.
+
+**Diferencia clave 401 vs 403**: 401 dispara el flujo de refresco (la sesión puede salvarse); 403 solo notifica al usuario, sin tocar la sesión — un 403 significa que el usuario *sí* está autenticado pero no tiene permiso sobre ese recurso específico, no que deba volver a loguearse.
+
+### 9.4 Logout: sesión actual vs todos los dispositivos
+
+```typescript
+// navbar.component.ts
+onLogout(): void {
+    const refreshToken = this.authService.getRefreshToken();
+    this.authService.clearSession();          // limpia SIEMPRE, sin esperar el backend
+    this.router.navigate(['/auth/login']);
+    if (refreshToken) {
+        this.authApiService.logout(refreshToken).subscribe({ error: () => {} });  // best-effort
+    }
+}
+```
+
+```typescript
+// profile.component.ts — distinto endpoint, distinto alcance
+onLogoutAllDevices(): void {
+    // confirmación de dos pasos, mismo patrón que suspender/eliminar cuenta
+    this.authApiService.logoutAll(userId).subscribe({
+        next: () => { this.authService.clearSession(); this.router.navigate(['/auth/login']); }
+    });
+}
+```
+
+**Bug evitado**: la primera versión tenía un único `LogoutUseCase` en backend que revocaba *todos* los dispositivos sin distinción — el logout normal del navbar habría desconectado, por ejemplo, una sesión móvil activa. Se separó en dos endpoints (`/logout` vs `/logout-all`) y dos métodos correspondientes en `AuthApiService`.
+
+La limpieza de `localStorage` en `onLogout()` ocurre **antes** de llamar al backend, no depende de su respuesta — permite cerrar sesión sin conexión a internet.
+
+---
+
+## 10. Catálogo de Alimentos
+
+### 10.1 Sin cambios de código, solo de datos
+
+El catálogo de alimentos creció de 172 a 635 registros en esta sesión (ver documentación de backend, sección 14, para el detalle completo de las migraciones). El frontend no requirió ningún cambio estructural: `FoodResponse.category` siempre fue `string` libre, así que las 7 categorías nuevas (`FRUTOS_SECOS`, `EMBUTIDOS`, `CONDIMENTOS`, `COMIDA_RAPIDA`, `PANADERIA`, `VEGANOS`, `INDUSTRIALES`, `COMIDA_CALLE`) llegan al buscador (`food-search.component.ts`) sin tocar código.
+
+### 10.2 Punto a revisar (no abordado esta sesión)
+
+El componente de búsqueda de alimentos no fue auditado contra el catálogo ampliado — vale la pena confirmar en una sesión futura que el límite de resultados mostrados en el autocomplete (si existe alguno) siga siendo razonable con más del cuádruple de alimentos en la tabla, y que el orden de resultados (relevancia vs. alfabético) no se vea afectado negativamente por el volumen.
+
+---
+
+## 11. Selector de Rango de Fechas
+
+### 11.1 Patrón replicado de `ReportComponent`
 
 `GlucoseHistoryComponent` implementa un menú desplegable (`mat-menu`) con atajos rápidos (7/30/90/180 días) + sección de rango personalizado con `MatDatepicker` para "Desde"/"Hasta", consolidados en un único control en lugar de chips fijos ocupando espacio permanente en el header.
 
@@ -362,7 +531,7 @@ rangeForm: FormGroup = this.fb.group({
 
 El rango seleccionado (`getRangeIso()`) alimenta tanto la carga de gráfica/tabla (`loadHistory()`) como la exportación CSV/JSON — un único punto de verdad para el rango activo.
 
-### 9.2 Fix de overlay
+### 11.2 Fix de overlay
 
 `mat-menu` por defecto limita `max-width`, cortando el contenido del rango personalizado. Como `mat-menu` se renderiza en un overlay fuera del árbol del componente, requiere `::ng-deep` a nivel de archivo (no anidado dentro de la clase del componente) para alcanzar `.mat-mdc-menu-panel`:
 
@@ -375,13 +544,13 @@ El rango seleccionado (`getRangeIso()`) alimenta tanto la carga de gráfica/tabl
 
 ---
 
-## 10. UX de Formularios — Botón "Ahora"
+## 12. UX de Formularios — Botón "Ahora"
 
-### 10.1 Motivación
+### 12.1 Motivación
 
 Reducir fricción en el caso más común: registrar una medición en el momento en que ocurre. El campo de fecha/hora ya cargaba el instante actual por defecto, pero no había forma rápida de "resetear" a la hora actual si el usuario tardó en completar el formulario.
 
-### 10.2 Patrón aplicado
+### 12.2 Patrón aplicado
 
 En `glucose-register`, `exercise-log`, `meal-log` (signos vitales ya lo tenía):
 
@@ -411,37 +580,65 @@ setNow(): void {
 
 ---
 
-## 11. Capa HTTP y Comunicación
+## 13. Capa HTTP y Comunicación
 
-Sin cambios estructurales en interceptores. Servicios nuevos esta sesión: `AccountService`, `SystemConfigService` (ya cubierto en sección 6).
+### 13.1 Interceptores (actualizado esta sesión)
+
+```
+jwtInterceptor    → adjunta Authorization: Bearer <token> a cada request saliente (sin cambios)
+errorInterceptor  → 401 (fuera de /auth/**): refresca el token automáticamente y reintenta
+                      (ver sección 9); 403: solo notifica, no redirige; ambos casos antes
+                      solo redirigían a login directamente sin distinguir, o ni siquiera
+                      reaccionaban al 403
+```
+
+Orden de registro en `app.config.ts`: `withInterceptors([jwtInterceptor, errorInterceptor])`. Los interceptores funcionales de Angular se ejecutan en ese orden para la request saliente, y en orden inverso para la respuesta/error — `errorInterceptor` ve el error primero (más cerca de la respuesta del backend), por eso la lógica de refresco vive ahí y no en `jwtInterceptor`.
+
+### 13.2 Servicios HTTP nuevos esta sesión
+
+| Servicio | Responsabilidad |
+|---|---|
+| `AuthApiService` | login, register, **refresh, logout, logoutAll, getActiveSessions** (los últimos 4, nuevos) |
+| `TokenRefreshCoordinator` | coordina refrescos concurrentes (ver sección 9) |
+| `NotificationService` | banner de notificaciones global (ver sección 7) |
+
+`AccountService`, `SystemConfigService` ya estaban cubiertos en sección 6 de una sesión anterior.
 
 ---
 
-## 12. Estándares Técnicos y de Código
+## 14. Estándares Técnicos y de Código
 
-### 12.1 Convenciones (sin cambios respecto a versión anterior)
+### 14.1 Convenciones (sin cambios respecto a versión anterior)
 
 Ver tabla completa en versión previa. Adición: NgRx Actions y Selectors siguen el patrón `[Feature] Verb Noun` / `select` + Feature + Property — sin cambios esta sesión, NgRx no se tocó.
 
-### 12.2 Reglas nuevas derivadas de esta sesión
+### 14.2 Reglas derivadas de sesiones anteriores
 
 - **`@for` track expression**: nunca usar un campo no garantizado único (como `alert.type` cuando puede repetirse) — usar `$index` si no hay un identificador único real
 - **`datetime-local` inputs**: siempre usar un helper que corrija el offset de timezone, nunca `toISOString()` directo
 - **Comparación de objetos para detectar "cambios"**: comparar por una firma compuesta de los campos relevantes, no por un único campo que pueda repetirse con datos distintos (ej. `título|mensaje`, no solo `título`)
 - **Vinculación temporal de eventos a una métrica puntual**: siempre aplicar una ventana de tolerancia máxima — vincular "el evento más cercano sin importar qué tan lejos esté" produce resultados engañosos cuando hay pocos puntos de referencia
 
+### 14.3 Reglas nuevas derivadas de esta sesión
+
+- **Nunca usar `MatSnackBar`**: usar siempre `NotificationService` (sección 7). Reintroducir `MatSnackBar` reabre el riesgo de overlays huérfanos en el `CdkOverlay` compartido con `mat-menu`/`mat-datepicker`
+- **Mostrar un mensaje justo antes de `router.navigate(...)`** con cualquier componente que dependa de `CdkOverlay` (snackbar, menú, tooltip persistente) es un patrón a evitar — si el mensaje debe sobrevivir la navegación, usar un servicio global con un componente montado en la raíz, no un mecanismo por página
+- **Servicios de coordinación de operaciones async concurrentes** (ej. refrescar un token cuando N requests fallan a la vez) van en un servicio `providedIn: 'root'` con un `BehaviorSubject` como flag compartido, nunca en variables de módulo (`let` a nivel de archivo) — rompe inyectabilidad y testeabilidad
+- **Logout y operaciones de "salir"**: limpiar el estado local primero, llamar al backend después sin bloquear sobre su respuesta (best-effort) — el usuario debe poder cerrar sesión sin conexión
+- **Excluir explícitamente los endpoints de autenticación** (`/api/v1/auth/**`) de cualquier interceptor que reaccione a 401 — un fallo de login no es un fallo de sesión
+
 ---
 
-## 13. Rendimiento y Optimización
+## 15. Rendimiento y Optimización
 
 Sin cambios respecto a la versión anterior — NgRx con TTL 5 min, Service Worker, lazy loading por feature.
 
 ---
 
-## 14. Accesibilidad
+## 16. Accesibilidad
 
 Sin cambios — ver versión anterior para el detalle completo (WCAG 2.1 AA, aria-labels, contraste, navegación por teclado).
 
 ---
 
-*DiabeCare Frontend Documentation v3.0*
+*DiabeCare Frontend Documentation v4.0*

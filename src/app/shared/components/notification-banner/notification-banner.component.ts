@@ -20,13 +20,6 @@ export class NotificationBannerComponent {
 
     readonly notifications = this.notificationService.visible;
 
-    readonly severityIcons: Record<AlertSeverity, string> = {
-        SUCCESS: 'check_circle',
-        INFO: 'info',
-        WARNING: 'warning',
-        DANGER: 'error'
-    };
-
     close(id: number): void {
         this.notificationService.dismiss(id);
     }
@@ -43,5 +36,9 @@ export class NotificationBannerComponent {
     getAlertBg(severity: AlertSeverity): string {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         return this.systemConfig.getAlertBg(severity, isDark);
+    }
+
+    getSeverityIcon(severity: AlertSeverity): string {
+        return this.systemConfig.getSeverityIcon(severity);
     }
 }

@@ -13,6 +13,7 @@ export interface RegisterRequest {
     diabetesType: string;
     diagnosisDate: string;
     heightCm: string;
+    biologicalSex: string;
 }
 
 export interface AuthResponse {

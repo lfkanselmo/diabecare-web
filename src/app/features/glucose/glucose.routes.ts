@@ -14,12 +14,6 @@ export const GLUCOSE_ROUTES: Routes = [
                 .then(m => m.GlucoseHistoryComponent)
     },
     {
-        path: 'insulin-calculator',
-        loadComponent: () =>
-            import('./pages/insulin-calculator/insulin-calculator.component')
-                .then(m => m.InsulinCalculatorComponent)
-    },
-    {
         path: '',
         redirectTo: 'register',
         pathMatch: 'full'

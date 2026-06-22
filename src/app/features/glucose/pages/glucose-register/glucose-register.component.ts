@@ -11,8 +11,8 @@ import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { NotificationService } from '../../../../core/services/notification.service';
-import { GlucoseUnit, ReadingType } from '../../../../shared/models/glucose.model';
 import { MetadataService } from '@core/services/metadata.service';
+import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-glucose-register',
@@ -45,13 +45,13 @@ export class GlucoseRegisterComponent {
         value: [null, [Validators.required, Validators.min(20), Validators.max(600)]],
         unit: ['MG_DL', Validators.required],
         readingType: ['', Validators.required],
-        measuredAt: [this.nowAsLocalIso(), Validators.required],
+        measuredAt: [nowAsLocalIso(), Validators.required],
         notes: [''],
         deviceSource: ['']
     });
 
     setNow(): void {
-        this.form.patchValue({ measuredAt: this.nowAsLocalIso() });
+        this.form.patchValue({ measuredAt: nowAsLocalIso() });
     }
 
     onSubmit(): void {
@@ -95,9 +95,4 @@ export class GlucoseRegisterComponent {
         });
     }
 
-    private nowAsLocalIso(): string {
-        const now = new Date();
-        const offsetMs = now.getTimezoneOffset() * 60000;
-        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
-    }
 }

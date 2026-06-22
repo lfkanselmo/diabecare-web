@@ -30,3 +30,8 @@ export interface MenstrualCycleStatusResponse {
     averageCycleLength: number;
     history: CycleHistoryItem[];
 }
+
+export interface CyclePhaseDayResponse {
+    date: string;
+    phase: CyclePhase;
+}

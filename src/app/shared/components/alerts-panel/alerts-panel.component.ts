@@ -17,13 +17,6 @@ export class AlertsPanelComponent {
 
     private readonly systemConfig = inject(SystemConfigService);
 
-    readonly severityIcons: Record<AlertSeverity, string> = {
-        SUCCESS: 'check_circle',
-        INFO: 'info',
-        WARNING: 'warning',
-        DANGER: 'error'
-    };
-
     getAlertColor(severity: AlertSeverity): string {
         return this.systemConfig.getAlertColor(severity);
     }
@@ -31,5 +24,9 @@ export class AlertsPanelComponent {
     getAlertBg(severity: AlertSeverity): string {
         const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
         return this.systemConfig.getAlertBg(severity, isDark);
+    }
+
+    getSeverityIcon(severity: AlertSeverity): string {
+        return this.systemConfig.getSeverityIcon(severity);
     }
 }

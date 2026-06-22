@@ -13,6 +13,7 @@ import { NotificationService } from '../../../../core/services/notification.serv
 import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { CyclePhase, MenstrualCycleStatusResponse } from '../../../../shared/models/menstrual-cycle.model';
 import { CycleCalendarComponent } from '../cycle-calendar/cycle-calendar.component';
+import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-menstrual-cycle',
@@ -46,16 +47,16 @@ export class MenstrualCycleComponent implements OnInit {
     noData = signal(false);
 
     form: FormGroup = this.fb.group({
-        startDate: [new Date().toISOString().split('T')[0]],
+        startDate: [toLocalDateString(new Date())],
         periodLengthDays: [5],
         symptoms: [''],
         notes: ['']
     });
 
     readonly commonSymptoms = [
-        'Cólicos', 'Dolor de cabeza', 'Fatiga',
-        'Cambios de humor', 'Hinchazón', 'Antojos',
-        'Sensibilidad en senos', 'Dificultad para dormir'
+        'CRAMPS', 'HEADACHE', 'FATIGUE', 'MOOD_CHANGES',
+        'BLOATING', 'CRAVINGS', 'BREAST_TENDERNESS', 'SLEEP_DIFFICULTY',
+        'BACK_PAIN', 'NAUSEA', 'ACNE', 'SPOTTING'
     ];
 
     selectedSymptoms = signal<string[]>([]);

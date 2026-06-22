@@ -16,3 +16,12 @@ export interface PatientResponse {
     targetGlucoseForCorrection: number | null;
     biologicalSex: string;
 }
+
+export interface UpdatePatientRequest {
+    heightCm?: number;
+    targetGlucoseMin: number;
+    targetGlucoseMax: number;
+    dailyCalorieGoal?: number;
+    activityLevel: string;
+    preferredGlucoseUnit: string;
+}

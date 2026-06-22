@@ -1,0 +1,84 @@
+<div class="nutrition-history">
+    <div class="nutrition-history__header">
+        <h1 class="nutrition-history__title">Historial de comidas</h1>
+
+        <button mat-stroked-button [matMenuTriggerFor]="rangeMenu">
+            <mat-icon>date_range</mat-icon>
+            {{ selectedRangeLabel() }}
+        </button>
+
+        <mat-menu #rangeMenu="matMenu">
+            @for (range of quickRanges; track range.label) {
+            <button mat-menu-item (click)="applyQuickRange(range.label, range.days)">
+                {{ range.label }}
+            </button>
+            }
+            <button mat-menu-item [matMenuTriggerFor]="customRangeMenu">
+                Rango personalizado
+            </button>
+        </mat-menu>
+
+        <mat-menu #customRangeMenu="matMenu">
+            <div class="nutrition-history__custom-range" [formGroup]="rangeForm" (click)="$event.stopPropagation()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Desde</mat-label>
+                    <input matInput [matDatepicker]="fromPicker" formControlName="from">
+                    <mat-datepicker-toggle matSuffix [for]="fromPicker" />
+                    <mat-datepicker #fromPicker />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Hasta</mat-label>
+                    <input matInput [matDatepicker]="toPicker" formControlName="to">
+                    <mat-datepicker-toggle matSuffix [for]="toPicker" />
+                    <mat-datepicker #toPicker />
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" (click)="applyCustomRange()">
+                    Aplicar
+                </button>
+            </div>
+        </mat-menu>
+    </div>
+
+    @if (loading()) {
+    <div class="nutrition-history__loading">
+        <mat-spinner diameter="40" />
+    </div>
+    } @else if (meals().length === 0) {
+    <div class="nutrition-history__empty">
+        <mat-icon>restaurant</mat-icon>
+        <span>No hay comidas registradas en este rango</span>
+    </div>
+    } @else {
+    <div class="nutrition-history__list">
+        @for (meal of meals(); track meal.mealId) {
+        <div class="nutrition-history__card">
+            <div class="nutrition-history__card-header">
+                <span class="nutrition-history__meal-type">{{ getMealTypeLabel(meal.mealType) }}</span>
+                <span class="nutrition-history__date">{{ meal.consumedAt | date:'dd MMM yyyy, HH:mm' }}</span>
+            </div>
+
+            <div class="nutrition-history__macros">
+                <span>{{ meal.totalCalories | number:'1.0-0' }} kcal</span>
+                <span>C: {{ meal.totalCarbohydrates | number:'1.0-1' }}g</span>
+                <span>P: {{ meal.totalProteins | number:'1.0-1' }}g</span>
+                <span>G: {{ meal.totalFats | number:'1.0-1' }}g</span>
+            </div>
+
+            @if (meal.items.length > 0) {
+            <ul class="nutrition-history__items">
+                @for (item of meal.items; track item.mealItemId) {
+                <li>{{ item.foodName }} — {{ item.quantityGrams }}g</li>
+                }
+            </ul>
+            }
+
+            @if (meal.notes) {
+            <p class="nutrition-history__notes">{{ meal.notes }}</p>
+            }
+        </div>
+        }
+    </div>
+    }
+</div>

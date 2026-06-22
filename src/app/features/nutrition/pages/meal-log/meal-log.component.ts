@@ -17,6 +17,7 @@ import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.m
 import { FoodResponse } from '../../../../shared/models/food.model';
 import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
 import { MetadataService } from '@core/services/metadata.service';
+import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-meal-log',
@@ -52,7 +53,7 @@ export class MealLogComponent {
 
     mealForm: FormGroup = this.fb.group({
         mealType: ['', Validators.required],
-        consumedAt: [this.nowAsLocalIso(), Validators.required],
+        consumedAt: [nowAsLocalIso(), Validators.required],
         notes: ['']
     });
 
@@ -91,7 +92,7 @@ export class MealLogComponent {
     }
 
     setNow(): void {
-        this.mealForm.patchValue({ consumedAt: this.nowAsLocalIso() });
+        this.mealForm.patchValue({ consumedAt: nowAsLocalIso() });
     }
 
     onFoodSelected(food: FoodResponse): void {
@@ -177,9 +178,4 @@ export class MealLogComponent {
         });
     }
 
-    private nowAsLocalIso(): string {
-        const now = new Date();
-        const offsetMs = now.getTimezoneOffset() * 60000;
-        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
-    }
 }

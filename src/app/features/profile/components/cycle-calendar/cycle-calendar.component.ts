@@ -4,6 +4,9 @@ import { EChartsOption } from 'echarts';
 import { DatePipe, KeyValuePipe, TitleCasePipe } from '@angular/common';
 import { MenstrualCycleStatusResponse, CyclePhase } from '../../../../shared/models/menstrual-cycle.model';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
+import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
+import { AuthService } from '../../../../core/auth/auth.service';
+import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-cycle-calendar',
@@ -17,6 +20,8 @@ export class CycleCalendarComponent implements OnChanges {
     @Input() status!: MenstrualCycleStatusResponse;
 
     private readonly systemConfig = inject(SystemConfigService);
+    private readonly cycleService = inject(MenstrualCycleService);
+    private readonly authService = inject(AuthService);
 
     wheelOptions: EChartsOption = {};
     calendarDays: CalendarDay[] = [];
@@ -30,7 +35,7 @@ export class CycleCalendarComponent implements OnChanges {
         if (this.status) {
             const dark = document.documentElement.getAttribute('data-theme') === 'dark';
             this.buildWheelChart(dark);
-            this.buildCalendar(dark);
+            this.loadCalendar(dark);
         }
     }
 
@@ -108,13 +113,32 @@ export class CycleCalendarComponent implements OnChanges {
         };
     }
 
-    private buildCalendar(dark: boolean): void {
+    private loadCalendar(dark: boolean): void {
+        const patientId = this.authService.getPatientId();
+        if (!patientId) return;
+
         const today = new Date();
         const year = today.getFullYear();
         const month = today.getMonth();
         const firstDay = new Date(year, month, 1);
         const lastDay = new Date(year, month + 1, 0);
+
+        this.cycleService.getPhaseCalendar(
+            patientId,
+            toLocalDateString(firstDay),
+            toLocalDateString(lastDay)
+        ).subscribe({
+            next: phaseDays => this.buildCalendar(dark, firstDay, lastDay, phaseDays),
+            error: () => { }
+        });
+    }
+
+    private buildCalendar(dark: boolean, firstDay: Date, lastDay: Date, phaseDays: { date: string; phase: CyclePhase }[]): void {
+        const today = new Date();
         const startPad = firstDay.getDay();
+        const nextCycle = new Date(this.status.nextCycleStart);
+
+        const phaseByDate = new Map(phaseDays.map(d => [d.date, d.phase]));
 
         this.calendarDays = [];
 
@@ -122,28 +146,14 @@ export class CycleCalendarComponent implements OnChanges {
             this.calendarDays.push({ date: null, phase: null, isToday: false, isPredicted: false, dark });
         }
 
-        const cycleStart = new Date(this.status.history[0]?.startDate ?? today);
-        const cycleLength = Math.round(this.status.averageCycleLength) || 28;
-        const nextCycle = new Date(this.status.nextCycleStart);
-
         for (let d = 1; d <= lastDay.getDate(); d++) {
-            const date = new Date(year, month, d);
+            const date = new Date(firstDay.getFullYear(), firstDay.getMonth(), d);
             const isToday = date.toDateString() === today.toDateString();
-            const diffDays = Math.floor((date.getTime() - cycleStart.getTime()) / 86400000);
-            const dayInCycle = ((diffDays % cycleLength) + cycleLength) % cycleLength + 1;
-            const phase = this.getDayPhase(dayInCycle, cycleLength);
+            const phase = phaseByDate.get(toLocalDateString(date)) ?? null;
             const isPredicted = date >= nextCycle && date < new Date(nextCycle.getTime() + 5 * 86400000);
 
             this.calendarDays.push({ date: d, phase, isToday, isPredicted, dark });
         }
-    }
-
-    private getDayPhase(day: number, cycleLength: number): CyclePhase {
-        if (day <= 5) return 'MENSTRUATION';
-        if (day <= 13) return 'FOLLICULAR';
-        if (day === 14) return 'OVULATION';
-        if (day <= Math.floor(cycleLength * 0.75)) return 'LUTEAL_EARLY';
-        return 'LUTEAL_LATE';
     }
 
     getDayColor(day: CalendarDay): string {

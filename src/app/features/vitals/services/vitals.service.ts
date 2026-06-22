@@ -22,8 +22,8 @@ export class VitalsService {
         return this.http.get<VitalSignResponse[]>(`${this.baseUrl}/${patientId}`);
     }
 
-    getLatest(patientId: string): Observable<VitalSignResponse> {
-        return this.http.get<VitalSignResponse>(`${this.baseUrl}/${patientId}/latest`);
+    getLatest(patientId: string): Observable<VitalSignResponse | null> {
+        return this.http.get<VitalSignResponse | null>(`${this.baseUrl}/${patientId}/latest`);
     }
 
     getHba1cTrend(patientId: string, months = 6): Observable<Hba1cTrendResponse[]> {

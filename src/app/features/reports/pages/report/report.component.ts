@@ -10,6 +10,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { ReportService } from '../../services/report.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-report',
@@ -68,8 +69,8 @@ export class ReportComponent {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
 
-        const from = (this.form.get('from')?.value as Date).toISOString().split('T')[0];
-        const to = (this.form.get('to')?.value as Date).toISOString().split('T')[0];
+        const from = toLocalDateString(this.form.get('from')?.value as Date);
+        const to = toLocalDateString(this.form.get('to')?.value as Date);
 
         this.loading.set(true);
 

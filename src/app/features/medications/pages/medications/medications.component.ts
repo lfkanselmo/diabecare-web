@@ -1,5 +1,6 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
@@ -44,10 +45,12 @@ export class MedicationsComponent implements OnInit {
     private readonly medicationsService = inject(MedicationsService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly route = inject(ActivatedRoute);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     medications = signal<MedicationResponse[]>([]);
+    selectedTabIndex = signal(0);
 
     form: FormGroup = this.fb.group({
         name: ['', Validators.required],
@@ -60,6 +63,10 @@ export class MedicationsComponent implements OnInit {
 
     ngOnInit(): void {
         this.loadMedications();
+
+        if (this.route.snapshot.queryParamMap.get('tab') === 'calculator') {
+            this.selectedTabIndex.set(1);
+        }
     }
 
     onSubmit(): void {

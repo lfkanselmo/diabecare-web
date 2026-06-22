@@ -4,7 +4,10 @@ export type AlertType =
     | 'GLUCOSE_AVERAGE_HIGH'
     | 'NO_GLUCOSE_RECORDED'
     | 'CALORIE_GOAL_EXCEEDED'
-    | 'POSITIVE_STREAK';
+    | 'POSITIVE_STREAK'
+    | 'HIGH_HBA1C_ESTIMATED'
+    | 'NO_MEAL_RECORDED'
+    | 'GLUCOSE_PATTERN_DETECTED';
 
 export interface AlertResponse {
     type: AlertType;

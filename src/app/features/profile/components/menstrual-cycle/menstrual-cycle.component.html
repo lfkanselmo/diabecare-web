@@ -30,7 +30,7 @@
                         <button type="button" class="cycle__symptom-chip"
                             [class.cycle__symptom-chip--selected]="isSymptomSelected(symptom)"
                             (click)="toggleSymptom(symptom)">
-                            {{ symptom }}
+                            {{ getSymptomLabel(symptom) }}
                         </button>
                         }
                     </div>

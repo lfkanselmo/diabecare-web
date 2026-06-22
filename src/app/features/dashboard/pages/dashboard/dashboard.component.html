@@ -19,7 +19,9 @@
         <span>Glucosa promedio (7 días)</span>
       </div>
       <div class="dashboard__metric">
-        @if (glucoseStats()) {
+        @if (glucoseStatsLoading()) {
+        <mat-spinner diameter="32" />
+        } @else if (glucoseStats()) {
         <span class="dashboard__metric-value">{{ glucoseStats()!.average | number:'1.0-0' }}</span>
         <span class="dashboard__metric-unit">mg/dL</span>
         } @else {
@@ -66,7 +68,9 @@
         <span>Calorías hoy</span>
       </div>
       <div class="dashboard__metric">
-        @if (dailySummary()) {
+        @if (dailySummaryLoading()) {
+        <mat-spinner diameter="32" />
+        } @else if (dailySummary()) {
         <span class="dashboard__metric-value">{{ dailySummary()!.totalCalories | number:'1.0-0' }}</span>
         <span class="dashboard__metric-unit">kcal</span>
         } @else {
@@ -95,7 +99,11 @@
         <mat-icon>favorite</mat-icon>
         <span>Último registro vital</span>
       </div>
-      @if (latestVitals()) {
+      @if (latestVitalsLoading()) {
+      <div class="dashboard__metric">
+        <mat-spinner diameter="32" />
+      </div>
+      } @else if (latestVitals()) {
       <div class="dashboard__vitals">
         @if (latestVitals()!.weightKg) {
         <div class="dashboard__vital-item">
@@ -140,7 +148,9 @@
         <span>Variabilidad glucémica</span>
       </div>
       <div class="dashboard__metric">
-        @if (glucoseStats()) {
+        @if (glucoseStatsLoading()) {
+        <mat-spinner diameter="32" />
+        } @else if (glucoseStats()) {
         <span class="dashboard__metric-value"
           [class.dashboard__metric-value--warning]="glucoseStats()!.coefficientOfVariation >= 36">
           {{ glucoseStats()!.coefficientOfVariation | number:'1.0-1' }}%
@@ -170,7 +180,11 @@
         <mat-icon>calendar_month</mat-icon>
         <span>Ciclo menstrual</span>
       </div>
-      @if (cycleStatus()) {
+      @if (cycleStatusLoading()) {
+      <div class="dashboard__metric">
+        <mat-spinner diameter="32" />
+      </div>
+      } @else if (cycleStatus()) {
       <div class="dashboard__cycle-phase" [style.border-left-color]="getCyclePhaseColor(cycleStatus()!.currentPhase)">
         <span class="dashboard__cycle-phase-label" [style.color]="getCyclePhaseColor(cycleStatus()!.currentPhase)">
           {{ cycleStatus()!.currentPhaseLabel }}
@@ -214,7 +228,7 @@
       <mat-icon>directions_run</mat-icon>
       Ejercicio
     </a>
-    <a mat-stroked-button routerLink="/app/glucose/insulin-calculator">
+    <a mat-stroked-button routerLink="/app/medications">
       <mat-icon>calculate</mat-icon>
       Calculadora
     </a>

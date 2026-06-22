@@ -23,8 +23,8 @@ export class SystemConfigService {
         MENSTRUATION: { label: 'Menstruación', color: '#EF5350', lightColor: '#FFEBEE', darkColor: 'rgba(239,83,80,0.18)', days: '1-5', icon: '🩸' },
         FOLLICULAR: { label: 'Fase folicular', color: '#66BB6A', lightColor: '#E8F5E9', darkColor: 'rgba(102,187,106,0.18)', days: '6-13', icon: '🌱' },
         OVULATION: { label: 'Ovulación', color: '#42A5F5', lightColor: '#E3F2FD', darkColor: 'rgba(66,165,245,0.18)', days: '14', icon: '✨' },
-        LUTEAL_EARLY: { label: 'Lútea temprana', color: '#FFA726', lightColor: '#FFF3E0', darkColor: 'rgba(255,167,38,0.18)', days: '15-21', icon: '🌙' },
-        LUTEAL_LATE: { label: 'Lútea tardía', color: '#FF7043', lightColor: '#FBE9E7', darkColor: 'rgba(255,112,67,0.18)', days: '22-28', icon: '⚡' }
+        LUTEAL_EARLY: { label: 'Fase lútea temprana', color: '#FFA726', lightColor: '#FFF3E0', darkColor: 'rgba(255,167,38,0.18)', days: '15-21', icon: '🌙' },
+        LUTEAL_LATE: { label: 'Fase lútea tardía', color: '#FF7043', lightColor: '#FBE9E7', darkColor: 'rgba(255,112,67,0.18)', days: '22-28', icon: '⚡' }
     };
 
     readonly phaseIcons: Record<string, string> = {
@@ -145,6 +145,16 @@ export class SystemConfigService {
             DANGER: 'rgba(224,75,75,0.12)'
         };
         return isDark ? (dark[severity] ?? 'transparent') : (light[severity] ?? 'transparent');
+    }
+
+    getSeverityIcon(severity: string): string {
+        const icons: Record<string, string> = {
+            SUCCESS: 'check_circle',
+            INFO: 'info',
+            WARNING: 'warning',
+            DANGER: 'error'
+        };
+        return icons[severity] ?? 'info';
     }
 
     getCyclePhaseColor(phase: string): string {

@@ -15,6 +15,7 @@ import { AlertService } from '../../../../core/services/alert.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
+import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-exercise-log',
@@ -52,7 +53,7 @@ export class ExerciseLogComponent implements OnInit {
         intensity: ['MODERATE', Validators.required],
         durationMinutes: [null, [Validators.required, Validators.min(1)]],
         notes: [''],
-        performedAt: [this.nowAsLocalIso()]
+        performedAt: [nowAsLocalIso()]
     });
 
     ngOnInit(): void {
@@ -60,7 +61,7 @@ export class ExerciseLogComponent implements OnInit {
     }
 
     setNow(): void {
-        this.form.patchValue({ performedAt: this.nowAsLocalIso() });
+        this.form.patchValue({ performedAt: nowAsLocalIso() });
     }
 
     onSubmit(): void {
@@ -81,7 +82,7 @@ export class ExerciseLogComponent implements OnInit {
         this.exerciseService.register(patientId, { ...value, performedAt }).subscribe({
             next: log => {
                 this.history.update(list => [log, ...list]);
-                this.form.patchValue({ durationMinutes: null, notes: '', performedAt: this.nowAsLocalIso() });
+                this.form.patchValue({ durationMinutes: null, notes: '', performedAt: nowAsLocalIso() });
                 this.notificationService.success('Ejercicio registrado');
                 this.loading.set(false);
                 this.notifyIfNewAlert(patientId);
@@ -127,9 +128,4 @@ export class ExerciseLogComponent implements OnInit {
         });
     }
 
-    private nowAsLocalIso(): string {
-        const now = new Date();
-        const offsetMs = now.getTimezoneOffset() * 60000;
-        return new Date(now.getTime() - offsetMs).toISOString().slice(0, 16);
-    }
 }

@@ -1,5 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
@@ -28,11 +29,11 @@ export class PushNotificationService {
             const key = subscription.getKey('p256dh');
             const auth = subscription.getKey('auth');
 
-            await this.http.post(`${this.baseUrl}/subscribe`, {
+            await firstValueFrom(this.http.post(`${this.baseUrl}/subscribe`, {
                 endpoint: subscription.endpoint,
                 p256dh: key ? btoa(String.fromCharCode(...new Uint8Array(key))) : '',
                 auth: auth ? btoa(String.fromCharCode(...new Uint8Array(auth))) : ''
-            }).toPromise();
+            }));
 
             return true;
         } catch (err) {
@@ -47,9 +48,9 @@ export class PushNotificationService {
             const subscription = await registration.pushManager.getSubscription();
             if (!subscription) return;
 
-            await this.http.delete(`${this.baseUrl}/unsubscribe`, {
+            await firstValueFrom(this.http.delete(`${this.baseUrl}/unsubscribe`, {
                 body: { endpoint: subscription.endpoint }
-            }).toPromise();
+            }));
 
             await subscription.unsubscribe();
         } catch (err) {
@@ -58,10 +59,10 @@ export class PushNotificationService {
     }
 
     private async getVapidPublicKey(): Promise<string> {
-        const res = await this.http.get<{ publicKey: string }>(
+        const res = await firstValueFrom(this.http.get<{ publicKey: string }>(
             `${this.baseUrl}/vapid-public-key`
-        ).toPromise();
-        return res!.publicKey;
+        ));
+        return res.publicKey;
     }
 
     private urlBase64ToUint8Array(base64String: string): ArrayBuffer {

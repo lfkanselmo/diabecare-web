@@ -24,4 +24,10 @@ export class NutritionService {
         return this.http.get<DailySummaryResponse>(
             `${this.baseUrl}/${patientId}/summary`, { params });
     }
+
+    getMealHistory(patientId: string, from: string, to: string): Observable<MealEntryResponse[]> {
+        const params = new HttpParams().set('from', from).set('to', to);
+        return this.http.get<MealEntryResponse[]>(
+            `${this.baseUrl}/${patientId}/meals`, { params });
+    }
 }

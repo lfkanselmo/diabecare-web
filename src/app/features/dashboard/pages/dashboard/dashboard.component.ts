@@ -1,6 +1,7 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Store } from '@ngrx/store';
@@ -21,6 +22,7 @@ import { VitalSignResponse } from '../../../../shared/models/vitals.model';
 import { AlertResponse } from '../../../../shared/models/alert.model';
 import { MenstrualCycleStatusResponse } from '../../../../shared/models/menstrual-cycle.model';
 import { AlertsPanelComponent } from '../../../../shared/components/alerts-panel/alerts-panel.component';
+import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-dashboard',
@@ -28,6 +30,7 @@ import { AlertsPanelComponent } from '../../../../shared/components/alerts-panel
     imports: [
         MatIconModule,
         MatButtonModule,
+        MatProgressSpinnerModule,
         RouterLink,
         DatePipe,
         DecimalPipe,
@@ -53,11 +56,18 @@ export class DashboardComponent implements OnInit {
     readonly patientId = this.authService.getPatientId();
 
     glucoseStats = signal<GlucoseStatsResponse | null>(null);
+    glucoseStatsLoading = signal(true);
+
     dailySummary = signal<DailySummaryResponse | null>(null);
+    dailySummaryLoading = signal(true);
+
     latestVitals = signal<VitalSignResponse | null>(null);
+    latestVitalsLoading = signal(true);
+
     cycleStatus = signal<MenstrualCycleStatusResponse | null>(null);
+    cycleStatusLoading = signal(true);
+
     alerts = signal<AlertResponse[]>([]);
-    loading = signal(true);
     isFemale = signal(false);
 
     ngOnInit(): void {
@@ -73,12 +83,15 @@ export class DashboardComponent implements OnInit {
 
         const from = weekAgo.toISOString();
         const to = now.toISOString();
-        const todayStr = now.toISOString().split('T')[0];
+        const todayStr = toLocalDateString(now);
 
         this.store.dispatch(GlucoseActions.loadStats({ patientId: this.patientId, from, to }));
 
         this.store.select(selectStats).subscribe({
-            next: stats => this.glucoseStats.set(stats)
+            next: stats => {
+                this.glucoseStats.set(stats);
+                this.glucoseStatsLoading.set(false);
+            }
         });
 
         this.profileService.getById(this.patientId).subscribe({
@@ -87,12 +100,17 @@ export class DashboardComponent implements OnInit {
                 this.isFemale.set(female);
                 if (female) {
                     this.cycleService.getStatus(this.patientId!).subscribe({
-                        next: status => this.cycleStatus.set(status),
-                        error: () => { }
+                        next: status => {
+                            this.cycleStatus.set(status);
+                            this.cycleStatusLoading.set(false);
+                        },
+                        error: () => this.cycleStatusLoading.set(false)
                     });
+                } else {
+                    this.cycleStatusLoading.set(false);
                 }
             },
-            error: () => { }
+            error: () => this.cycleStatusLoading.set(false)
         });
 
         this.glucoseService.getHistory(this.patientId, from, to).subscribe({
@@ -108,13 +126,19 @@ export class DashboardComponent implements OnInit {
         });
 
         this.nutritionService.getDailySummary(this.patientId, todayStr).subscribe({
-            next: summary => this.dailySummary.set(summary),
-            error: () => { }
+            next: summary => {
+                this.dailySummary.set(summary);
+                this.dailySummaryLoading.set(false);
+            },
+            error: () => this.dailySummaryLoading.set(false)
         });
 
         this.vitalsService.getLatest(this.patientId).subscribe({
-            next: vitals => this.latestVitals.set(vitals),
-            error: () => { }
+            next: vitals => {
+                this.latestVitals.set(vitals);
+                this.latestVitalsLoading.set(false);
+            },
+            error: () => this.latestVitalsLoading.set(false)
         });
 
         this.alertService.getAlerts(this.patientId).subscribe({
@@ -123,8 +147,6 @@ export class DashboardComponent implements OnInit {
         });
 
         this.alertService.primeKnownAlerts(this.patientId);
-
-        this.loading.set(false);
     }
 
     getHba1cPercent(hba1c: number): number {

@@ -4,7 +4,7 @@
     <div class="alerts-panel__item" [style.background-color]="getAlertBg(alert.severity)"
         [style.border-left-color]="getAlertColor(alert.severity)">
         <mat-icon class="alerts-panel__icon" [style.color]="getAlertColor(alert.severity)">
-            {{ severityIcons[alert.severity] }}
+            {{ getSeverityIcon(alert.severity) }}
         </mat-icon>
         <div class="alerts-panel__content">
             <span class="alerts-panel__title">{{ alert.title }}</span>

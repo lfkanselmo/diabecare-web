@@ -2,16 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
-import { PatientResponse } from '../../../shared/models/patient.model';
-
-export interface UpdatePatientRequest {
-    heightCm?: number;
-    targetGlucoseMin: number;
-    targetGlucoseMax: number;
-    dailyCalorieGoal?: number;
-    activityLevel: string;
-    preferredGlucoseUnit: string;
-}
+import { PatientResponse, UpdatePatientRequest } from '../../../shared/models/patient.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProfileService {

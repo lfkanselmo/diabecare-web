@@ -170,7 +170,7 @@
                 <mat-form-field appearance="outline">
                     <mat-label>Intensidad del flujo hoy</mat-label>
                     <mat-select formControlName="flowIntensity">
-                        @for (option of flowOptions; track option.value) {
+                        @for (option of metadata.flowIntensities(); track option.value) {
                         <mat-option [value]="option.value">{{ option.label }}</mat-option>
                         }
                     </mat-select>
@@ -179,11 +179,11 @@
                 <div class="cycle__symptoms-section">
                     <label class="cycle__symptoms-label">Síntomas de hoy</label>
                     <div class="cycle__symptoms-grid">
-                        @for (symptom of commonSymptoms; track symptom) {
+                        @for (symptomItem of metadata.cycleSymptoms(); track symptomItem.value) {
                         <button type="button" class="cycle__symptom-chip"
-                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptom)"
-                            (click)="toggleSymptom(symptom)">
-                            {{ getSymptomLabel(symptom) }}
+                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptomItem.value)"
+                            (click)="toggleSymptom(symptomItem.value)">
+                            {{ symptomItem.label }}
                         </button>
                         }
                     </div>
@@ -196,10 +196,10 @@
                     <div class="cycle__severity-row">
                         <span class="cycle__severity-symptom">{{ getSymptomLabel(entry[0]) }}</span>
                         <div class="cycle__severity-options">
-                            @for (sev of severityOptions; track sev.value) {
+                            @for (sev of metadata.symptomSeverities(); track sev.value) {
                             <button type="button" class="cycle__severity-chip"
                                 [class.cycle__severity-chip--selected]="getSeverityFor(entry[0]) === sev.value"
-                                (click)="setSeverity(entry[0], sev.value)">
+                                (click)="setSeverity(entry[0], asSeverity(sev.value))">
                                 {{ sev.label }}
                             </button>
                             }

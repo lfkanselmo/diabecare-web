@@ -12,10 +12,10 @@ import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
+import { MetadataService } from '../../../../core/services/metadata.service';
 import {
     CycleSymptom,
     CyclePhase,
-    FlowIntensity,
     MenstrualCycleStatusResponse,
     SymptomInput,
     SymptomSeverity
@@ -48,6 +48,7 @@ export class MenstrualCycleComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
     private readonly systemConfig = inject(SystemConfigService);
+    readonly metadata = inject(MetadataService);
 
     loading = signal(false);
     saving = signal(false);
@@ -55,30 +56,6 @@ export class MenstrualCycleComponent implements OnInit {
     confirmFinish = signal(false);
     status = signal<MenstrualCycleStatusResponse | null>(null);
     noData = signal(false);
-
-    readonly flowOptions: { value: FlowIntensity; label: string }[] = [
-        { value: 'NONE', label: 'Sin sangrado' },
-        { value: 'SPOTTING', label: 'Manchado' },
-        { value: 'LIGHT', label: 'Ligero' },
-        { value: 'MODERATE', label: 'Moderado' },
-        { value: 'HEAVY', label: 'Abundante' },
-        { value: 'VERY_HEAVY', label: 'Muy abundante' }
-    ];
-
-    readonly severityOptions: { value: SymptomSeverity; label: string }[] = [
-        { value: 'MILD', label: 'Leve' },
-        { value: 'MODERATE', label: 'Moderado' },
-        { value: 'SEVERE', label: 'Severo' }
-    ];
-
-    readonly commonSymptoms: CycleSymptom[] = [
-        'CRAMPS', 'HEADACHE', 'MIGRAINE', 'FATIGUE', 'MOOD_CHANGES',
-        'ANXIETY', 'IRRITABILITY', 'SADNESS', 'BLOATING', 'CRAVINGS',
-        'APPETITE_INCREASE', 'APPETITE_DECREASE', 'BREAST_TENDERNESS',
-        'SLEEP_DIFFICULTY', 'BACK_PAIN', 'JOINT_PAIN', 'NAUSEA',
-        'DIARRHEA', 'CONSTIPATION', 'ACNE', 'SPOTTING', 'HOT_FLASHES',
-        'DIZZINESS', 'LOW_LIBIDO', 'HIGH_LIBIDO', 'BRAIN_FOG', 'CLOTS'
-    ];
 
     startForm: FormGroup = this.fb.group({
         startDate: [toLocalDateString(new Date())],
@@ -100,12 +77,12 @@ export class MenstrualCycleComponent implements OnInit {
         this.loadStatus();
     }
 
-    toggleSymptom(symptom: CycleSymptom): void {
+    toggleSymptom(symptom: string): void {
         const current = new Map(this.selectedSymptoms());
-        if (current.has(symptom)) {
-            current.delete(symptom);
+        if (current.has(symptom as CycleSymptom)) {
+            current.delete(symptom as CycleSymptom);
         } else {
-            current.set(symptom, 'MILD');
+            current.set(symptom as CycleSymptom, 'MILD');
         }
         this.selectedSymptoms.set(current);
     }
@@ -118,12 +95,16 @@ export class MenstrualCycleComponent implements OnInit {
         }
     }
 
-    isSymptomSelected(symptom: CycleSymptom): boolean {
-        return this.selectedSymptoms().has(symptom);
+    isSymptomSelected(symptom: string): boolean {
+        return this.selectedSymptoms().has(symptom as CycleSymptom);
     }
 
     getSeverityFor(symptom: CycleSymptom): SymptomSeverity {
         return this.selectedSymptoms().get(symptom) ?? 'MILD';
+    }
+
+    asSeverity(value: string): SymptomSeverity {
+        return value as SymptomSeverity;
     }
 
     onStartCycle(): void {
@@ -213,11 +194,11 @@ export class MenstrualCycleComponent implements OnInit {
     }
 
     getSymptomLabel(symptom: string): string {
-        return this.systemConfig.getSymptomLabel(symptom);
+        return this.metadata.getLabelByValue(this.metadata.cycleSymptoms(), symptom);
     }
 
-    getSeverityLabel(severity: SymptomSeverity): string {
-        return this.severityOptions.find(s => s.value === severity)?.label ?? severity;
+    getSeverityLabel(severity: string): string {
+        return this.metadata.getLabelByValue(this.metadata.symptomSeverities(), severity);
     }
 
     private loadStatus(): void {

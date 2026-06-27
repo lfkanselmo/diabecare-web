@@ -24,6 +24,11 @@ export class MetadataService {
     readonly activityLevels = signal<MetadataItem[]>([]);
     readonly diabetesTypes = signal<MetadataItem[]>([]);
     readonly glucoseUnits = signal<MetadataItem[]>([]);
+    readonly glucoseStatuses = signal<MetadataItem[]>([]);
+    readonly cycleSymptoms = signal<MetadataItem[]>([]);
+    readonly flowIntensities = signal<MetadataItem[]>([]);
+    readonly symptomSeverities = signal<MetadataItem[]>([]);
+    readonly cyclePhases = signal<MetadataItem[]>([]);
 
     readonly loaded = signal(false);
 
@@ -40,7 +45,12 @@ export class MetadataService {
             readingTypes: this.http.get<MetadataItem[]>(`${this.baseUrl}/reading-types`),
             activityLevels: this.http.get<MetadataItem[]>(`${this.baseUrl}/activity-levels`),
             diabetesTypes: this.http.get<MetadataItem[]>(`${this.baseUrl}/diabetes-types`),
-            glucoseUnits: this.http.get<MetadataItem[]>(`${this.baseUrl}/glucose-units`)
+            glucoseUnits: this.http.get<MetadataItem[]>(`${this.baseUrl}/glucose-units`),
+            glucoseStatuses: this.http.get<MetadataItem[]>(`${this.baseUrl}/glucose-statuses`),
+            cycleSymptoms: this.http.get<MetadataItem[]>(`${this.baseUrl}/cycle-symptoms`),
+            flowIntensities: this.http.get<MetadataItem[]>(`${this.baseUrl}/flow-intensities`),
+            symptomSeverities: this.http.get<MetadataItem[]>(`${this.baseUrl}/symptom-severities`),
+            cyclePhases: this.http.get<MetadataItem[]>(`${this.baseUrl}/cycle-phases`)
         }).subscribe({
             next: (data) => {
                 this.exerciseTypes.set(data.exerciseTypes);
@@ -53,6 +63,11 @@ export class MetadataService {
                 this.activityLevels.set(data.activityLevels);
                 this.diabetesTypes.set(data.diabetesTypes);
                 this.glucoseUnits.set(data.glucoseUnits);
+                this.glucoseStatuses.set(data.glucoseStatuses);
+                this.cycleSymptoms.set(data.cycleSymptoms);
+                this.flowIntensities.set(data.flowIntensities);
+                this.symptomSeverities.set(data.symptomSeverities);
+                this.cyclePhases.set(data.cyclePhases);
                 this.loaded.set(true);
             },
             error: (err) => console.error('Error cargando metadatos:', err)

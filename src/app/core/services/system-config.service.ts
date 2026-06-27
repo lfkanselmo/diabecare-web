@@ -20,11 +20,11 @@ export class SystemConfigService {
     readonly loaded = signal(false);
 
     readonly phaseConfig: Record<string, PhaseConfig> = {
-        MENSTRUATION: { label: 'Menstruación', color: '#EF5350', lightColor: '#FFEBEE', darkColor: 'rgba(239,83,80,0.18)', days: '1-5', icon: '🩸' },
-        FOLLICULAR: { label: 'Fase folicular', color: '#66BB6A', lightColor: '#E8F5E9', darkColor: 'rgba(102,187,106,0.18)', days: '6-13', icon: '🌱' },
-        OVULATION: { label: 'Ovulación', color: '#42A5F5', lightColor: '#E3F2FD', darkColor: 'rgba(66,165,245,0.18)', days: '14', icon: '✨' },
-        LUTEAL_EARLY: { label: 'Fase lútea temprana', color: '#FFA726', lightColor: '#FFF3E0', darkColor: 'rgba(255,167,38,0.18)', days: '15-21', icon: '🌙' },
-        LUTEAL_LATE: { label: 'Fase lútea tardía', color: '#FF7043', lightColor: '#FBE9E7', darkColor: 'rgba(255,112,67,0.18)', days: '22-28', icon: '⚡' }
+        MENSTRUATION: { color: '#EF5350', lightColor: '#FFEBEE', darkColor: 'rgba(239,83,80,0.18)', days: '1-5', icon: '🩸' },
+        FOLLICULAR: { color: '#66BB6A', lightColor: '#E8F5E9', darkColor: 'rgba(102,187,106,0.18)', days: '6-13', icon: '🌱' },
+        OVULATION: { color: '#42A5F5', lightColor: '#E3F2FD', darkColor: 'rgba(66,165,245,0.18)', days: '14', icon: '✨' },
+        LUTEAL_EARLY: { color: '#FFA726', lightColor: '#FFF3E0', darkColor: 'rgba(255,167,38,0.18)', days: '15-21', icon: '🌙' },
+        LUTEAL_LATE: { color: '#FF7043', lightColor: '#FBE9E7', darkColor: 'rgba(255,112,67,0.18)', days: '22-28', icon: '⚡' }
     };
 
     readonly phaseIcons: Record<string, string> = {
@@ -33,21 +33,6 @@ export class SystemConfigService {
         OVULATION: 'egg',
         LUTEAL_EARLY: 'trending_up',
         LUTEAL_LATE: 'warning'
-    };
-
-    readonly symptomLabels: Record<string, string> = {
-        CRAMPS: 'Cólicos',
-        HEADACHE: 'Dolor de cabeza',
-        FATIGUE: 'Fatiga',
-        MOOD_CHANGES: 'Cambios de humor',
-        BLOATING: 'Hinchazón',
-        CRAVINGS: 'Antojos',
-        BREAST_TENDERNESS: 'Sensibilidad en senos',
-        SLEEP_DIFFICULTY: 'Dificultad para dormir',
-        BACK_PAIN: 'Dolor de espalda',
-        NAUSEA: 'Náuseas',
-        ACNE: 'Acné',
-        SPOTTING: 'Sangrado leve'
     };
 
     load(): void {
@@ -109,17 +94,6 @@ export class SystemConfigService {
         return colors[status] ?? 'transparent';
     }
 
-    getGlucoseStatusLabel(status: string): string {
-        const labels: Record<string, string> = {
-            CRITICALLY_LOW: 'Crítico bajo',
-            LOW: 'Bajo',
-            NORMAL: 'Normal',
-            HIGH: 'Alto',
-            CRITICALLY_HIGH: 'Crítico alto'
-        };
-        return labels[status] ?? status;
-    }
-
     // ── Helpers semánticos para alertas
     getAlertColor(severity: string): string {
         const colors: Record<string, string> = {
@@ -168,10 +142,6 @@ export class SystemConfigService {
         return colors[phase] ?? '#9E9E9E';
     }
 
-    getSymptomLabel(symptom: string): string {
-        return this.symptomLabels[symptom.trim()] ?? symptom;
-    }
-
     getPhaseIcon(phase: string): string {
         return this.phaseIcons[phase] ?? 'circle';
     }
@@ -182,7 +152,6 @@ export class SystemConfigService {
 }
 
 export interface PhaseConfig {
-    label: string;
     color: string;
     lightColor: string;
     darkColor: string;

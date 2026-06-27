@@ -95,4 +95,26 @@
     &--moderate { background: var(--color-warning-light); color: var(--color-warning); }
     &--high     { background: var(--color-danger-light);  color: var(--color-danger);  }
   }
+
+  &__calories-toggle {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-top: calc(-1 * var(--space-2));
+  }
+
+  &__calories-link {
+    align-self: flex-start;
+    font-size: var(--font-size-sm);
+    color: var(--color-primary);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  &__calories-hint {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+    margin: 0;
+  }
 }

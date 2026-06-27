@@ -58,8 +58,14 @@ export class MealLogComponent {
     });
 
     quantityForm: FormGroup = this.fb.group({
-        quantityGrams: [null, [Validators.required, Validators.min(0.1)]]
+        quantityGrams: [null, [Validators.required, Validators.min(0.1)]],
+        calories: [null, [Validators.required, Validators.min(0)]],
+        carbohydrates: [null, [Validators.required, Validators.min(0)]],
+        proteins: [null, [Validators.min(0)]],
+        fats: [null, [Validators.min(0)]]
     });
+
+    valuesEditedManually = signal(false);
 
     get totalCalories(): number {
         return this.items().reduce((sum, i) => sum + i.calories, 0);
@@ -77,54 +83,69 @@ export class MealLogComponent {
         return this.items().reduce((sum, i) => sum + (i.fats ?? 0), 0);
     }
 
-    get calculatedValues() {
-        const food = this.selectedFood();
-        const qty = this.quantityForm.get('quantityGrams')?.value;
-        if (!food || !qty || qty <= 0) return null;
-
-        const factor = qty / 100;
-        return {
-            calories: Math.round(food.caloriesPer100g * factor * 10) / 10,
-            carbohydrates: Math.round(food.carbsPer100g * factor * 10) / 10,
-            proteins: Math.round(food.proteinsPer100g * factor * 10) / 10,
-            fats: Math.round(food.fatsPer100g * factor * 10) / 10
-        };
-    }
-
     setNow(): void {
         this.mealForm.patchValue({ consumedAt: nowAsLocalIso() });
     }
 
     onFoodSelected(food: FoodResponse): void {
         this.selectedFood.set(food);
+        this.valuesEditedManually.set(false);
         this.quantityForm.reset();
     }
 
     onClearFood(): void {
         this.selectedFood.set(null);
+        this.valuesEditedManually.set(false);
         this.quantityForm.reset();
+    }
+
+    onQuantityChanged(): void {
+        if (this.valuesEditedManually()) return;
+        this.recalculateFromQuantity();
+    }
+
+    onNutrientEditedManually(): void {
+        this.valuesEditedManually.set(true);
+    }
+
+    resetToSuggestedValues(): void {
+        this.valuesEditedManually.set(false);
+        this.recalculateFromQuantity();
     }
 
     onAddItem(): void {
         if (!this.selectedFood() || this.quantityForm.invalid) return;
-        const calc = this.calculatedValues;
-        if (!calc) return;
 
         const food = this.selectedFood()!;
-        const qty = this.quantityForm.get('quantityGrams')?.value;
+        const value = this.quantityForm.getRawValue();
 
         this.items.update(list => [...list, {
             foodName: food.name,
-            quantityGrams: qty,
-            calories: calc.calories,
-            carbohydrates: calc.carbohydrates,
-            proteins: calc.proteins,
-            fats: calc.fats,
+            quantityGrams: value.quantityGrams,
+            calories: value.calories,
+            carbohydrates: value.carbohydrates,
+            proteins: value.proteins,
+            fats: value.fats,
             foodCode: food.foodId
         }]);
 
         this.selectedFood.set(null);
+        this.valuesEditedManually.set(false);
         this.quantityForm.reset();
+    }
+
+    private recalculateFromQuantity(): void {
+        const food = this.selectedFood();
+        const qty = this.quantityForm.get('quantityGrams')?.value;
+        if (!food || !qty || qty <= 0) return;
+
+        const factor = qty / 100;
+        this.quantityForm.patchValue({
+            calories: Math.round(food.caloriesPer100g * factor * 10) / 10,
+            carbohydrates: Math.round(food.carbsPer100g * factor * 10) / 10,
+            proteins: Math.round(food.proteinsPer100g * factor * 10) / 10,
+            fats: Math.round(food.fatsPer100g * factor * 10) / 10
+        }, { emitEvent: false });
     }
 
     onRemoveItem(index: number): void {

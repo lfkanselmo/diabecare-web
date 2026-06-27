@@ -82,8 +82,8 @@ export class GlucoseChartComponent implements OnChanges {
         const exerciseMarkLines = this.buildExerciseMarkLines(sorted, dark);
 
         const labelColor = dark ? '#9B97C0' : '#546E7A';
-        const gridColor = dark ? 'rgba(139,130,224,0.1)' : '#F0F0F0';
-        const axisColor = dark ? 'rgba(139,130,224,0.2)' : '#E0E0E0';
+        const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
+        const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
         const areaColor = dark ? 'rgba(34,169,106,0.08)' : 'rgba(34,169,106,0.06)';
         const minLine = dark ? '#F07070' : '#C62828';
         const maxLine = dark ? '#FABD4A' : '#E8A020';
@@ -93,8 +93,8 @@ export class GlucoseChartComponent implements OnChanges {
             grid: { top: 30, right: 20, bottom: 60, left: 60 },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: dark ? '#1F1D36' : '#FFFFFF',
-                borderColor: dark ? 'rgba(139,130,224,0.2)' : '#E8E6F5',
+                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
                 textStyle: { color: dark ? '#EAE8F8' : '#1A1730', fontSize: 12 },
                 formatter: (params: any) => {
                     const p = Array.isArray(params) ? params[0] : params;
@@ -199,7 +199,7 @@ export class GlucoseChartComponent implements OnChanges {
     private buildExerciseMarkLines(sorted: GlucoseReadingResponse[], dark: boolean): any[] {
         if (!this.exerciseLogs.length || !sorted.length) return [];
 
-        const exerciseColor = dark ? '#A99EF0' : '#5B4FCF';
+        const exerciseColor = dark ? '#9588ED' : '#5B4FCF';
 
         return this.exerciseLogs
             .filter(log => this.hasNearbyReading(log.performedAt, sorted))

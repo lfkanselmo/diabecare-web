@@ -11,6 +11,7 @@ export interface RegisterExerciseRequest {
     durationMinutes: number;
     notes?: string;
     performedAt?: string;
+    caloriesBurned?: number | null;
 }
 
 export interface ExerciseLogResponse {

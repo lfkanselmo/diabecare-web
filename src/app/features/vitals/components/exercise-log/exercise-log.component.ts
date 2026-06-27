@@ -53,11 +53,22 @@ export class ExerciseLogComponent implements OnInit {
         intensity: ['MODERATE', Validators.required],
         durationMinutes: [null, [Validators.required, Validators.min(1)]],
         notes: [''],
-        performedAt: [nowAsLocalIso()]
+        performedAt: [nowAsLocalIso()],
+        caloriesBurned: [null, [Validators.min(0)]]
     });
+
+    customCalories = signal(false);
 
     ngOnInit(): void {
         this.loadHistory();
+    }
+
+    toggleCustomCalories(): void {
+        const next = !this.customCalories();
+        this.customCalories.set(next);
+        if (!next) {
+            this.form.patchValue({ caloriesBurned: null });
+        }
     }
 
     setNow(): void {
@@ -79,10 +90,13 @@ export class ExerciseLogComponent implements OnInit {
                 : value.performedAt
             : undefined;
 
-        this.exerciseService.register(patientId, { ...value, performedAt }).subscribe({
+        const caloriesBurned = this.customCalories() ? value.caloriesBurned : null;
+
+        this.exerciseService.register(patientId, { ...value, performedAt, caloriesBurned }).subscribe({
             next: log => {
                 this.history.update(list => [log, ...list]);
-                this.form.patchValue({ durationMinutes: null, notes: '', performedAt: nowAsLocalIso() });
+                this.form.patchValue({ durationMinutes: null, notes: '', performedAt: nowAsLocalIso(), caloriesBurned: null });
+                this.customCalories.set(false);
                 this.notificationService.success('Ejercicio registrado');
                 this.loading.set(false);
                 this.notifyIfNewAlert(patientId);

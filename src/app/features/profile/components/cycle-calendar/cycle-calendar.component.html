@@ -8,7 +8,7 @@
             <div class="cycle-cal__legend-item">
                 <span class="cycle-cal__legend-dot" [style.background]="entry.value.color"></span>
                 <span class="cycle-cal__legend-text">
-                    {{ entry.value.icon }} {{ entry.value.label }}
+                    {{ entry.value.icon }} {{ getPhaseLabel(entry.key) }}
                     <span class="cycle-cal__legend-days">días {{ entry.value.days }}</span>
                 </span>
             </div>
@@ -32,7 +32,7 @@
             <div class="cycle-cal__day" [class.cycle-cal__day--empty]="!day.date"
                 [class.cycle-cal__day--today]="day.isToday" [class.cycle-cal__day--predicted]="day.isPredicted"
                 [style.background-color]="getDayColor(day)" [style.border-color]="getDayBorderColor(day)"
-                [title]="day.phase ? phaseConfig[day.phase].label : ''">
+                [title]="day.phase ? getPhaseLabel(day.phase) : ''">
                 @if (day.date) {
                 <span class="cycle-cal__day-number">{{ day.date }}</span>
                 @if (day.isPredicted) {

@@ -4,6 +4,7 @@ import { EChartsOption } from 'echarts';
 import { DatePipe, KeyValuePipe, TitleCasePipe } from '@angular/common';
 import { MenstrualCycleStatusResponse, CyclePhase } from '../../../../shared/models/menstrual-cycle.model';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
+import { MetadataService } from '../../../../core/services/metadata.service';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { toLocalDateString } from '../../../../shared/utils/date.utils';
@@ -22,6 +23,7 @@ export class CycleCalendarComponent implements OnChanges {
     private readonly systemConfig = inject(SystemConfigService);
     private readonly cycleService = inject(MenstrualCycleService);
     private readonly authService = inject(AuthService);
+    readonly metadata = inject(MetadataService);
 
     wheelOptions: EChartsOption = {};
     calendarDays: CalendarDay[] = [];
@@ -29,6 +31,10 @@ export class CycleCalendarComponent implements OnChanges {
 
     get phaseConfig() {
         return this.systemConfig.phaseConfig;
+    }
+
+    getPhaseLabel(phase: string): string {
+        return this.metadata.getLabelByValue(this.metadata.cyclePhases(), phase);
     }
 
     ngOnChanges(): void {
@@ -46,23 +52,23 @@ export class CycleCalendarComponent implements OnChanges {
         const dayOfCycle = this.status.dayOfCycle;
         const currentPhase = this.status.currentPhase;
         const labelColor = dark ? '#9B97C0' : '#546E7A';
-        const borderColor = dark ? '#2A2845' : '#FFFFFF';
+        const borderColor = dark ? '#1C1C20' : '#FFFFFF';
         const cfg = this.systemConfig.phaseConfig;
 
         const phases = [
-            { name: cfg['MENSTRUATION'].label, value: 5, color: cfg['MENSTRUATION'].color, phase: 'MENSTRUATION' },
-            { name: cfg['FOLLICULAR'].label, value: 8, color: cfg['FOLLICULAR'].color, phase: 'FOLLICULAR' },
-            { name: cfg['OVULATION'].label, value: 1, color: cfg['OVULATION'].color, phase: 'OVULATION' },
-            { name: cfg['LUTEAL_EARLY'].label, value: 7, color: cfg['LUTEAL_EARLY'].color, phase: 'LUTEAL_EARLY' },
-            { name: cfg['LUTEAL_LATE'].label, value: cycleLength - 21, color: cfg['LUTEAL_LATE'].color, phase: 'LUTEAL_LATE' }
+            { name: this.getPhaseLabel('MENSTRUATION'), value: 5, color: cfg['MENSTRUATION'].color, phase: 'MENSTRUATION' },
+            { name: this.getPhaseLabel('FOLLICULAR'), value: 8, color: cfg['FOLLICULAR'].color, phase: 'FOLLICULAR' },
+            { name: this.getPhaseLabel('OVULATION'), value: 1, color: cfg['OVULATION'].color, phase: 'OVULATION' },
+            { name: this.getPhaseLabel('LUTEAL_EARLY'), value: 7, color: cfg['LUTEAL_EARLY'].color, phase: 'LUTEAL_EARLY' },
+            { name: this.getPhaseLabel('LUTEAL_LATE'), value: cycleLength - 21, color: cfg['LUTEAL_LATE'].color, phase: 'LUTEAL_LATE' }
         ];
 
         this.wheelOptions = {
             backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'item',
-                backgroundColor: dark ? '#1F1D36' : '#FFFFFF',
-                borderColor: dark ? 'rgba(139,130,224,0.2)' : '#E8E6F5',
+                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
                 textStyle: { color: dark ? '#EAE8F8' : '#1A1730' },
                 formatter: (p: any) => {
                     const phase = phases[p.dataIndex];

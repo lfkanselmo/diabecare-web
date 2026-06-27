@@ -16,7 +16,6 @@ import { GlucoseService } from '../../services/glucose.service';
 import { ExerciseService } from '../../../vitals/services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
-import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import {
     GlucoseReadingResponse,
@@ -58,7 +57,6 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
-    private readonly systemConfig = inject(SystemConfigService);
     readonly metadata = inject(MetadataService);
 
     readings = signal<GlucoseReadingResponse[]>([]);
@@ -117,7 +115,7 @@ export class GlucoseHistoryComponent implements OnInit {
     }
 
     getStatusLabel(status: string): string {
-        return this.systemConfig.getGlucoseStatusLabel(status);
+        return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
     }
 
     getStatusClass(status: string): string {

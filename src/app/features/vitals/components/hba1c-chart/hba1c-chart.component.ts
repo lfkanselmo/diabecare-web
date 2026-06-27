@@ -29,9 +29,9 @@ export class Hba1cChartComponent implements OnChanges {
         const glucose = this.trend.map(t => t.averageGlucose ?? null);
 
         const labelColor = dark ? '#9B97C0' : '#546E7A';
-        const gridColor = dark ? 'rgba(139,130,224,0.1)' : '#F0F0F0';
-        const axisColor = dark ? 'rgba(139,130,224,0.2)' : '#E0E0E0';
-        const primaryColor = dark ? '#8B82E0' : '#5B4FCF';
+        const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
+        const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
+        const primaryColor = dark ? '#776CDA' : '#5B4FCF';
         const tealColor = dark ? '#2DD4CF' : '#0EA5A0';
         const barColor = dark ? 'rgba(14,165,160,0.35)' : '#A2D9CE';
         const goalColor = dark ? '#4ADE98' : '#22A96A';
@@ -46,8 +46,8 @@ export class Hba1cChartComponent implements OnChanges {
             },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: dark ? '#1F1D36' : '#FFFFFF',
-                borderColor: dark ? 'rgba(139,130,224,0.2)' : '#E8E6F5',
+                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
                 textStyle: { color: dark ? '#EAE8F8' : '#1A1730', fontSize: 12 },
                 formatter: (params: any) => {
                     let html = `<strong>${params[0].name}</strong><br/>`;

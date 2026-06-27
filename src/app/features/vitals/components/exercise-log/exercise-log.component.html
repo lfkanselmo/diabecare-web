@@ -51,6 +51,30 @@
                     <textarea matInput formControlName="notes" rows="2"></textarea>
                 </mat-form-field>
 
+                <div class="exercise-log__calories-toggle">
+                    <button mat-button type="button" class="exercise-log__calories-link"
+                        (click)="toggleCustomCalories()">
+                        <mat-icon>{{ customCalories() ? 'remove_circle_outline' : 'tune' }}</mat-icon>
+                        @if (customCalories()) {
+                        No quiero ajustar las calorías
+                        } @else {
+                        Ajustar calorías estimadas
+                        }
+                    </button>
+                    <p class="exercise-log__calories-hint">
+                        Por defecto calculamos las calorías quemadas automáticamente. Si tienes
+                        un dato más preciso (por ejemplo, de un reloj inteligente), puedes ingresarlo aquí.
+                    </p>
+                </div>
+
+                @if (customCalories()) {
+                <mat-form-field appearance="outline">
+                    <mat-label>Calorías quemadas</mat-label>
+                    <input matInput formControlName="caloriesBurned" type="number" min="0" step="1" />
+                    <mat-icon matSuffix>local_fire_department</mat-icon>
+                </mat-form-field>
+                }
+
                 <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
                     @if (loading()) { Guardando... } @else { Registrar ejercicio }
                 </button>

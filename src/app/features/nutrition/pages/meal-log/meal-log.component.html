@@ -63,33 +63,51 @@
         <form [formGroup]="quantityForm" class="meal-log__quantity-form">
           <mat-form-field appearance="outline">
             <mat-label>Cantidad (gramos)</mat-label>
-            <input matInput formControlName="quantityGrams" type="number" min="0.1" step="1" />
+            <input matInput formControlName="quantityGrams" type="number" min="0.1" step="1"
+              (input)="onQuantityChanged()" />
             <mat-icon matSuffix>scale</mat-icon>
           </mat-form-field>
 
-          @if (calculatedValues) {
+          @if (quantityForm.get('calories')?.value !== null) {
+          <div class="meal-log__calculated-header">
+            <span class="meal-log__calculated-label">Valores nutricionales</span>
+            @if (valuesEditedManually()) {
+            <button mat-button type="button" class="meal-log__reset-link" (click)="resetToSuggestedValues()">
+              <mat-icon>restart_alt</mat-icon>
+              Usar valores sugeridos
+            </button>
+            }
+          </div>
+          <p class="meal-log__calc-hint">
+            Estos valores son una sugerencia según el catálogo. Si conoces el valor real
+            de este alimento (por ejemplo, por el empaque), puedes editarlo.
+          </p>
           <div class="meal-log__calculated">
-            <div class="meal-log__calc-item">
-              <span class="meal-log__calc-label">Calorías</span>
-              <span class="meal-log__calc-value">{{ calculatedValues.calories | number:'1.0-1' }} kcal</span>
-            </div>
-            <div class="meal-log__calc-item">
-              <span class="meal-log__calc-label">Carbohidratos</span>
-              <span class="meal-log__calc-value">{{ calculatedValues.carbohydrates | number:'1.0-1' }} g</span>
-            </div>
-            <div class="meal-log__calc-item">
-              <span class="meal-log__calc-label">Proteínas</span>
-              <span class="meal-log__calc-value">{{ calculatedValues.proteins | number:'1.0-1' }} g</span>
-            </div>
-            <div class="meal-log__calc-item">
-              <span class="meal-log__calc-label">Grasas</span>
-              <span class="meal-log__calc-value">{{ calculatedValues.fats | number:'1.0-1' }} g</span>
-            </div>
+            <mat-form-field appearance="outline" class="meal-log__calc-field">
+              <mat-label>Calorías (kcal)</mat-label>
+              <input matInput formControlName="calories" type="number" min="0" step="0.1"
+                (input)="onNutrientEditedManually()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="meal-log__calc-field">
+              <mat-label>Carbohidratos (g)</mat-label>
+              <input matInput formControlName="carbohydrates" type="number" min="0" step="0.1"
+                (input)="onNutrientEditedManually()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="meal-log__calc-field">
+              <mat-label>Proteínas (g)</mat-label>
+              <input matInput formControlName="proteins" type="number" min="0" step="0.1"
+                (input)="onNutrientEditedManually()" />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="meal-log__calc-field">
+              <mat-label>Grasas (g)</mat-label>
+              <input matInput formControlName="fats" type="number" min="0" step="0.1"
+                (input)="onNutrientEditedManually()" />
+            </mat-form-field>
           </div>
           }
 
-          <button mat-stroked-button color="primary" type="button"
-            [disabled]="quantityForm.invalid || !calculatedValues" (click)="onAddItem()">
+          <button mat-stroked-button color="primary" type="button" [disabled]="quantityForm.invalid"
+            (click)="onAddItem()">
             <mat-icon>add</mat-icon>
             Agregar a la comida
           </button>

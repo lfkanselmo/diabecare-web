@@ -70,7 +70,7 @@
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: rgba(169, 158, 240, 0.5) !important;
+          border-color: rgba(149, 136, 237, 0.5) !important;
         }
       }
 
@@ -78,7 +78,7 @@
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: #A99EF0 !important;
+          border-color: #9588ED !important;
         }
       }
     }
@@ -93,13 +93,13 @@
     }
 
     .mdc-text-field--focused .mdc-floating-label {
-      color: #A99EF0 !important;
+      color: #9588ED !important;
     }
 
     .mat-mdc-input-element,
     .mdc-text-field__input {
       color: #EAE8F8 !important;
-      caret-color: #A99EF0 !important;
+      caret-color: #9588ED !important;
     }
 
     .mat-mdc-form-field-icon-suffix .mat-icon,
@@ -151,7 +151,7 @@
     color: #8A85B0;
 
     a {
-      color: #A99EF0;
+      color: #9588ED;
       font-weight: var(--font-weight-medium);
 
       &:hover {

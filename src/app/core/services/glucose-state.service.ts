@@ -1,11 +1,13 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { GlucoseReadingResponse, GlucoseStatus } from '../../shared/models/glucose.model';
 import { SystemConfigService } from './system-config.service';
+import { MetadataService } from './metadata.service';
 
 @Injectable({ providedIn: 'root' })
 export class GlucoseStateService {
 
     private readonly systemConfig = inject(SystemConfigService);
+    private readonly metadata = inject(MetadataService);
 
     readonly latestReading = signal<GlucoseReadingResponse | null>(null);
 
@@ -22,6 +24,6 @@ export class GlucoseStateService {
     }
 
     getStatusLabel(status: GlucoseStatus): string {
-        return this.systemConfig.getGlucoseStatusLabel(status);
+        return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
     }
 }

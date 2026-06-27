@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
     GlucoseCorrelationResponse,
+    GlucoseReadingResponse,
     GlucoseStatsResponse,
     RegisterGlucoseRequest
 } from '../../../shared/models/glucose.model';
@@ -22,6 +23,10 @@ export class GlucoseService {
         const params = new HttpParams().set('from', from).set('to', to);
         return this.http.get<GlucoseCorrelationResponse>(
             `${this.baseUrl}/${patientId}/history`, { params });
+    }
+
+    getLatest(patientId: string): Observable<GlucoseReadingResponse | null> {
+        return this.http.get<GlucoseReadingResponse>(`${this.baseUrl}/${patientId}/latest`);
     }
 
     getStats(patientId: string, from: string, to: string): Observable<GlucoseStatsResponse> {

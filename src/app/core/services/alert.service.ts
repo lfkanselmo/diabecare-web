@@ -16,11 +16,8 @@ export class AlertService {
         return this.http.get<AlertResponse[]>(`${this.baseUrl}/${patientId}`);
     }
 
-    primeKnownAlerts(patientId: string): void {
-        this.getAlerts(patientId).subscribe({
-            next: alerts => this.lastKnownSignatures.set(new Set(alerts.map(a => this.signatureOf(a)))),
-            error: () => { }
-        });
+    primeKnownAlerts(alerts: AlertResponse[]): void {
+        this.lastKnownSignatures.set(new Set(alerts.map(a => this.signatureOf(a))));
     }
 
     getNewAlerts(patientId: string): Observable<AlertResponse[]> {

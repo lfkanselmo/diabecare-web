@@ -96,29 +96,22 @@ export class DashboardComponent implements OnInit {
 
         this.profileService.getById(this.patientId).subscribe({
             next: patient => {
-                const female = patient.biologicalSex === 'FEMALE';
-                this.isFemale.set(female);
-                if (female) {
-                    this.cycleService.getStatus(this.patientId!).subscribe({
-                        next: status => {
-                            this.cycleStatus.set(status);
-                            this.cycleStatusLoading.set(false);
-                        },
-                        error: () => this.cycleStatusLoading.set(false)
-                    });
-                } else {
-                    this.cycleStatusLoading.set(false);
-                }
+                this.isFemale.set(patient.biologicalSex === 'FEMALE');
+            },
+            error: () => { }
+        });
+
+        this.cycleService.getStatus(this.patientId).subscribe({
+            next: status => {
+                this.cycleStatus.set(status);
+                this.cycleStatusLoading.set(false);
             },
             error: () => this.cycleStatusLoading.set(false)
         });
 
-        this.glucoseService.getHistory(this.patientId, from, to).subscribe({
-            next: correlation => {
-                if (correlation.readings.length > 0) {
-                    const latest = [...correlation.readings].sort(
-                        (a, b) => new Date(b.measuredAt).getTime() - new Date(a.measuredAt).getTime()
-                    )[0];
+        this.glucoseService.getLatest(this.patientId).subscribe({
+            next: latest => {
+                if (latest) {
                     this.glucoseStateService.setLatestReading(latest);
                 }
             },
@@ -142,11 +135,12 @@ export class DashboardComponent implements OnInit {
         });
 
         this.alertService.getAlerts(this.patientId).subscribe({
-            next: data => this.alerts.set(data),
+            next: data => {
+                this.alerts.set(data);
+                this.alertService.primeKnownAlerts(data);
+            },
             error: () => { }
         });
-
-        this.alertService.primeKnownAlerts(this.patientId);
     }
 
     getHba1cPercent(hba1c: number): number {

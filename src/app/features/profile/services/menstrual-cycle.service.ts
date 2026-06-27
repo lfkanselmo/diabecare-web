@@ -3,9 +3,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
+    CycleDayEntryResponse,
     CyclePhaseDayResponse,
+    FinishPeriodRequest,
     MenstrualCycleRequest,
-    MenstrualCycleStatusResponse
+    MenstrualCycleStatusResponse,
+    RegisterCycleDayEntryRequest
 } from '../../../shared/models/menstrual-cycle.model';
 
 @Injectable({ providedIn: 'root' })
@@ -22,6 +25,16 @@ export class MenstrualCycleService {
     register(patientId: string, request: MenstrualCycleRequest): Observable<MenstrualCycleStatusResponse> {
         return this.http.post<MenstrualCycleStatusResponse>(
             `${this.baseUrl}/${patientId}`, request);
+    }
+
+    finishPeriod(patientId: string, request: FinishPeriodRequest): Observable<MenstrualCycleStatusResponse> {
+        return this.http.post<MenstrualCycleStatusResponse>(
+            `${this.baseUrl}/${patientId}/finish-period`, request);
+    }
+
+    registerDayEntry(patientId: string, request: RegisterCycleDayEntryRequest): Observable<CycleDayEntryResponse> {
+        return this.http.post<CycleDayEntryResponse>(
+            `${this.baseUrl}/${patientId}/days`, request);
     }
 
     getPhaseCalendar(patientId: string, from: string, to: string): Observable<CyclePhaseDayResponse[]> {

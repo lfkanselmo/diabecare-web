@@ -1,40 +1,25 @@
 <div class="cycle">
+    @if (loading()) {
+    <p class="cycle__loading-text">Cargando...</p>
+    } @else if (noData() || !status()) {
     <div class="cycle__layout">
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>calendar_month</mat-icon>
-                Registrar nuevo ciclo
+                Registrar tu período
             </h2>
             <p class="cycle__hint">
-                Registra el inicio de tu período para llevar el seguimiento y recibir
-                orientación personalizada sobre tu glucosa.
+                Registra el día en que comenzó tu período. A partir de ahí podrás
+                registrar cada día cómo te sientes, y cuando termine, marcar la fecha
+                exacta de finalización para que el seguimiento sea preciso para tu cuerpo.
             </p>
 
-            <form [formGroup]="form" (ngSubmit)="onRegister()">
+            <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Fecha de inicio del ciclo</mat-label>
+                    <mat-label>Fecha de inicio del período</mat-label>
                     <input matInput formControlName="startDate" type="date" />
                     <mat-icon matSuffix>event</mat-icon>
                 </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                    <mat-label>Duración de la menstruación (días)</mat-label>
-                    <input matInput formControlName="periodLengthDays" type="number" min="2" max="10" />
-                    <mat-hint>Generalmente entre 3 y 7 días</mat-hint>
-                </mat-form-field>
-
-                <div class="cycle__symptoms-section">
-                    <label class="cycle__symptoms-label">Síntomas frecuentes</label>
-                    <div class="cycle__symptoms-grid">
-                        @for (symptom of commonSymptoms; track symptom) {
-                        <button type="button" class="cycle__symptom-chip"
-                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptom)"
-                            (click)="toggleSymptom(symptom)">
-                            {{ getSymptomLabel(symptom) }}
-                        </button>
-                        }
-                    </div>
-                </div>
 
                 <mat-form-field appearance="outline">
                     <mat-label>Notas adicionales (opcional)</mat-label>
@@ -42,21 +27,14 @@
                 </mat-form-field>
 
                 <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { Registrando... } @else { Registrar inicio de ciclo }
+                    @if (saving()) { Registrando... } @else { Registrar inicio de período }
                 </button>
             </form>
         </div>
-
+    </div>
+    } @else {
+    <div class="cycle__layout">
         <div class="cycle__card">
-            @if (loading()) {
-            <p class="cycle__loading">Cargando...</p>
-            } @else if (noData() || !status()) {
-            <div class="cycle__empty">
-                <mat-icon>calendar_today</mat-icon>
-                <h3>Sin ciclos registrados</h3>
-                <p>Registra tu primer ciclo para comenzar el seguimiento.</p>
-            </div>
-            } @else {
             <h2 class="cycle__section-title">
                 <mat-icon>insights</mat-icon>
                 Estado actual del ciclo
@@ -73,6 +51,9 @@
                         </span>
                         <span class="cycle__phase-day">
                             Día {{ status()!.dayOfCycle }} del ciclo
+                            @if (status()!.isOngoing) {
+                            · Período en curso
+                            }
                         </span>
                     </div>
                 </div>
@@ -95,12 +76,53 @@
                 </div>
                 <div class="cycle__stat">
                     <span class="cycle__stat-label">Duración promedio</span>
-                    <span class="cycle__stat-value">
-                        {{ status()!.averageCycleLength | number:'1.0-0' }} días
-                    </span>
+                    @if (status()!.averageCycleLength) {
+                    <span class="cycle__stat-value">{{ status()!.averageCycleLength }} días</span>
                     <span class="cycle__stat-sub">Basado en tu historial</span>
+                    } @else {
+                    <span class="cycle__stat-value cycle__stat-value--muted">—</span>
+                    <span class="cycle__stat-sub">Aún no hay suficientes datos</span>
+                    }
                 </div>
             </div>
+
+            @if (status()!.isOngoing) {
+            <mat-divider />
+            <div class="cycle__finish-section">
+                <h3 class="cycle__subsection-title">¿Tu período ya terminó?</h3>
+                <p class="cycle__hint">
+                    Marca la fecha exacta en que terminó tu sangrado. Esto nos permite calcular
+                    la duración real de tu período, específica para tu cuerpo, en vez de asumir un valor fijo.
+                </p>
+                <form [formGroup]="finishForm" class="cycle__finish-form">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Fecha de fin del período</mat-label>
+                        <input matInput formControlName="endDate" type="date" />
+                    </mat-form-field>
+
+                    @if (!confirmFinish()) {
+                    <button mat-stroked-button color="primary" type="button" [disabled]="finishingPeriod()"
+                        (click)="onFinishPeriod()">
+                        Finalizar período
+                    </button>
+                    } @else {
+                    <div class="cycle__finish-confirm">
+                        <span>¿Confirmas que tu período terminó en esta fecha?</span>
+                        <div class="cycle__finish-confirm-actions">
+                            <button mat-stroked-button type="button" (click)="cancelFinish()"
+                                [disabled]="finishingPeriod()">
+                                Cancelar
+                            </button>
+                            <button mat-raised-button color="primary" type="button" [disabled]="finishingPeriod()"
+                                (click)="onFinishPeriod()">
+                                @if (finishingPeriod()) { Guardando... } @else { Sí, confirmar }
+                            </button>
+                        </div>
+                    </div>
+                    }
+                </form>
+            </div>
+            }
 
             @if (status()!.history.length > 0) {
             <mat-divider />
@@ -110,16 +132,17 @@
                 <div class="cycle__history-item">
                     <span class="cycle__history-date">
                         {{ item.startDate | date:'dd/MM/yyyy' }}
+                        @if (item.endDate) {
+                        → {{ item.endDate | date:'dd/MM/yyyy' }}
+                        }
                     </span>
                     <span class="cycle__history-detail">
-                        @if (item.cycleLengthDays) {
-                        {{ item.cycleLengthDays }} días de ciclo ·
+                        @if (item.actualPeriodLengthDays) {
+                        {{ item.actualPeriodLengthDays }} días de período (real)
+                        } @else {
+                        Período en curso o sin finalizar
                         }
-                        {{ item.periodLengthDays ?? 5 }} días de período
                     </span>
-                    @if (item.symptoms) {
-                    <span class="cycle__history-symptoms">{{ getSymptomsList(item.symptoms) }}</span>
-                    }
                 </div>
                 }
             </div>
@@ -130,7 +153,73 @@
                 <app-cycle-calendar [status]="status()!" />
             </div>
             }
-            }
         </div>
+
+        @if (status()!.isOngoing) {
+        <div class="cycle__card">
+            <h2 class="cycle__section-title">
+                <mat-icon>edit_calendar</mat-icon>
+                Registro de hoy
+            </h2>
+            <p class="cycle__hint">
+                Cuéntanos cómo te sientes hoy. Esto nos ayuda a entender mejor tu ciclo
+                y, a futuro, su relación con tu glucosa.
+            </p>
+
+            <form [formGroup]="dayEntryForm" (ngSubmit)="onSaveDayEntry()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Intensidad del flujo hoy</mat-label>
+                    <mat-select formControlName="flowIntensity">
+                        @for (option of flowOptions; track option.value) {
+                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <div class="cycle__symptoms-section">
+                    <label class="cycle__symptoms-label">Síntomas de hoy</label>
+                    <div class="cycle__symptoms-grid">
+                        @for (symptom of commonSymptoms; track symptom) {
+                        <button type="button" class="cycle__symptom-chip"
+                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptom)"
+                            (click)="toggleSymptom(symptom)">
+                            {{ getSymptomLabel(symptom) }}
+                        </button>
+                        }
+                    </div>
+                </div>
+
+                @if (selectedSymptoms().size > 0) {
+                <div class="cycle__severity-section">
+                    <label class="cycle__symptoms-label">¿Qué tan intenso es cada síntoma?</label>
+                    @for (entry of selectedSymptoms().entries(); track entry[0]) {
+                    <div class="cycle__severity-row">
+                        <span class="cycle__severity-symptom">{{ getSymptomLabel(entry[0]) }}</span>
+                        <div class="cycle__severity-options">
+                            @for (sev of severityOptions; track sev.value) {
+                            <button type="button" class="cycle__severity-chip"
+                                [class.cycle__severity-chip--selected]="getSeverityFor(entry[0]) === sev.value"
+                                (click)="setSeverity(entry[0], sev.value)">
+                                {{ sev.label }}
+                            </button>
+                            }
+                        </div>
+                    </div>
+                    }
+                </div>
+                }
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Notas de hoy (opcional)</mat-label>
+                    <textarea matInput formControlName="notes" rows="2"></textarea>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+                    @if (saving()) { Guardando... } @else { Guardar registro de hoy }
+                </button>
+            </form>
+        </div>
+        }
     </div>
+    }
 </div>

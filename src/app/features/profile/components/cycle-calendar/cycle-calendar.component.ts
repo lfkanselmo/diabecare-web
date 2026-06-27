@@ -40,7 +40,9 @@ export class CycleCalendarComponent implements OnChanges {
     }
 
     private buildWheelChart(dark: boolean): void {
-        const cycleLength = Math.round(this.status.averageCycleLength) || 28;
+        const cycleLength = this.status.averageCycleLength
+            ? Math.round(this.status.averageCycleLength)
+            : 28;
         const dayOfCycle = this.status.dayOfCycle;
         const currentPhase = this.status.currentPhase;
         const labelColor = dark ? '#9B97C0' : '#546E7A';

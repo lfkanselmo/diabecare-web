@@ -41,6 +41,13 @@
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     margin-top: calc(-1 * var(--space-2));
+
+    &--muted {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-disabled);
+      font-style: italic;
+      margin-top: 0;
+    }
   }
 
   &__symptoms-section {
@@ -173,6 +180,18 @@
     background: var(--color-surface-variant);
     border-radius: var(--radius-md);
     padding: var(--space-3);
+
+    &--inline {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+
+      .cycle__stat-label {
+        text-transform: none;
+        letter-spacing: normal;
+      }
+    }
   }
 
   &__stat-label {
@@ -314,6 +333,38 @@
       background: var(--color-warning);
       border-color: var(--color-warning);
       color: white;
+    }
+  }
+
+  &__open-too-long-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    background: var(--color-warning-light);
+    border: 1px solid var(--color-warning);
+    border-radius: var(--radius-md);
+
+    mat-icon {
+      color: var(--color-warning);
+      flex-shrink: 0;
+    }
+  }
+
+  &__open-too-long-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+
+    strong {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+    }
+
+    span {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
     }
   }
 }

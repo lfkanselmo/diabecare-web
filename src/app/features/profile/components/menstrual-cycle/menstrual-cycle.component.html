@@ -32,6 +32,96 @@
             </form>
         </div>
     </div>
+    } @else if (!noData() && status() && !status()!.isOngoing) {
+    <div class="cycle__layout">
+        <div class="cycle__card">
+            <h2 class="cycle__section-title">
+                <mat-icon>calendar_month</mat-icon>
+                Registrar tu próximo período
+            </h2>
+            <p class="cycle__hint">
+                Tu último período terminó el {{ status()!.history[0]?.endDate | date:'dd/MM/yyyy' }}.
+                Cuando comience tu próximo período, regístralo aquí.
+            </p>
+
+            <div class="cycle__stat cycle__stat--inline">
+                <span class="cycle__stat-label">
+                    @if (status()!.isProjectionStale) {
+                    Estimación aproximada (sin registros recientes)
+                    } @else {
+                    Próximo período estimado
+                    }
+                </span>
+                <span class="cycle__stat-value">
+                    {{ status()!.nextCycleStart | date:'dd MMM yyyy' }}
+                </span>
+            </div>
+
+            @if (status()!.isProjectionStale) {
+            <p class="cycle__hint cycle__hint--muted">
+                Como ha pasado tiempo desde tu último registro, esta fecha es solo una proyección
+                basada en tu promedio histórico, no en un seguimiento reciente.
+            </p>
+            }
+
+            <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
+                <mat-form-field appearance="outline">
+                    <mat-label>Fecha de inicio del período</mat-label>
+                    <input matInput formControlName="startDate" type="date" />
+                    <mat-icon matSuffix>event</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline">
+                    <mat-label>Notas adicionales (opcional)</mat-label>
+                    <textarea matInput formControlName="notes" rows="2"></textarea>
+                </mat-form-field>
+
+                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+                    @if (saving()) { Registrando... } @else { Registrar inicio de período }
+                </button>
+            </form>
+        </div>
+
+        <div class="cycle__card">
+            <h2 class="cycle__section-title">
+                <mat-icon>history</mat-icon>
+                Tu historial
+            </h2>
+
+            @if (status()!.history.length > 0) {
+            <div class="cycle__history">
+                @for (item of status()!.history; track item.cycleId) {
+                <div class="cycle__history-item">
+                    <span class="cycle__history-date">
+                        {{ item.startDate | date:'dd/MM/yyyy' }}
+                        @if (item.endDate) {
+                        → {{ item.endDate | date:'dd/MM/yyyy' }}
+                        }
+                    </span>
+                    <span class="cycle__history-detail">
+                        @if (item.actualPeriodLengthDays) {
+                        {{ item.actualPeriodLengthDays }} días de período (real)
+                        } @else {
+                        Período en curso o sin finalizar
+                        }
+                    </span>
+                </div>
+                }
+            </div>
+            }
+
+            @if (status()!.averageCycleLength) {
+            <div class="cycle__stat">
+                <span class="cycle__stat-label">Duración promedio del ciclo</span>
+                <span class="cycle__stat-value">{{ status()!.averageCycleLength }} días</span>
+            </div>
+            }
+        </div>
+
+        <div class="cycle__card">
+            <app-cycle-calendar [status]="status()!" />
+        </div>
+    </div>
     } @else {
     <div class="cycle__layout">
         <div class="cycle__card">
@@ -39,6 +129,22 @@
                 <mat-icon>insights</mat-icon>
                 Estado actual del ciclo
             </h2>
+
+            @if (status()!.isOpenTooLong) {
+            <div class="cycle__open-too-long-banner">
+                <mat-icon>warning</mat-icon>
+                <div class="cycle__open-too-long-text">
+                    <strong>¿Ya terminó tu período?</strong>
+                    <span>
+                        Llevas {{ status()!.dayOfCycle }} días con tu período abierto.
+                        Si ya terminó, regístralo para que tu seguimiento sea más preciso.
+                    </span>
+                </div>
+                <button mat-stroked-button color="warn" type="button" (click)="onJumpToFinishPeriod()">
+                    Finalizar ahora
+                </button>
+            </div>
+            }
 
             <div class="cycle__phase-card" [style.border-color]="getPhaseColor(status()!.currentPhase)">
                 <div class="cycle__phase-header">
@@ -88,7 +194,7 @@
 
             @if (status()!.isOngoing) {
             <mat-divider />
-            <div class="cycle__finish-section">
+            <div class="cycle__finish-section" id="finish-period-section">
                 <h3 class="cycle__subsection-title">¿Tu período ya terminó?</h3>
                 <p class="cycle__hint">
                     Marca la fecha exacta en que terminó tu sangrado. Esto nos permite calcular

@@ -7,7 +7,8 @@ export type AlertType =
     | 'POSITIVE_STREAK'
     | 'HIGH_HBA1C_ESTIMATED'
     | 'NO_MEAL_RECORDED'
-    | 'GLUCOSE_PATTERN_DETECTED';
+    | 'GLUCOSE_PATTERN_DETECTED'
+    | 'OPEN_CYCLE_REMINDER';
 
 export interface AlertResponse {
     type: AlertType;

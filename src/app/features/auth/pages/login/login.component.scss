@@ -3,13 +3,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(145deg, #2D1B6B 0%, #1A1730 100%);
+  background: linear-gradient(145deg, var(--auth-bg-gradient-start) 0%, var(--auth-bg-gradient-end) 100%);
   padding: var(--space-4);
 
   &__card {
-    background: rgba(255, 255, 255, 0.06);
+    background: var(--auth-card-bg);
     border-radius: var(--radius-lg);
-    border: 0.5px solid rgba(255, 255, 255, 0.1);
+    border: 0.5px solid var(--auth-card-border);
     padding: var(--space-10);
     width: 100%;
     max-width: 420px;
@@ -25,7 +25,7 @@
   &__logo-wrap {
     width: 52px;
     height: 52px;
-    background: rgba(91, 79, 207, 0.35);
+    background: var(--auth-logo-bg);
     border-radius: 14px;
     display: flex;
     align-items: center;
@@ -35,18 +35,18 @@
 
   &__logo {
     font-size: 28px;
-    color: #C4BBFF;
+    color: var(--auth-logo-icon);
   }
 
   &__title {
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-medium);
-    color: #F0EEF8;
+    color: var(--auth-title);
     margin-bottom: var(--space-1);
   }
 
   &__subtitle {
-    color: #8A85B0;
+    color: var(--auth-subtitle);
     font-size: var(--font-size-sm);
   }
 
@@ -63,14 +63,14 @@
       .mdc-notched-outline__leading,
       .mdc-notched-outline__notch,
       .mdc-notched-outline__trailing {
-        border-color: rgba(255, 255, 255, 0.15) !important;
+        border-color: var(--auth-field-border) !important;
       }
 
       &:hover {
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: rgba(149, 136, 237, 0.5) !important;
+          border-color: var(--auth-field-border-hover) !important;
         }
       }
 
@@ -78,37 +78,37 @@
         .mdc-notched-outline__leading,
         .mdc-notched-outline__notch,
         .mdc-notched-outline__trailing {
-          border-color: #9588ED !important;
+          border-color: var(--auth-accent) !important;
         }
       }
     }
 
     .mdc-text-field--outlined {
-      background-color: rgba(255, 255, 255, 0.05) !important;
+      background-color: var(--auth-field-bg) !important;
       border-radius: var(--radius-md) !important;
     }
 
     .mdc-floating-label {
-      color: #8A85B0 !important;
+      color: var(--auth-subtitle) !important;
     }
 
     .mdc-text-field--focused .mdc-floating-label {
-      color: #9588ED !important;
+      color: var(--auth-accent) !important;
     }
 
     .mat-mdc-input-element,
     .mdc-text-field__input {
-      color: #EAE8F8 !important;
-      caret-color: #9588ED !important;
+      color: var(--auth-text) !important;
+      caret-color: var(--auth-accent) !important;
     }
 
     .mat-mdc-form-field-icon-suffix .mat-icon,
     .mat-mdc-form-field-icon-suffix button .mat-icon {
-      color: #6B6590 !important;
+      color: var(--auth-text-muted) !important;
     }
 
     .mat-mdc-form-field-error {
-      color: #F07070 !important;
+      color: var(--auth-error) !important;
     }
   }
 
@@ -116,12 +116,12 @@
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    color: #F07070;
+    color: var(--auth-error);
     font-size: var(--font-size-sm);
-    background-color: rgba(224, 75, 75, 0.15);
+    background-color: var(--auth-error-bg);
     padding: var(--space-3);
     border-radius: var(--radius-sm);
-    border: 0.5px solid rgba(224, 75, 75, 0.25);
+    border: 0.5px solid var(--auth-error-border);
   }
 
   &__submit {
@@ -131,16 +131,16 @@
     font-weight: var(--font-weight-medium);
     margin-top: var(--space-2);
     border-radius: var(--radius-md) !important;
-    background-color: #5B4FCF !important;
+    background-color: var(--auth-primary) !important;
     color: #FFFFFF !important;
 
     &:hover {
-      background-color: #4A3FBF !important;
+      background-color: var(--auth-primary-hover) !important;
     }
 
     &:disabled {
-      background-color: rgba(91, 79, 207, 0.4) !important;
-      color: rgba(255, 255, 255, 0.5) !important;
+      background-color: var(--auth-primary-disabled) !important;
+      color: var(--auth-on-primary-disabled) !important;
     }
   }
 
@@ -148,14 +148,14 @@
     text-align: center;
     margin-top: var(--space-6);
     font-size: var(--font-size-sm);
-    color: #8A85B0;
+    color: var(--auth-subtitle);
 
     a {
-      color: #9588ED;
+      color: var(--auth-accent);
       font-weight: var(--font-weight-medium);
 
       &:hover {
-        color: #C4BBFF;
+        color: var(--auth-accent-hover);
         text-decoration: none;
       }
     }

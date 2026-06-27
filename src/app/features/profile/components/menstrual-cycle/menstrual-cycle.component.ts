@@ -181,6 +181,12 @@ export class MenstrualCycleComponent implements OnInit {
         });
     }
 
+    onJumpToFinishPeriod(): void {
+        this.confirmFinish.set(true);
+        document.getElementById('finish-period-section')
+            ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     cancelFinish(): void {
         this.confirmFinish.set(false);
     }

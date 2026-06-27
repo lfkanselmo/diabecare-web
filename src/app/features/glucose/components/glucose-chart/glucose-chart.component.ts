@@ -5,6 +5,7 @@ import { DatePipe } from '@angular/common';
 import { GlucoseReadingResponse, MealMarkerResponse } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
+import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
 interface TimelineEvent {
     type: 'meal' | 'exercise';
@@ -81,21 +82,21 @@ export class GlucoseChartComponent implements OnChanges {
         const mealMarkLines = this.buildMealMarkLines(sorted, dark);
         const exerciseMarkLines = this.buildExerciseMarkLines(sorted, dark);
 
-        const labelColor = dark ? '#9B97C0' : '#546E7A';
+        const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
         const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
         const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
         const areaColor = dark ? 'rgba(34,169,106,0.08)' : 'rgba(34,169,106,0.06)';
-        const minLine = dark ? '#F07070' : '#C62828';
-        const maxLine = dark ? '#FABD4A' : '#E8A020';
+        const minLine = dark ? getCssColor('--color-danger', '#F07070') : '#C62828';
+        const maxLine = getCssColor('--color-warning', dark ? '#FABD4A' : '#E8A020');
 
         this.chartOptions = {
             backgroundColor: 'transparent',
             grid: { top: 30, right: 20, bottom: 60, left: 60 },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
                 borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
-                textStyle: { color: dark ? '#EAE8F8' : '#1A1730', fontSize: 12 },
+                textStyle: { color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730'), fontSize: 12 },
                 formatter: (params: any) => {
                     const p = Array.isArray(params) ? params[0] : params;
                     const reading = sorted[p.dataIndex];
@@ -141,9 +142,9 @@ export class GlucoseChartComponent implements OnChanges {
                 pieces: [
                     { lte: 54, color: dark ? '#F48FB1' : '#880E4F' },
                     { gt: 54, lte: 70, color: dark ? '#F07070' : '#C62828' },
-                    { gt: 70, lte: this.targetMax, color: dark ? '#4ADE98' : '#22A96A' },
-                    { gt: this.targetMax, lte: 250, color: dark ? '#FABD4A' : '#E8A020' },
-                    { gt: 250, color: dark ? '#FF8A65' : '#BF360C' }
+                    { gt: 70, lte: this.targetMax, color: getCssColor('--glucose-normal', dark ? '#4ADE98' : '#22A96A') },
+                    { gt: this.targetMax, lte: 250, color: getCssColor('--glucose-high', dark ? '#FABD4A' : '#E8A020') },
+                    { gt: 250, color: getCssColor('--glucose-critically-high', dark ? '#FF8A65' : '#BF360C') }
                 ]
             },
             series: [{
@@ -186,7 +187,7 @@ export class GlucoseChartComponent implements OnChanges {
     private buildMealMarkLines(sorted: GlucoseReadingResponse[], dark: boolean): any[] {
         if (!this.mealMarkers.length || !sorted.length) return [];
 
-        const mealColor = dark ? '#2DD4CF' : '#0EA5A0';
+        const mealColor = getCssColor('--color-info', dark ? '#2DD4CF' : '#0EA5A0');
 
         return this.mealMarkers
             .filter(meal => this.hasNearbyReading(meal.consumedAt, sorted))
@@ -199,7 +200,9 @@ export class GlucoseChartComponent implements OnChanges {
     private buildExerciseMarkLines(sorted: GlucoseReadingResponse[], dark: boolean): any[] {
         if (!this.exerciseLogs.length || !sorted.length) return [];
 
-        const exerciseColor = dark ? '#9588ED' : '#5B4FCF';
+        const exerciseColor = dark
+            ? getCssColor('--color-primary-mid', '#9588ED')
+            : getCssColor('--color-primary', '#5B4FCF');
 
         return this.exerciseLogs
             .filter(log => this.hasNearbyReading(log.performedAt, sorted))

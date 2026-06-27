@@ -71,6 +71,8 @@ export interface MenstrualCycleStatusResponse {
     currentPhaseLabel: string;
     dayOfCycle: number;
     isOngoing: boolean;
+    isOpenTooLong: boolean;
+    isProjectionStale: boolean;
     periodStartDate: string;
     nextCycleStart: string;
     daysUntilNextCycle: number;

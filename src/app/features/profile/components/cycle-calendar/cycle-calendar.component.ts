@@ -8,6 +8,7 @@ import { MetadataService } from '../../../../core/services/metadata.service';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { toLocalDateString } from '../../../../shared/utils/date.utils';
+import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
 @Component({
     selector: 'app-cycle-calendar',
@@ -51,8 +52,8 @@ export class CycleCalendarComponent implements OnChanges {
             : 28;
         const dayOfCycle = this.status.dayOfCycle;
         const currentPhase = this.status.currentPhase;
-        const labelColor = dark ? '#9B97C0' : '#546E7A';
-        const borderColor = dark ? '#1C1C20' : '#FFFFFF';
+        const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
+        const borderColor = dark ? getCssColor('--color-surface-variant', '#1C1C20') : '#FFFFFF';
         const cfg = this.systemConfig.phaseConfig;
 
         const phases = [
@@ -67,9 +68,9 @@ export class CycleCalendarComponent implements OnChanges {
             backgroundColor: 'transparent',
             tooltip: {
                 trigger: 'item',
-                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
                 borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
-                textStyle: { color: dark ? '#EAE8F8' : '#1A1730' },
+                textStyle: { color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730') },
                 formatter: (p: any) => {
                     const phase = phases[p.dataIndex];
                     const pCfg = cfg[phase.phase];

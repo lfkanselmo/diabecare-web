@@ -2,6 +2,7 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { Hba1cTrendResponse } from '../../../../shared/models/vitals.model';
+import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
 @Component({
     selector: 'app-hba1c-chart',
@@ -28,13 +29,13 @@ export class Hba1cChartComponent implements OnChanges {
         const hba1c = this.trend.map(t => t.estimatedHba1c ?? null);
         const glucose = this.trend.map(t => t.averageGlucose ?? null);
 
-        const labelColor = dark ? '#9B97C0' : '#546E7A';
+        const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
         const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
         const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
-        const primaryColor = dark ? '#776CDA' : '#5B4FCF';
-        const tealColor = dark ? '#2DD4CF' : '#0EA5A0';
+        const primaryColor = getCssColor('--color-primary', dark ? '#776CDA' : '#5B4FCF');
+        const tealColor = getCssColor('--color-info', dark ? '#2DD4CF' : '#0EA5A0');
         const barColor = dark ? 'rgba(14,165,160,0.35)' : '#A2D9CE';
-        const goalColor = dark ? '#4ADE98' : '#22A96A';
+        const goalColor = getCssColor('--color-success', dark ? '#4ADE98' : '#22A96A');
 
         this.chartOptions = {
             backgroundColor: 'transparent',
@@ -46,9 +47,9 @@ export class Hba1cChartComponent implements OnChanges {
             },
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: dark ? '#121214' : '#FFFFFF',
+                backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
                 borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
-                textStyle: { color: dark ? '#EAE8F8' : '#1A1730', fontSize: 12 },
+                textStyle: { color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730'), fontSize: 12 },
                 formatter: (params: any) => {
                     let html = `<strong>${params[0].name}</strong><br/>`;
                     params.forEach((p: any) => {

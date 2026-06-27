@@ -1,0 +1,30 @@
+:root {
+  --auth-bg-gradient-start:   #2D1B6B;
+  --auth-bg-gradient-end:     #1A1730;
+  --auth-card-bg:             rgba(255, 255, 255, 0.06);
+  --auth-card-border:         rgba(255, 255, 255, 0.1);
+
+  --auth-logo-bg:             rgba(91, 79, 207, 0.35);
+  --auth-logo-icon:           #C4BBFF;
+
+  --auth-title:               #F0EEF8;
+  --auth-subtitle:            #8A85B0;
+  --auth-text:                #EAE8F8;
+  --auth-text-muted:          #6B6590;
+
+  --auth-field-bg:            rgba(255, 255, 255, 0.05);
+  --auth-field-border:        rgba(255, 255, 255, 0.15);
+  --auth-field-border-hover:  rgba(149, 136, 237, 0.5);
+
+  --auth-accent:              #9588ED;
+  --auth-accent-hover:        #C4BBFF;
+
+  --auth-primary:             #5B4FCF;
+  --auth-primary-hover:       #4A3FBF;
+  --auth-primary-disabled:    rgba(91, 79, 207, 0.4);
+  --auth-on-primary-disabled: rgba(255, 255, 255, 0.5);
+
+  --auth-error:               #F07070;
+  --auth-error-bg:            rgba(224, 75, 75, 0.15);
+  --auth-error-border:        rgba(224, 75, 75, 0.25);
+}

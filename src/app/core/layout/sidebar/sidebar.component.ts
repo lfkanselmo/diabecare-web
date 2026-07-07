@@ -26,6 +26,7 @@ export class SidebarComponent {
         { labelKey: 'nav.nutrition', icon: 'restaurant', route: '/app/nutrition' },
         { labelKey: 'nav.vitals', icon: 'favorite', route: '/app/vitals' },
         { labelKey: 'nav.medications', icon: 'medication', route: '/app/medications' },
+        { labelKey: 'nav.caregivers', icon: 'group', route: '/app/caregivers' },
         { labelKey: 'nav.reports', icon: 'picture_as_pdf', route: '/app/reports' },
         { labelKey: 'nav.profile', icon: 'person', route: '/app/profile' },
     ];

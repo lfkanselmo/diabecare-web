@@ -22,6 +22,7 @@
     "nutrition": "Nutrition",
     "vitals": "Vitals",
     "medications": "Medications",
+    "caregivers": "Caregivers",
     "reports": "Reports",
     "profile": "My profile"
   },
@@ -249,6 +250,44 @@
       "totalDose": "Total dose",
       "errorMessage": "Couldn't calculate the dose"
     }
+  },
+  "caregivers": {
+    "title": "Caregivers",
+    "myAccess": {
+      "title": "People with access to my data",
+      "description": "Generate an invite code and share it with anyone you want to have read-only access to your data.",
+      "empty": "No one has access to your data yet."
+    },
+    "patientsICareFor": {
+      "title": "Patients I care for",
+      "description": "Enter an invite code to link and view another patient's data.",
+      "empty": "You don't have access to any patient's data yet."
+    },
+    "generateInvite": "Generate invite code",
+    "generating": "Generating...",
+    "copyCode": "Copy code",
+    "codeCopied": "Code copied to clipboard",
+    "expiresAt": "Expires:",
+    "inviteCode": "Invite code",
+    "link": "Link",
+    "view": "View",
+    "revoke": "Revoke",
+    "revokeConfirm": "Confirm revoking this access?",
+    "yesRevoke": "Yes, revoke",
+    "cancel": "Cancel",
+    "revoked": "Access revoked",
+    "errorInvite": "Error generating the invite code",
+    "errorRevoke": "Error revoking access",
+    "errorRedeem": "The code is invalid, already used, or expired",
+    "redeemSuccess": "You now have access to {{name}}'s data",
+    "backToList": "Back to caregivers",
+    "readOnlyBadge": "Read-only view",
+    "latestReading": "Latest reading",
+    "noReadings": "No readings recorded",
+    "last14Days": "Last 14 days",
+    "average": "Average",
+    "timeInRange": "Time in range",
+    "estimatedHba1c": "Estimated HbA1c"
   },
   "nutrition": {
     "mealLog": {

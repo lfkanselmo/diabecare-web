@@ -1,0 +1,56 @@
+<div class="page-container caregiver-view">
+  <a class="caregiver-view__back" routerLink="/app/caregivers">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'caregivers.backToList' | transloco }}
+  </a>
+
+  @if (loading()) {
+  <div class="caregiver-view__loading">
+    <mat-spinner diameter="32" />
+  </div>
+  } @else if (patient()) {
+  <div class="caregiver-view__badge">
+    <mat-icon>visibility</mat-icon>
+    {{ 'caregivers.readOnlyBadge' | transloco }}
+  </div>
+
+  <h1 class="caregiver-view__title">{{ patient()!.fullName }}</h1>
+  <p class="caregiver-view__subtitle">{{ getDiabetesTypeLabel(patient()!.diabetesType) }}</p>
+
+  <app-alerts-panel [alerts]="alerts()" />
+
+  <div class="caregiver-view__grid">
+    <div class="card caregiver-view__card">
+      <h2 class="caregiver-view__card-title">{{ 'caregivers.latestReading' | transloco }}</h2>
+      @if (latestReading()) {
+      <span class="caregiver-view__metric">{{ latestReading()!.value }}</span>
+      <span class="caregiver-view__metric-unit">mg/dL</span>
+      } @else {
+      <p class="caregiver-view__empty">{{ 'caregivers.noReadings' | transloco }}</p>
+      }
+    </div>
+
+    <div class="card caregiver-view__card">
+      <h2 class="caregiver-view__card-title">{{ 'caregivers.last14Days' | transloco }}</h2>
+      @if (stats()) {
+      <ul class="caregiver-view__stats">
+        <li>
+          <span>{{ 'caregivers.average' | transloco }}</span>
+          <strong>{{ stats()!.average | number:'1.0-0' }} mg/dL</strong>
+        </li>
+        <li>
+          <span>{{ 'caregivers.timeInRange' | transloco }}</span>
+          <strong>{{ stats()!.timeInRangePercent | number:'1.0-0' }}%</strong>
+        </li>
+        <li>
+          <span>{{ 'caregivers.estimatedHba1c' | transloco }}</span>
+          <strong>{{ stats()!.estimatedHba1c | number:'1.0-1' }}%</strong>
+        </li>
+      </ul>
+      } @else {
+      <p class="caregiver-view__empty">{{ 'caregivers.noReadings' | transloco }}</p>
+      }
+    </div>
+  </div>
+  }
+</div>

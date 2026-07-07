@@ -22,6 +22,7 @@
     "nutrition": "Nutrición",
     "vitals": "Signos vitales",
     "medications": "Medicamentos",
+    "caregivers": "Cuidadores",
     "reports": "Reportes",
     "profile": "Mi perfil"
   },
@@ -249,6 +250,44 @@
       "totalDose": "Dosis total",
       "errorMessage": "Error al calcular la dosis"
     }
+  },
+  "caregivers": {
+    "title": "Cuidadores",
+    "myAccess": {
+      "title": "Personas con acceso a mis datos",
+      "description": "Genera un código de invitación y compártelo con quien quieras que pueda ver tus datos de forma solo lectura.",
+      "empty": "Nadie tiene acceso a tus datos todavía."
+    },
+    "patientsICareFor": {
+      "title": "Pacientes que cuido",
+      "description": "Ingresa un código de invitación para vincularte y ver los datos de otro paciente.",
+      "empty": "No tienes acceso a los datos de ningún paciente todavía."
+    },
+    "generateInvite": "Generar código de invitación",
+    "generating": "Generando...",
+    "copyCode": "Copiar código",
+    "codeCopied": "Código copiado al portapapeles",
+    "expiresAt": "Expira:",
+    "inviteCode": "Código de invitación",
+    "link": "Vincular",
+    "view": "Ver",
+    "revoke": "Revocar",
+    "revokeConfirm": "¿Confirmas revocar este acceso?",
+    "yesRevoke": "Sí, revocar",
+    "cancel": "Cancelar",
+    "revoked": "Acceso revocado",
+    "errorInvite": "Error al generar el código de invitación",
+    "errorRevoke": "Error al revocar el acceso",
+    "errorRedeem": "El código no es válido, ya fue usado o expiró",
+    "redeemSuccess": "Ahora tienes acceso a los datos de {{name}}",
+    "backToList": "Volver a cuidadores",
+    "readOnlyBadge": "Vista de solo lectura",
+    "latestReading": "Última lectura",
+    "noReadings": "Sin lecturas registradas",
+    "last14Days": "Últimos 14 días",
+    "average": "Promedio",
+    "timeInRange": "Tiempo en rango",
+    "estimatedHba1c": "HbA1c estimada"
   },
   "nutrition": {
     "mealLog": {

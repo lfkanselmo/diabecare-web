@@ -1,0 +1,83 @@
+<div class="page-container caregivers">
+  <h1 class="caregivers__title">{{ 'caregivers.title' | transloco }}</h1>
+
+  <section class="card caregivers__section">
+    <h2 class="caregivers__section-title">{{ 'caregivers.myAccess.title' | transloco }}</h2>
+    <p class="caregivers__section-desc">{{ 'caregivers.myAccess.description' | transloco }}</p>
+
+    <button mat-raised-button color="primary" (click)="onGenerateInvite()" [disabled]="generatingInvite()">
+      <mat-icon>person_add</mat-icon>
+      @if (generatingInvite()) { {{ 'caregivers.generating' | transloco }} } @else { {{ 'caregivers.generateInvite' | transloco }} }
+    </button>
+
+    @if (invite()) {
+    <div class="caregivers__invite">
+      <span class="caregivers__invite-code">{{ invite()!.code }}</span>
+      <button mat-icon-button [matTooltip]="'caregivers.copyCode' | transloco" (click)="onCopyCode()">
+        <mat-icon>content_copy</mat-icon>
+      </button>
+      <span class="caregivers__invite-expiry">
+        {{ 'caregivers.expiresAt' | transloco }} {{ invite()!.expiresAt | date:'short' }}
+      </span>
+    </div>
+    }
+
+    <ul class="caregivers__list">
+      @for (link of links(); track link.linkId) {
+      <li class="caregivers__list-item">
+        <div class="caregivers__list-info">
+          <span class="caregivers__list-name">{{ link.caregiverName || link.caregiverEmail }}</span>
+          <span class="caregivers__list-meta">{{ link.caregiverEmail }}</span>
+        </div>
+
+        @if (armedRevokeLinkId() !== link.linkId) {
+        <button mat-stroked-button color="warn" (click)="onArmRevoke(link.linkId)">
+          {{ 'caregivers.revoke' | transloco }}
+        </button>
+        } @else {
+        <div class="caregivers__revoke-confirm">
+          <span>{{ 'caregivers.revokeConfirm' | transloco }}</span>
+          <button mat-stroked-button (click)="onCancelRevoke()">{{ 'caregivers.cancel' | transloco }}</button>
+          <button mat-raised-button color="warn" (click)="onRevoke(link.linkId)">
+            {{ 'caregivers.yesRevoke' | transloco }}
+          </button>
+        </div>
+        }
+      </li>
+      } @empty {
+      <li class="caregivers__empty">{{ 'caregivers.myAccess.empty' | transloco }}</li>
+      }
+    </ul>
+  </section>
+
+  <section class="card caregivers__section">
+    <h2 class="caregivers__section-title">{{ 'caregivers.patientsICareFor.title' | transloco }}</h2>
+    <p class="caregivers__section-desc">{{ 'caregivers.patientsICareFor.description' | transloco }}</p>
+
+    <form class="caregivers__redeem-form" [formGroup]="redeemForm" (ngSubmit)="onRedeem()">
+      <mat-form-field appearance="outline">
+        <mat-label>{{ 'caregivers.inviteCode' | transloco }}</mat-label>
+        <input matInput formControlName="code" placeholder="XXXX-XXXX" />
+      </mat-form-field>
+      <button mat-raised-button color="primary" type="submit" [disabled]="redeemForm.invalid || redeeming()">
+        {{ 'caregivers.link' | transloco }}
+      </button>
+    </form>
+
+    <ul class="caregivers__list">
+      @for (patient of myPatients(); track patient.patientId) {
+      <li class="caregivers__list-item">
+        <div class="caregivers__list-info">
+          <span class="caregivers__list-name">{{ patient.patientFullName }}</span>
+        </div>
+        <a mat-stroked-button [routerLink]="['/app/caregivers/view', patient.patientId]">
+          <mat-icon>visibility</mat-icon>
+          {{ 'caregivers.view' | transloco }}
+        </a>
+      </li>
+      } @empty {
+      <li class="caregivers__empty">{{ 'caregivers.patientsICareFor.empty' | transloco }}</li>
+      }
+    </ul>
+  </section>
+</div>

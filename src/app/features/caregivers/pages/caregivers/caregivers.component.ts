@@ -59,7 +59,7 @@ export class CaregiversComponent implements OnInit {
     }
 
     onGenerateInvite(): void {
-        const patientId = this.authService.getPatientId();
+        const patientId = this.myPatientId();
         if (!patientId) return;
 
         this.generatingInvite.set(true);
@@ -92,7 +92,7 @@ export class CaregiversComponent implements OnInit {
     }
 
     onRevoke(linkId: string): void {
-        const patientId = this.authService.getPatientId();
+        const patientId = this.myPatientId();
         if (!patientId) return;
 
         this.caregiversService.revokeLink(patientId, linkId).subscribe({
@@ -129,7 +129,7 @@ export class CaregiversComponent implements OnInit {
     }
 
     private loadLinks(): void {
-        const patientId = this.authService.getPatientId();
+        const patientId = this.myPatientId();
         if (!patientId) return;
 
         this.caregiversService.getLinks(patientId).subscribe({
@@ -143,5 +143,9 @@ export class CaregiversComponent implements OnInit {
             next: (data) => this.myPatients.set(data),
             error: () => { }
         });
+    }
+
+    private myPatientId(): string | null {
+        return this.authService.getPatientId();
     }
 }

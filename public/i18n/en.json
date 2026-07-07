@@ -444,7 +444,7 @@
       "deleteTitle": "Delete account",
       "deleteDesc": "Permanently deletes your account and anonymizes your data. This action cannot be undone.",
       "delete": "Delete",
-      "deleteConfirm": "Are you sure you want to delete your account? This action is permanent.",
+      "deleteConfirm": "Are you sure you want to delete your account? Your access is deactivated immediately, and your health data is permanently and irreversibly deleted after 30 days.",
       "deleting": "Deleting...",
       "yesDelete": "Yes, delete",
       "cancel": "Cancel",

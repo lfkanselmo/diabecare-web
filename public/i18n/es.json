@@ -444,7 +444,7 @@
       "deleteTitle": "Eliminar cuenta",
       "deleteDesc": "Elimina permanentemente tu cuenta y anonimiza tus datos. Esta acción no se puede deshacer.",
       "delete": "Eliminar",
-      "deleteConfirm": "¿Confirmas que deseas eliminar tu cuenta? Esta acción es permanente.",
+      "deleteConfirm": "¿Confirmas que deseas eliminar tu cuenta? Tu acceso se desactiva de inmediato y tus datos de salud se eliminan de forma permanente e irreversible a los 30 días.",
       "deleting": "Eliminando...",
       "yesDelete": "Sí, eliminar",
       "cancel": "Cancelar",

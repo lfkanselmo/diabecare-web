@@ -16,4 +16,8 @@ export class AccountService {
     delete(userId: string): Observable<void> {
         return this.http.delete<void>(`${this.baseUrl}/${userId}`);
     }
+
+    exportData(userId: string): Observable<Blob> {
+        return this.http.get(`${this.baseUrl}/${userId}/export`, { responseType: 'blob' });
+    }
 }

@@ -429,6 +429,11 @@
     "tabCycle": "Ciclo menstrual",
     "account": {
       "management": "Gestión de cuenta",
+      "exportTitle": "Exportar mis datos",
+      "exportDesc": "Descarga un archivo con absolutamente todos tus datos personales y de salud (derecho de acceso, Ley 1581 de 2012).",
+      "export": "Exportar datos",
+      "exporting": "Exportando...",
+      "exportError": "Error al exportar tus datos",
       "suspendTitle": "Suspender cuenta",
       "suspendDesc": "Desactiva tu acceso temporalmente. Tus datos se conservan y puedes reactivarla contactándonos.",
       "suspend": "Suspender",

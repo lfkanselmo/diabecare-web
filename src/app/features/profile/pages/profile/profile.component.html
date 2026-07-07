@@ -15,6 +15,26 @@
                     <div class="profile__account-action">
                         <div class="profile__account-action-top">
                             <div class="profile__account-info">
+                                <mat-icon class="profile__account-icon">download</mat-icon>
+                                <div>
+                                    <span class="profile__account-label">{{ 'profile.account.exportTitle' | transloco }}</span>
+                                    <span class="profile__account-desc">
+                                        {{ 'profile.account.exportDesc' | transloco }}
+                                    </span>
+                                </div>
+                            </div>
+                            <button mat-stroked-button (click)="onExportData()" [disabled]="exporting()">
+                                <mat-icon>download</mat-icon>
+                                @if (exporting()) { {{ 'profile.account.exporting' | transloco }} } @else { {{ 'profile.account.export' | transloco }} }
+                            </button>
+                        </div>
+                    </div>
+
+                    <mat-divider />
+
+                    <div class="profile__account-action">
+                        <div class="profile__account-action-top">
+                            <div class="profile__account-info">
                                 <mat-icon
                                     class="profile__account-icon profile__account-icon--warn">pause_circle</mat-icon>
                                 <div>

@@ -429,6 +429,11 @@
     "tabCycle": "Menstrual cycle",
     "account": {
       "management": "Account management",
+      "exportTitle": "Export my data",
+      "exportDesc": "Download a file with absolutely all of your personal and health data (right of access, Colombian Law 1581 of 2012).",
+      "export": "Export data",
+      "exporting": "Exporting...",
+      "exportError": "Couldn't export your data",
       "suspendTitle": "Suspend account",
       "suspendDesc": "Temporarily disable your access. Your data is kept and you can reactivate it by contacting us.",
       "suspend": "Suspend",

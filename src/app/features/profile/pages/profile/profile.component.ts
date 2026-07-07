@@ -61,6 +61,7 @@ export class ProfileComponent implements OnInit {
     saving = signal(false);
     suspending = signal(false);
     deleting = signal(false);
+    exporting = signal(false);
     confirmDelete = signal(false);
     confirmSuspend = signal(false);
     patient = signal<PatientResponse | null>(null);
@@ -160,6 +161,29 @@ export class ProfileComponent implements OnInit {
                 this.notificationService.danger(this.transloco.translate('profile.account.deleteError'));
                 this.deleting.set(false);
                 this.confirmDelete.set(false);
+            }
+        });
+    }
+
+    onExportData(): void {
+        const userId = this.authService.getUserId();
+        if (!userId) return;
+
+        this.exporting.set(true);
+
+        this.accountService.exportData(userId).subscribe({
+            next: (blob) => {
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'diabecare_mis_datos.json';
+                link.click();
+                URL.revokeObjectURL(url);
+                this.exporting.set(false);
+            },
+            error: () => {
+                this.notificationService.danger(this.transloco.translate('profile.account.exportError'));
+                this.exporting.set(false);
             }
         });
     }

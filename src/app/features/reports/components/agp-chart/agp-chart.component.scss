@@ -1,0 +1,62 @@
+.agp-chart {
+  width: 100%;
+
+  &__canvas {
+    width: 100%;
+    height: 280px;
+  }
+
+  &__legend {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+    padding: var(--space-3) var(--space-2) 0;
+  }
+
+  &__legend-item {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+  }
+
+  &__legend-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary);
+
+    &--median {
+      width: 18px;
+      height: 3px;
+      border-radius: var(--radius-full);
+    }
+
+    &--band50 {
+      opacity: 0.5;
+    }
+
+    &--band90 {
+      opacity: 0.2;
+    }
+  }
+
+  &__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    height: 200px;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    mat-icon {
+      font-size: 32px;
+      width: 32px;
+      height: 32px;
+      opacity: 0.5;
+    }
+  }
+}

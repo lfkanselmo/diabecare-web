@@ -1,0 +1,25 @@
+<div class="agp-chart">
+  @if (hasEnoughData) {
+  <div echarts [options]="chartOptions" class="agp-chart__canvas"></div>
+
+  <div class="agp-chart__legend">
+    <div class="agp-chart__legend-item">
+      <span class="agp-chart__legend-swatch agp-chart__legend-swatch--median"></span>
+      <span>{{ 'reports.agp.median' | transloco }}</span>
+    </div>
+    <div class="agp-chart__legend-item">
+      <span class="agp-chart__legend-swatch agp-chart__legend-swatch--band50"></span>
+      <span>{{ 'reports.agp.band50' | transloco }}</span>
+    </div>
+    <div class="agp-chart__legend-item">
+      <span class="agp-chart__legend-swatch agp-chart__legend-swatch--band90"></span>
+      <span>{{ 'reports.agp.band90' | transloco }}</span>
+    </div>
+  </div>
+  } @else {
+  <div class="agp-chart__empty">
+    <mat-icon>show_chart</mat-icon>
+    <span>{{ 'reports.agp.notEnoughData' | transloco }}</span>
+  </div>
+  }
+</div>

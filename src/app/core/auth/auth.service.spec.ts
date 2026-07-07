@@ -407,6 +407,46 @@ describe('AuthService', () => {
 
 
     // ─── getUserId ─────────────────────────────────────────────────────────
+    // ─── getPatient ────────────────────────────────────────────────────────
+    describe('getPatient()', () => {
+
+        it('should return null when no patient data is stored', () => {
+            // Arrange
+            const service = createService();
+
+            // Act
+            const result = service.getPatient();
+
+            // Assert
+            expect(result).toBeNull();
+        });
+
+        it('should return the parsed patient object from storage', () => {
+            // Arrange
+            const service = createService();
+            const patient = { patientId: 'p-99', fullName: 'Ana García', targetGlucoseMin: 70, targetGlucoseMax: 180 };
+            localStorage.setItem(PATIENT_KEY, JSON.stringify(patient));
+
+            // Act
+            const result = service.getPatient();
+
+            // Assert
+            expect(result).toEqual(patient);
+        });
+
+        it('should return null when stored patient data is malformed JSON', () => {
+            // Arrange
+            const service = createService();
+            localStorage.setItem(PATIENT_KEY, 'this is not json {{');
+
+            // Act
+            const result = service.getPatient();
+
+            // Assert
+            expect(result).toBeNull();
+        });
+    });
+
     describe('getUserId()', () => {
 
         it('should return null when no token is stored', () => {

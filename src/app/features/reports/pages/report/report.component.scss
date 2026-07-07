@@ -1,5 +1,5 @@
 .report {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
 
   &__title {
@@ -58,6 +58,14 @@
     @media (max-width: 480px) {
       grid-template-columns: 1fr;
     }
+  }
+
+  &__agp-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-2);
+    border-top: 0.5px solid var(--color-border);
   }
 
   &__preview {

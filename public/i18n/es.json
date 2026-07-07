@@ -408,7 +408,16 @@
     "last7Days": "Últimos 7 días",
     "last30Days": "Últimos 30 días",
     "last90Days": "Últimos 90 días",
-    "last6Months": "Últimos 6 meses"
+    "last6Months": "Últimos 6 meses",
+    "agp": {
+      "title": "Perfil de glucosa ambulatorio (AGP)",
+      "median": "Mediana",
+      "band50": "Rango 25%–75%",
+      "band90": "Rango 10%–90%",
+      "readings": "Lecturas",
+      "noData": "Sin lecturas en esta hora",
+      "notEnoughData": "Aún no hay suficientes lecturas en este período para construir el perfil"
+    }
   },
   "profile": {
     "title": "Mi perfil",

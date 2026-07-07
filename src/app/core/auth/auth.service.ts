@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { PatientResponse } from '../../shared/models/patient.model';
 
 const TOKEN_KEY = 'dc_access_token';
 const REFRESH_TOKEN_KEY = 'dc_refresh_token';
@@ -55,6 +56,16 @@ export class AuthService {
         try {
             const patient = JSON.parse(raw);
             return patient?.patientId ?? null;
+        } catch {
+            return null;
+        }
+    }
+
+    getPatient(): PatientResponse | null {
+        const raw = localStorage.getItem(PATIENT_KEY);
+        if (!raw) return null;
+        try {
+            return JSON.parse(raw) as PatientResponse;
         } catch {
             return null;
         }

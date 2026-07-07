@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 import {
+    AgpBucketResponse,
     GlucoseCorrelationResponse,
     GlucoseReadingResponse,
     GlucoseStatsResponse,
@@ -33,6 +34,12 @@ export class GlucoseService {
         const params = new HttpParams().set('from', from).set('to', to);
         return this.http.get<GlucoseStatsResponse>(
             `${this.baseUrl}/${patientId}/stats`, { params });
+    }
+
+    getAgpProfile(patientId: string, from: string, to: string): Observable<AgpBucketResponse[]> {
+        const params = new HttpParams().set('from', from).set('to', to);
+        return this.http.get<AgpBucketResponse[]>(
+            `${this.baseUrl}/${patientId}/agp-profile`, { params });
     }
 
     delete(patientId: string, readingId: string): Observable<void> {

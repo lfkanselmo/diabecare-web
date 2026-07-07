@@ -44,3 +44,13 @@ export interface GlucoseCorrelationResponse {
     readings: GlucoseReadingResponse[];
     mealMarkers: MealMarkerResponse[];
 }
+
+export interface AgpBucketResponse {
+    hour: number;
+    p10: number | null;
+    p25: number | null;
+    median: number | null;
+    p75: number | null;
+    p90: number | null;
+    readingCount: number;
+}

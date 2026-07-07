@@ -37,6 +37,13 @@
     </form>
 
     @if (selectedRange) {
+      <div class="report__agp-section">
+        <h2 class="report__section-title">{{ 'reports.agp.title' | transloco }}</h2>
+        <app-agp-chart [buckets]="agpBuckets()" [targetMin]="targetMin" [targetMax]="targetMax" />
+      </div>
+    }
+
+    @if (selectedRange) {
       <div class="report__preview">
         <mat-icon class="report__preview-icon">picture_as_pdf</mat-icon>
         <div class="report__preview-info">

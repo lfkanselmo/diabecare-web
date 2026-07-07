@@ -408,7 +408,16 @@
     "last7Days": "Last 7 days",
     "last30Days": "Last 30 days",
     "last90Days": "Last 90 days",
-    "last6Months": "Last 6 months"
+    "last6Months": "Last 6 months",
+    "agp": {
+      "title": "Ambulatory Glucose Profile (AGP)",
+      "median": "Median",
+      "band50": "25%–75% range",
+      "band90": "10%–90% range",
+      "readings": "Readings",
+      "noData": "No readings at this hour",
+      "notEnoughData": "Not enough readings yet in this period to build the profile"
+    }
   },
   "profile": {
     "title": "My profile",

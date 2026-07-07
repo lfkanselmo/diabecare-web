@@ -24,8 +24,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => new Error('SESSION_EXPIRED'));
     };
 
-    const handleUnauthorized = () =>
-        tokenRefreshCoordinator.refreshAccessToken().pipe(
+    const handleUnauthorized = () => {
+        // Sin refresh token no hubo sesión que expirar (p. ej. una llamada de una pantalla
+        // pública como el registro) — dejamos que el error siga su curso normal en vez de
+        // mostrar "tu sesión expiró" y redirigir a un usuario que nunca inició sesión.
+        if (!authService.getRefreshToken()) {
+            return throwError(() => new Error('UNAUTHENTICATED'));
+        }
+
+        return tokenRefreshCoordinator.refreshAccessToken().pipe(
             switchMap(newAccessToken =>
                 next(req.clone({ setHeaders: { Authorization: `Bearer ${newAccessToken}` } }))
             ),
@@ -34,6 +41,7 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
                 return redirectToLogin();
             })
         );
+    };
 
     return next(req).pipe(
         catchError((error: HttpErrorResponse) => {

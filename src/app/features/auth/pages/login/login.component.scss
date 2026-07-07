@@ -58,58 +58,6 @@
     mat-form-field {
       width: 100%;
     }
-
-    .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
-      .mdc-notched-outline__leading,
-      .mdc-notched-outline__notch,
-      .mdc-notched-outline__trailing {
-        border-color: var(--auth-field-border) !important;
-      }
-
-      &:hover {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--auth-field-border-hover) !important;
-        }
-      }
-
-      &.mdc-text-field--focused {
-        .mdc-notched-outline__leading,
-        .mdc-notched-outline__notch,
-        .mdc-notched-outline__trailing {
-          border-color: var(--auth-accent) !important;
-        }
-      }
-    }
-
-    .mdc-text-field--outlined {
-      background-color: var(--auth-field-bg) !important;
-      border-radius: var(--radius-md) !important;
-    }
-
-    .mdc-floating-label {
-      color: var(--auth-subtitle) !important;
-    }
-
-    .mdc-text-field--focused .mdc-floating-label {
-      color: var(--auth-accent) !important;
-    }
-
-    .mat-mdc-input-element,
-    .mdc-text-field__input {
-      color: var(--auth-text) !important;
-      caret-color: var(--auth-accent) !important;
-    }
-
-    .mat-mdc-form-field-icon-suffix .mat-icon,
-    .mat-mdc-form-field-icon-suffix button .mat-icon {
-      color: var(--auth-text-muted) !important;
-    }
-
-    .mat-mdc-form-field-error {
-      color: var(--auth-error) !important;
-    }
   }
 
   &__error {
@@ -131,14 +79,15 @@
     font-weight: var(--font-weight-medium);
     margin-top: var(--space-2);
     border-radius: var(--radius-md) !important;
-    background-color: var(--auth-primary) !important;
+    background-image: var(--gradient-primary) !important;
     color: #FFFFFF !important;
 
-    &:hover {
-      background-color: var(--auth-primary-hover) !important;
+    &:hover:not(:disabled) {
+      background-image: var(--gradient-primary-hover) !important;
     }
 
     &:disabled {
+      background-image: none !important;
       background-color: var(--auth-primary-disabled) !important;
       color: var(--auth-on-primary-disabled) !important;
     }

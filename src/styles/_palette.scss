@@ -22,6 +22,17 @@ $color-warning-dark-mode: #FABD4A;
 $color-danger-dark-mode:  #F07070;
 $color-info-dark-mode:    #2DD4CF;
 
+// ── Identidad visual "Liquid Glass" (sin transparencias) ──────────────────
+// Misma sensación de profundidad/brillo por capas que Apple Liquid Glass, pero
+// lograda con degradados y sombras — nunca con opacidad/blur sobre el fondo.
+$gradient-primary:        linear-gradient(135deg, #{$color-primary-mid} 0%, #{$color-primary} 55%, #{$color-primary-dark} 100%);
+$gradient-primary-hover:  linear-gradient(135deg, #{$color-primary} 0%, #{$color-primary-dark} 100%);
+$gradient-header:         linear-gradient(120deg, #{$color-primary-dark} 0%, #{$color-primary} 100%);
+
+$gradient-primary-dark-mode:       linear-gradient(135deg, #9588ED 0%, #{$color-primary-dark-mode} 55%, #4A3FBF 100%);
+$gradient-primary-hover-dark-mode: linear-gradient(135deg, #{$color-primary-dark-mode} 0%, #4A3FBF 100%);
+$gradient-header-dark-mode:        linear-gradient(120deg, #241C57 0%, #342B7A 100%);
+
 // Construye un mapa de paleta M2 completo (50-900 + acentos) a partir de un único
 // color de marca, para que Angular Material use exactamente el mismo hex que los
 // design tokens en vez de una paleta de stock (deep-purple, teal, red) sin relación.

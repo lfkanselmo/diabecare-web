@@ -1,6 +1,7 @@
 @use 'styles/tokens';
 @use 'styles/mixins';
 @use 'styles/theme';
+@use 'styles/form-fields';
 @use 'styles/auth-theme';
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap');
@@ -53,6 +54,23 @@ h1, h2, h3, h4, h5, h6 {
   border-radius: var(--radius-lg);
   border: 0.5px solid var(--color-border);
   padding: var(--space-6);
+}
+
+// Botones primarios con degradado de marca (identidad "Liquid Glass", sin
+// transparencias) en vez del relleno plano que generan por defecto los temas
+// M2 de Angular Material.
+.mat-mdc-raised-button.mat-primary,
+.mat-mdc-unelevated-button.mat-primary,
+.mat-mdc-fab.mat-primary {
+  background-image: var(--gradient-primary) !important;
+
+  &:hover:not(:disabled) {
+    background-image: var(--gradient-primary-hover) !important;
+  }
+
+  &:disabled {
+    background-image: none !important;
+  }
 }
 
 .page-container {

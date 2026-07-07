@@ -30,6 +30,24 @@
   --color-surface-variant:  #F0EFF9;
   --color-border:           rgba(91, 79, 207, 0.12);
 
+  // ── Degradados de marca (identidad "Liquid Glass" — sin transparencias)
+  --gradient-primary:        #{p.$gradient-primary};
+  --gradient-primary-hover:  #{p.$gradient-primary-hover};
+  --gradient-header:         #{p.$gradient-header};
+  --gradient-surface:        linear-gradient(160deg, #FFFFFF 0%, #F7F6FC 100%);
+
+  // ── Campos de formulario (inputs/selects) — un solo origen para toda la app
+  --input-bg:            #{p.$color-primary-light};
+  --input-bg-focus:      #FFFFFF;
+  --input-border:        rgba(91, 79, 207, 0.18);
+  --input-border-hover:  #{p.$color-primary-mid};
+  --input-border-focus:  #{p.$color-primary};
+  --input-label:         var(--color-text-secondary);
+  --input-label-focus:   #{p.$color-primary};
+  --input-text:          var(--color-text-primary);
+  --input-caret:         #{p.$color-primary};
+  --input-icon:          var(--color-text-secondary);
+
   // ── Texto
   --color-text-primary:     #1A1730;
   --color-text-secondary:   #6E6A8A;
@@ -115,6 +133,22 @@
   --color-surface:          #121214;
   --color-surface-variant:  #1C1C20;
   --color-border:           rgba(255, 255, 255, 0.08);
+
+  --gradient-primary:        #{p.$gradient-primary-dark-mode};
+  --gradient-primary-hover:  #{p.$gradient-primary-hover-dark-mode};
+  --gradient-header:         #{p.$gradient-header-dark-mode};
+  --gradient-surface:        linear-gradient(160deg, #17171B 0%, #121214 100%);
+
+  --input-bg:            #1C1C20;
+  --input-bg-focus:      #232328;
+  --input-border:        rgba(255, 255, 255, 0.12);
+  --input-border-hover:  #9588ED;
+  --input-border-focus:  #{p.$color-primary-dark-mode};
+  --input-label:         var(--color-text-secondary);
+  --input-label-focus:   #{p.$color-primary-dark-mode};
+  --input-text:          var(--color-text-primary);
+  --input-caret:         #{p.$color-primary-dark-mode};
+  --input-icon:          var(--color-text-secondary);
 
   --color-text-primary:     #EAE8F8;
   --color-text-secondary:   #9B97C0;

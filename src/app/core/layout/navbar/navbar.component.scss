@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: var(--color-primary) !important;
+  background-image: var(--gradient-header) !important;
   color: var(--color-text-inverse) !important;
   height: var(--navbar-height);
   box-shadow: none !important;
@@ -87,7 +87,7 @@
 }
 
 [data-theme="dark"] .navbar {
-  background-color: #2A2060 !important;
+  background-image: var(--gradient-header) !important;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 

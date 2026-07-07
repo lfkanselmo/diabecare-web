@@ -1,30 +1,44 @@
+// Fondo tipo "hero" de las páginas de auth: degradado oscuro (no un color plano),
+// con una tarjeta central que gana profundidad por su PROPIO degradado y sombra
+// — nunca dejando ver el fondo a través de ella. Nada de transparencia/blur.
 :root {
   --auth-bg-gradient-start:   #2D1B6B;
   --auth-bg-gradient-end:     #1A1730;
-  --auth-card-bg:             rgba(255, 255, 255, 0.06);
+  --auth-card-bg:             linear-gradient(160deg, #2E2568 0%, #201A4D 100%);
   --auth-card-border:         rgba(255, 255, 255, 0.1);
 
-  --auth-logo-bg:             rgba(91, 79, 207, 0.35);
-  --auth-logo-icon:           #C4BBFF;
+  --auth-logo-bg:             linear-gradient(135deg, #776CDA 0%, #4A3FBF 100%);
+  --auth-logo-icon:           #F0EEF8;
 
   --auth-title:               #F0EEF8;
   --auth-subtitle:            #8A85B0;
   --auth-text:                #EAE8F8;
   --auth-text-muted:          #6B6590;
 
-  --auth-field-bg:            rgba(255, 255, 255, 0.05);
-  --auth-field-border:        rgba(255, 255, 255, 0.15);
-  --auth-field-border-hover:  rgba(149, 136, 237, 0.5);
-
   --auth-accent:              #9588ED;
   --auth-accent-hover:        #C4BBFF;
 
-  --auth-primary:             #5B4FCF;
-  --auth-primary-hover:       #4A3FBF;
-  --auth-primary-disabled:    rgba(91, 79, 207, 0.4);
-  --auth-on-primary-disabled: rgba(255, 255, 255, 0.5);
+  --auth-primary-disabled:    #4A4470;
+  --auth-on-primary-disabled: #9B97C0;
 
   --auth-error:               #F07070;
-  --auth-error-bg:            rgba(224, 75, 75, 0.15);
-  --auth-error-border:        rgba(224, 75, 75, 0.25);
+  --auth-error-bg:            #3A2340;
+  --auth-error-border:        rgba(224, 75, 75, 0.35);
+}
+
+// Las páginas de auth reutilizan el mismo partial global de inputs/selects
+// (_form-fields.scss) — solo redefinen estas variables --input-* localmente
+// para adaptarlas al fondo oscuro, en vez de duplicar las reglas de estilo.
+.login__form,
+.register__fields {
+  --input-bg:            #2A2465;
+  --input-bg-focus:      #322A78;
+  --input-border:        rgba(255, 255, 255, 0.15);
+  --input-border-hover:  #9588ED;
+  --input-border-focus:  #9588ED;
+  --input-label:         var(--auth-subtitle);
+  --input-label-focus:   var(--auth-accent);
+  --input-text:          var(--auth-text);
+  --input-caret:         var(--auth-accent);
+  --input-icon:          var(--auth-text-muted);
 }

@@ -1,0 +1,95 @@
+// Restyle global de inputs y selects de Angular Material para la identidad
+// "Liquid Glass" (superficies opacas con degradado/sombra, sin transparencia).
+// Única fuente de verdad: antes cada página con formularios (login, register...)
+// repetía este mismo bloque de overrides de .mdc-text-field.
+//
+// Lee variables --input-* (definidas en _tokens.scss) en vez de colores fijos,
+// para que un contexto local (p.ej. las páginas de auth sobre fondo oscuro)
+// pueda redefinir esas mismas variables sin duplicar las reglas.
+//
+// mat-select despliega su panel en el overlay de CDK, fuera del árbol del
+// componente que lo abrió — por eso estas reglas viven en el stylesheet
+// global y no en el .scss de cada feature.
+
+.mat-mdc-form-field {
+  width: 100%;
+}
+
+.mdc-text-field--outlined:not(.mdc-text-field--disabled) {
+  .mdc-notched-outline__leading,
+  .mdc-notched-outline__notch,
+  .mdc-notched-outline__trailing {
+    border-color: var(--input-border) !important;
+  }
+
+  &:hover {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--input-border-hover) !important;
+    }
+  }
+
+  &.mdc-text-field--focused {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: var(--input-border-focus) !important;
+    }
+  }
+}
+
+.mdc-text-field--outlined {
+  background-color: var(--input-bg) !important;
+  border-radius: var(--radius-md) !important;
+  transition: background-color var(--transition-fast);
+}
+
+.mdc-text-field--outlined.mdc-text-field--focused {
+  background-color: var(--input-bg-focus) !important;
+}
+
+.mdc-floating-label {
+  color: var(--input-label) !important;
+}
+
+.mdc-text-field--focused .mdc-floating-label {
+  color: var(--input-label-focus) !important;
+}
+
+.mat-mdc-input-element,
+.mdc-text-field__input {
+  color: var(--input-text) !important;
+  caret-color: var(--input-caret) !important;
+}
+
+.mat-mdc-form-field-icon-suffix .mat-icon,
+.mat-mdc-form-field-icon-suffix button .mat-icon,
+.mat-mdc-select-arrow {
+  color: var(--input-icon) !important;
+}
+
+.mat-mdc-form-field-error {
+  color: var(--color-danger) !important;
+}
+
+// ── Panel desplegable de mat-select (vive en .cdk-overlay-container, global) ──
+.mat-mdc-select-panel {
+  background: var(--gradient-surface) !important;
+  border: 0.5px solid var(--color-border);
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.mat-mdc-option {
+  &.mdc-list-item--selected:not(.mdc-list-item--disabled) {
+    .mdc-list-item__primary-text {
+      color: var(--color-primary);
+    }
+  }
+
+  &.mat-mdc-option-active,
+  &:hover:not(.mdc-list-item--disabled) {
+    background-color: var(--color-primary-light) !important;
+  }
+}

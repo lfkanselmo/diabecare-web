@@ -65,6 +65,18 @@
     .mat-mdc-select-value { color: var(--auth-text) !important; }
   }
 
+  &__terms {
+    display: block;
+    margin-top: var(--space-3);
+    font-size: var(--font-size-sm);
+    color: var(--auth-subtitle);
+
+    a {
+      color: var(--auth-accent);
+      &:hover { color: var(--auth-accent-hover); }
+    }
+  }
+
   // Stepper oscuro
   .mat-stepper-vertical {
     background: transparent !important;

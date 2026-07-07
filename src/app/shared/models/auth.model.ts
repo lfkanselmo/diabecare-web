@@ -14,6 +14,7 @@ export interface RegisterRequest {
     diagnosisDate: string;
     heightCm: string;
     biologicalSex: string;
+    termsAccepted: boolean;
 }
 
 export interface AuthResponse {

@@ -1,0 +1,23 @@
+<div class="page-container privacy-policy">
+  <a class="privacy-policy__back" routerLink="/auth/register">
+    <mat-icon>arrow_back</mat-icon>
+    {{ 'legal.privacy.backToRegister' | transloco }}
+  </a>
+
+  <div class="card privacy-policy__card">
+    <h1 class="privacy-policy__title">{{ 'legal.privacy.title' | transloco }}</h1>
+    <p class="privacy-policy__updated">{{ 'legal.privacy.lastUpdated' | transloco }}</p>
+
+    <div class="privacy-policy__draft-notice">
+      <mat-icon>info</mat-icon>
+      <span>{{ 'legal.privacy.draftNotice' | transloco }}</span>
+    </div>
+
+    @for (n of sections; track n) {
+    <section class="privacy-policy__section">
+      <h2>{{ 'legal.privacy.s' + n + 'Heading' | transloco }}</h2>
+      <p>{{ 'legal.privacy.s' + n + 'Body' | transloco }}</p>
+    </section>
+    }
+  </div>
+</div>

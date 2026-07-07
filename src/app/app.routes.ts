@@ -13,6 +13,13 @@ export const routes: Routes = [
             import('./features/auth/auth.routes').then(m => m.AUTH_ROUTES)
     },
     {
+        // Pública a propósito: el registro enlaza aquí antes de que exista sesión.
+        path: 'legal/privacidad',
+        loadComponent: () =>
+            import('./features/legal/pages/privacy-policy/privacy-policy.component')
+                .then(m => m.PrivacyPolicyComponent)
+    },
+    {
         path: 'app',
         canActivate: [authGuard],
         loadComponent: () =>

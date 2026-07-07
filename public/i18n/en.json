@@ -87,7 +87,9 @@
       "submit": "Create account",
       "hasAccount": "Already have an account?",
       "loginHere": "Sign in",
-      "errorGeneric": "Couldn't create the account. Check your details and try again."
+      "errorGeneric": "Couldn't create the account. Check your details and try again.",
+      "termsPrefix": "I accept the",
+      "termsLink": "personal data processing policy"
     }
   },
   "dashboard": {
@@ -540,6 +542,34 @@
       "dayLabel": "Day",
       "today": "Today",
       "predictedNextPeriod": "Predicted next period"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Personal Data Processing Policy",
+      "draftNotice": "This document is an informational draft and has not yet been reviewed by legal counsel. It should not be treated as the final production privacy policy.",
+      "lastUpdated": "Last updated: July 2026",
+      "backToRegister": "Back to registration",
+      "s1Heading": "1. Data controller",
+      "s1Body": "DiabeCare is the controller responsible for the personal data collected through this application, in accordance with Colombian Law 1581 of 2012 and its regulatory decrees (Habeas Data).",
+      "s2Heading": "2. Data we collect",
+      "s2Body": "We collect contact data (email) and health data (glucose, medications, vital signs, meals, exercise, and menstrual cycle, when applicable). Health data is sensitive data and receives special treatment under the law.",
+      "s3Heading": "3. Purpose of processing",
+      "s3Body": "We use your data to provide health-tracking services, generate alerts and reports, and — if you choose to — share certain read-only information with the people you designate as your caregivers.",
+      "s4Heading": "4. Legal basis and consent",
+      "s4Body": "The processing of your data is based on your prior, express, and informed consent, given by checking the acceptance box during registration.",
+      "s5Heading": "5. Sharing data with caregivers",
+      "s5Body": "You can generate an invite code so another person can access, on a strictly read-only basis, your glucose data and alerts. You can revoke that access at any time from the Caregivers section.",
+      "s6Heading": "6. Data retention and deletion",
+      "s6Body": "We retain your data while your account is active. If you delete your account, your access is deactivated immediately, and your health data is permanently and irreversibly deleted 30 days later, unless you recover your account before that deadline.",
+      "s7Heading": "7. Your rights (ARCO)",
+      "s7Body": "As the data subject, you have the right to Access your data, request its Rectification if outdated or inaccurate, request its Cancellation (deletion), and Object to a specific processing activity.",
+      "s8Heading": "8. How to exercise your rights",
+      "s8Body": "You can update or correct your data from your profile, and delete your account from that same section. For any other request related to your rights, contact us at soporte@diabecare.example (placeholder address, still to be defined).",
+      "s9Heading": "9. Information security",
+      "s9Body": "We apply reasonable technical measures (password hashing, role-based access control, login attempt rate limiting) to protect your data against unauthorized access.",
+      "s10Heading": "10. Changes to this policy",
+      "s10Body": "If this policy changes substantially, we will notify you and, if necessary, ask you to accept the new version."
     }
   }
 }

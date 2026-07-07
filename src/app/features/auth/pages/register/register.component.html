@@ -115,6 +115,11 @@
             </mat-form-field>
           </div>
 
+          <mat-checkbox formControlName="termsAccepted" class="register__terms">
+            {{ 'auth.register.termsPrefix' | transloco }}
+            <a routerLink="/legal/privacidad" target="_blank" rel="noopener">{{ 'auth.register.termsLink' | transloco }}</a>
+          </mat-checkbox>
+
           @if (errorMessage) {
           <div class="register__error">
             <mat-icon>error_outline</mat-icon>
@@ -124,7 +129,7 @@
 
           <div class="register__actions">
             <button mat-button matStepperPrevious type="button">{{ 'auth.register.back' | transloco }}</button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="loading">
+            <button mat-raised-button color="primary" type="submit" [disabled]="loading || profileForm.invalid">
               @if (loading) {
               <mat-spinner diameter="20" />
               } @else {

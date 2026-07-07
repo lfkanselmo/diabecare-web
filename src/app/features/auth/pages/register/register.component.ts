@@ -10,6 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -30,6 +31,7 @@ import { MetadataService } from '@core/services/metadata.service';
         MatNativeDateModule,
         MatProgressSpinnerModule,
         MatStepperModule,
+        MatCheckboxModule,
         TranslocoPipe
     ],
     templateUrl: './register.component.html',
@@ -63,7 +65,8 @@ export class RegisterComponent implements OnInit {
         diabetesType: ['', Validators.required],
         diagnosisDate: [null, Validators.required],
         heightCm: ['', [Validators.required, Validators.min(50), Validators.max(250)]],
-        biologicalSex: ['NOT_SPECIFIED']
+        biologicalSex: ['NOT_SPECIFIED'],
+        termsAccepted: [false, Validators.requiredTrue]
     });
 
     loading = false;
@@ -87,7 +90,8 @@ export class RegisterComponent implements OnInit {
             diabetesType: this.profileForm.get('diabetesType')?.value,
             diagnosisDate: diagDate.toISOString().split('T')[0],
             heightCm: String(this.profileForm.get('heightCm')?.value),
-            biologicalSex: String(this.profileForm.get('biologicalSex')?.value)
+            biologicalSex: String(this.profileForm.get('biologicalSex')?.value),
+            termsAccepted: Boolean(this.profileForm.get('termsAccepted')?.value)
         };
 
         this.authApiService.register(request).subscribe({

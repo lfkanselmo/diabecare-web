@@ -87,7 +87,9 @@
       "submit": "Crear cuenta",
       "hasAccount": "¿Ya tienes cuenta?",
       "loginHere": "Inicia sesión",
-      "errorGeneric": "Error al crear la cuenta. Verifica los datos e intenta de nuevo."
+      "errorGeneric": "Error al crear la cuenta. Verifica los datos e intenta de nuevo.",
+      "termsPrefix": "Acepto la",
+      "termsLink": "política de tratamiento de datos personales"
     }
   },
   "dashboard": {
@@ -540,6 +542,34 @@
       "dayLabel": "Día",
       "today": "Hoy",
       "predictedNextPeriod": "Próximo período predicho"
+    }
+  },
+  "legal": {
+    "privacy": {
+      "title": "Política de Tratamiento de Datos Personales",
+      "draftNotice": "Este documento es un borrador informativo y aún no ha sido revisado por un asesor legal. No debe tratarse como la versión definitiva de la política de privacidad de producción.",
+      "lastUpdated": "Última actualización: julio de 2026",
+      "backToRegister": "Volver al registro",
+      "s1Heading": "1. Responsable del tratamiento",
+      "s1Body": "DiabeCare es responsable del tratamiento de los datos personales que recolecta a través de esta aplicación, de conformidad con la Ley 1581 de 2012 y sus decretos reglamentarios (Habeas Data).",
+      "s2Heading": "2. Datos que recolectamos",
+      "s2Body": "Recolectamos datos de contacto (correo electrónico) y datos de salud (glucosa, medicamentos, signos vitales, alimentación, ejercicio y ciclo menstrual, cuando aplique). Los datos de salud son datos sensibles y reciben un tratamiento especial bajo la ley.",
+      "s3Heading": "3. Finalidad del tratamiento",
+      "s3Body": "Usamos tus datos para prestarte el servicio de seguimiento de tu condición de salud, generar alertas y reportes, y — si así lo decides — compartir cierta información de solo lectura con las personas que designes como tus cuidadores.",
+      "s4Heading": "4. Base legal y consentimiento",
+      "s4Body": "El tratamiento de tus datos se basa en tu consentimiento previo, expreso e informado, otorgado al marcar la casilla de aceptación durante el registro.",
+      "s5Heading": "5. Compartir datos con cuidadores",
+      "s5Body": "Puedes generar un código de invitación para que otra persona acceda, de forma exclusivamente de solo lectura, a tus datos de glucosa y alertas. Puedes revocar ese acceso en cualquier momento desde la sección de Cuidadores.",
+      "s6Heading": "6. Conservación y eliminación de datos",
+      "s6Body": "Conservamos tus datos mientras tu cuenta esté activa. Si eliminas tu cuenta, tu acceso se desactiva de inmediato y tus datos de salud se eliminan de forma permanente e irreversible 30 días después, salvo que decidas recuperar tu cuenta antes de ese plazo.",
+      "s7Heading": "7. Tus derechos (ARCO)",
+      "s7Body": "Como titular de tus datos, tienes derecho a Acceder a ellos, solicitar su Rectificación si están desactualizados o son inexactos, solicitar su Cancelación (eliminación), y Oponerte a un tratamiento específico.",
+      "s8Heading": "8. Cómo ejercer tus derechos",
+      "s8Body": "Puedes actualizar o corregir tus datos desde tu perfil, y eliminar tu cuenta desde la misma sección. Para cualquier otra solicitud relacionada con tus derechos, contáctanos a soporte@diabecare.example (dirección de ejemplo, pendiente de definir).",
+      "s9Heading": "9. Seguridad de la información",
+      "s9Body": "Aplicamos medidas técnicas razonables (cifrado de contraseñas, control de acceso basado en roles, limitación de intentos de inicio de sesión) para proteger tus datos frente a accesos no autorizados.",
+      "s10Heading": "10. Cambios a esta política",
+      "s10Body": "Si esta política cambia de forma sustancial, te lo notificaremos y, de ser necesario, te pediremos aceptar la nueva versión."
     }
   }
 }

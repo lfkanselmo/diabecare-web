@@ -241,6 +241,16 @@ Métodos relevantes:
 
 Cargado al inicio en `shell.component.ts` junto con `MetadataService.loadAll()`.
 
+### 6.2 Decisión: por qué NgRx solo para glucosa (2026-07-07)
+
+`src/app/store/glucose/` es el único store real de NgRx en todo el proyecto — el resto de features (nutrición, vitales, medicamentos, ciclo) usa servicios `providedIn: 'root'` con Angular Signals. Existían carpetas `features/{glucose,medications,nutrition,vitals}/store/` vacías, restos de un plan de "NgRx por feature" que se evaluó y abandonó sin documentar la decisión ni borrar el andamiaje — eliminadas en esta sesión.
+
+**Por qué glucosa sí usa NgRx y el resto no:**
+- Glucosa es el único dominio con estado *derivado* no trivial que se consume desde múltiples componentes hermanos a la vez (dashboard, navbar, historial) con una necesidad real de caché con TTL — encaja con lo que NgRx resuelve bien (selectors memoizados, un solo punto de verdad para datos que varias vistas leen sin relación jerárquica directa entre ellas).
+- El resto de features expone estado que un único componente "dueño" consume casi en exclusiva (formulario + su propia lista), donde un signal en un servicio ya es la fuente única de verdad sin necesidad de acciones/reducers/efectos.
+
+**Si se agrega una feature nueva:** por defecto, usar signals + servicio (el patrón mayoritario). Justificar NgRx explícitamente aquí solo si aparece la misma necesidad de caché compartido entre vistas no relacionadas — no por consistencia superficial con "cómo se hizo glucosa".
+
 ---
 
 ## 7. Sistema de Notificaciones

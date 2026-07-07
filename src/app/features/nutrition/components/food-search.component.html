@@ -1,17 +1,17 @@
 <div class="food-search">
   <mat-form-field appearance="outline" class="food-search__input">
-    <mat-label>Buscar alimento</mat-label>
+    <mat-label>{{ 'nutrition.foodSearch.label' | transloco }}</mat-label>
     <input matInput [formControl]="searchControl" autocomplete="off" />
     @if (searching()) {
       <mat-spinner matSuffix diameter="20" />
     } @else if (searchControl.value) {
-      <button mat-icon-button matSuffix (click)="onClear()" aria-label="Limpiar búsqueda">
+      <button mat-icon-button matSuffix (click)="onClear()" [attr.aria-label]="'common.clearSearch' | transloco">
         <mat-icon>close</mat-icon>
       </button>
     } @else {
       <mat-icon matSuffix>search</mat-icon>
     }
-    <mat-hint>Escribe al menos 2 caracteres</mat-hint>
+    <mat-hint>{{ 'nutrition.foodSearch.hint' | transloco }}</mat-hint>
   </mat-form-field>
 
   @if (showResults() && results().length > 0) {
@@ -33,7 +33,7 @@
 
   @if (showResults() && !searching() && results().length === 0 && searchControl.value!.length >= 2) {
     <div class="food-search__empty">
-      No se encontraron alimentos para "{{ searchControl.value }}"
+      {{ 'nutrition.foodSearch.noResults' | transloco: { query: searchControl.value } }}
     </div>
   }
 </div>

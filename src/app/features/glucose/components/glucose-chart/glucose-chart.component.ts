@@ -2,9 +2,11 @@ import { Component, Input, OnChanges, inject } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { DatePipe } from '@angular/common';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GlucoseReadingResponse, MealMarkerResponse } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
 interface TimelineEvent {
@@ -18,7 +20,7 @@ interface TimelineEvent {
 @Component({
     selector: 'app-glucose-chart',
     standalone: true,
-    imports: [NgxEchartsDirective, DatePipe],
+    imports: [NgxEchartsDirective, DatePipe, TranslocoPipe],
     templateUrl: './glucose-chart.component.html',
     styleUrl: './glucose-chart.component.scss'
 })
@@ -34,6 +36,8 @@ export class GlucoseChartComponent implements OnChanges {
     timelineEvents: TimelineEvent[] = [];
 
     private readonly metadata = inject(MetadataService);
+    private readonly transloco = inject(TranslocoService);
+    private readonly languageService = inject(LanguageService);
 
     private readonly MAX_GAP_MS = 2 * 60 * 60 * 1000; // 2 horas
 
@@ -52,7 +56,10 @@ export class GlucoseChartComponent implements OnChanges {
             time: new Date(meal.consumedAt),
             icon: '🍽',
             title: this.metadata.getLabelByValue(this.metadata.mealTypes(), meal.mealType),
-            detail: `${Math.round(meal.totalCalories)} kcal · ${meal.totalCarbohydrates}g carbohidratos`
+            detail: this.transloco.translate('glucose.chart.kcalCarbs', {
+                kcal: Math.round(meal.totalCalories),
+                carbs: meal.totalCarbohydrates
+            })
         }));
 
         const exerciseEvents: TimelineEvent[] = this.exerciseLogs.map(log => ({
@@ -60,7 +67,10 @@ export class GlucoseChartComponent implements OnChanges {
             time: new Date(log.performedAt),
             icon: '🏃',
             title: this.metadata.getLabelByValue(this.metadata.exerciseTypes(), log.exerciseType),
-            detail: `${log.durationMinutes} min · Intensidad ${this.metadata.getLabelByValue(this.metadata.exerciseIntensities(), log.intensity)}`
+            detail: this.transloco.translate('glucose.chart.minIntensity', {
+                minutes: log.durationMinutes,
+                intensity: this.metadata.getLabelByValue(this.metadata.exerciseIntensities(), log.intensity)
+            })
         }));
 
         this.timelineEvents = [...mealEvents, ...exerciseEvents]
@@ -72,8 +82,9 @@ export class GlucoseChartComponent implements OnChanges {
             (a, b) => new Date(a.measuredAt).getTime() - new Date(b.measuredAt).getTime()
         );
 
+        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
         const dates = sorted.map(r =>
-            new Date(r.measuredAt).toLocaleDateString('es-CO', {
+            new Date(r.measuredAt).toLocaleDateString(locale, {
                 day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit'
             })
         );
@@ -105,8 +116,8 @@ export class GlucoseChartComponent implements OnChanges {
                     let html = `
                         <div style="font-size:13px; max-width:220px">
                             <strong>${p.name}</strong><br/>
-                            Glucosa: <strong>${reading.value} ${reading.unit === 'MG_DL' ? 'mg/dL' : 'mmol/L'}</strong><br/>
-                            Tipo: ${this.metadata.getLabelByValue(this.metadata.readingTypes(), reading.readingType)}
+                            ${this.transloco.translate('glucose.chart.glucoseLegendTitle')}: <strong>${reading.value} ${reading.unit === 'MG_DL' ? 'mg/dL' : 'mmol/L'}</strong><br/>
+                            ${this.transloco.translate('glucose.chart.typeLabel')}: ${this.metadata.getLabelByValue(this.metadata.readingTypes(), reading.readingType)}
                     `;
 
                     const eventsHere = this.eventsNear(reading.measuredAt);
@@ -148,7 +159,7 @@ export class GlucoseChartComponent implements OnChanges {
                 ]
             },
             series: [{
-                name: 'Glucosa',
+                name: this.transloco.translate('glucose.chart.glucoseLegendTitle'),
                 type: 'line',
                 data: values,
                 smooth: true,
@@ -163,12 +174,12 @@ export class GlucoseChartComponent implements OnChanges {
                     data: [
                         {
                             yAxis: this.targetMin,
-                            label: { show: true, formatter: `Mín ${this.targetMin}`, position: 'end', fontSize: 10, color: minLine },
+                            label: { show: true, formatter: `${this.transloco.translate('glucose.chart.min')} ${this.targetMin}`, position: 'end', fontSize: 10, color: minLine },
                             lineStyle: { color: minLine, opacity: 0.6 }
                         },
                         {
                             yAxis: this.targetMax,
-                            label: { show: true, formatter: `Máx ${this.targetMax}`, position: 'end', fontSize: 10, color: maxLine },
+                            label: { show: true, formatter: `${this.transloco.translate('glucose.chart.max')} ${this.targetMax}`, position: 'end', fontSize: 10, color: maxLine },
                             lineStyle: { color: maxLine, opacity: 0.6 }
                         },
                         ...mealMarkLines,

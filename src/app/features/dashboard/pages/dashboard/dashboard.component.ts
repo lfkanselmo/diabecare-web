@@ -5,6 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe } from '@angular/common';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { Store } from '@ngrx/store';
 import { NutritionService } from '../../../nutrition/services/nutrition.service';
 import { VitalsService } from '../../../vitals/services/vitals.service';
@@ -35,6 +36,7 @@ import { toLocalDateString } from '../../../../shared/utils/date.utils';
         RouterLink,
         DatePipe,
         DecimalPipe,
+        TranslocoPipe,
         AlertsPanelComponent
     ],
     templateUrl: './dashboard.component.html',

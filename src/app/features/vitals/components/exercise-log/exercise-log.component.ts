@@ -9,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ExerciseService } from '../../services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
@@ -30,7 +31,8 @@ import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
         MatIconModule,
         MatSelectModule,
         MatDividerModule,
-        MatTooltipModule
+        MatTooltipModule,
+        TranslocoPipe
     ],
     templateUrl: './exercise-log.component.html',
     styleUrl: './exercise-log.component.scss'
@@ -42,6 +44,7 @@ export class ExerciseLogComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
     private readonly router = inject(Router);
     readonly metadata = inject(MetadataService);
 
@@ -97,12 +100,12 @@ export class ExerciseLogComponent implements OnInit {
                 this.history.update(list => [log, ...list]);
                 this.form.patchValue({ durationMinutes: null, notes: '', performedAt: nowAsLocalIso(), caloriesBurned: null });
                 this.customCalories.set(false);
-                this.notificationService.success('Ejercicio registrado');
+                this.notificationService.success(this.transloco.translate('vitals.exerciseLog.successMessage'));
                 this.loading.set(false);
                 this.notifyIfNewAlert(patientId);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar el ejercicio');
+                this.notificationService.danger(this.transloco.translate('vitals.exerciseLog.errorMessage'));
                 this.loading.set(false);
             }
         });
@@ -120,7 +123,7 @@ export class ExerciseLogComponent implements OnInit {
         this.alertService.getNewAlerts(patientId).subscribe({
             next: newAlerts => {
                 newAlerts.forEach(alert => this.notificationService.showAlert(alert, undefined, {
-                    label: 'Ver',
+                    label: this.transloco.translate('vitals.exerciseLog.view'),
                     onClick: () => this.router.navigate(['/app/dashboard'])
                 }));
             },

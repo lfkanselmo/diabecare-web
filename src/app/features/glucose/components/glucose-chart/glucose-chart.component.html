@@ -4,48 +4,48 @@
 
 <div class="glucose-chart__legend">
   <div class="glucose-chart__legend-group">
-    <span class="glucose-chart__legend-title">Glucosa</span>
+    <span class="glucose-chart__legend-title">{{ 'glucose.chart.glucoseLegendTitle' | transloco }}</span>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-dot" style="background:#22A96A"></span>
-      <span>En rango (70–180 mg/dL)</span>
+      <span>{{ 'glucose.chart.inRange' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-dot" style="background:#E8A020"></span>
-      <span>Alto (&gt;180 mg/dL)</span>
+      <span>{{ 'glucose.chart.high' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-dot" style="background:#E04B4B"></span>
-      <span>Bajo (&lt;70 mg/dL)</span>
+      <span>{{ 'glucose.chart.low' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-dot" style="background:#880E4F"></span>
-      <span>Crítico (&lt;54 mg/dL)</span>
+      <span>{{ 'glucose.chart.critical' | transloco }}</span>
     </div>
   </div>
   <div class="glucose-chart__legend-group">
-    <span class="glucose-chart__legend-title">Marcadores</span>
+    <span class="glucose-chart__legend-title">{{ 'glucose.chart.markersTitle' | transloco }}</span>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-line glucose-chart__legend-line--meal"></span>
-      <span>🍽 Comida registrada</span>
+      <span>🍽 {{ 'glucose.chart.mealLogged' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-line glucose-chart__legend-line--exercise"></span>
-      <span>🏃 Ejercicio registrado</span>
+      <span>🏃 {{ 'glucose.chart.exerciseLogged' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-line glucose-chart__legend-line--min"></span>
-      <span>Límite mínimo objetivo</span>
+      <span>{{ 'glucose.chart.minTarget' | transloco }}</span>
     </div>
     <div class="glucose-chart__legend-item">
       <span class="glucose-chart__legend-line glucose-chart__legend-line--max"></span>
-      <span>Límite máximo objetivo</span>
+      <span>{{ 'glucose.chart.maxTarget' | transloco }}</span>
     </div>
   </div>
 </div>
 
 @if (timelineEvents.length > 0) {
 <div class="glucose-chart__timeline">
-  <span class="glucose-chart__timeline-title">Eventos registrados</span>
+  <span class="glucose-chart__timeline-title">{{ 'glucose.chart.registeredEvents' | transloco }}</span>
   <div class="glucose-chart__timeline-list">
     @for (event of timelineEvents; track event.time.getTime()) {
     <div class="glucose-chart__timeline-item" [class.glucose-chart__timeline-item--meal]="event.type === 'meal'"

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { VitalsService } from '../../services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -30,7 +31,8 @@ import { MatTabsModule } from '@angular/material/tabs';
         MatButtonToggleModule,
         MatTabsModule,
         Hba1cChartComponent,
-        ExerciseLogComponent
+        ExerciseLogComponent,
+        TranslocoPipe
     ],
     templateUrl: './vitals.component.html',
     styleUrl: './vitals.component.scss'
@@ -41,6 +43,7 @@ export class VitalsComponent implements OnInit {
     private readonly vitalsService = inject(VitalsService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
 
     loading = signal(false);
     history = signal<VitalSignResponse[]>([]);
@@ -57,12 +60,14 @@ export class VitalsComponent implements OnInit {
         notes: ['']
     });
 
-    readonly bmiLabels: Record<string, string> = {
-        UNDERWEIGHT: 'Bajo peso',
-        NORMAL: 'Normal',
-        OVERWEIGHT: 'Sobrepeso',
-        OBESE: 'Obesidad'
-    };
+    get bmiLabels(): Record<string, string> {
+        return {
+            UNDERWEIGHT: this.transloco.translate('vitals.bmiUnderweight'),
+            NORMAL: this.transloco.translate('vitals.bmiNormal'),
+            OVERWEIGHT: this.transloco.translate('vitals.bmiOverweight'),
+            OBESE: this.transloco.translate('vitals.bmiObese')
+        };
+    }
 
     ngOnInit(): void {
         this.loadHistory();
@@ -80,11 +85,11 @@ export class VitalsComponent implements OnInit {
                 this.history.update(list => [vital, ...list]);
                 this.form.reset();
                 this.loadTrend();
-                this.notificationService.success('Signos vitales registrados');
+                this.notificationService.success(this.transloco.translate('vitals.successMessage'));
                 this.loading.set(false);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar los signos vitales');
+                this.notificationService.danger(this.transloco.translate('vitals.errorMessage'));
                 this.loading.set(false);
             }
         });

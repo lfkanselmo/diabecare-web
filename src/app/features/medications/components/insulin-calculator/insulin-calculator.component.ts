@@ -5,11 +5,12 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
 import { DecimalPipe } from '@angular/common';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { InsulinService } from '../../services/insulin.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { NotificationService } from '../../../../core/services/notification.service';
 import { InsulinCalculationResponse } from '../../../../shared/models/insulin.model';
 
 @Component({
@@ -23,8 +24,8 @@ import { InsulinCalculationResponse } from '../../../../shared/models/insulin.mo
         MatButtonModule,
         MatIconModule,
         MatCheckboxModule,
-        MatSnackBarModule,
-        MatDividerModule
+        MatDividerModule,
+        TranslocoPipe
     ],
     templateUrl: './insulin-calculator.component.html',
     styleUrl: './insulin-calculator.component.scss'
@@ -34,7 +35,8 @@ export class InsulinCalculatorComponent {
     private readonly fb = inject(FormBuilder);
     private readonly insulinService = inject(InsulinService);
     private readonly authService = inject(AuthService);
-    private readonly snackBar = inject(MatSnackBar);
+    private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
 
     loading = signal(false);
     result = signal<InsulinCalculationResponse | null>(null);
@@ -60,8 +62,8 @@ export class InsulinCalculatorComponent {
                 this.loading.set(false);
             },
             error: (err) => {
-                const msg = err.error?.message ?? 'Error al calcular la dosis';
-                this.snackBar.open(msg, 'Cerrar', { duration: 4000 });
+                const msg = err.error?.message ?? this.transloco.translate('medications.insulinCalculator.errorMessage');
+                this.notificationService.danger(msg);
                 this.loading.set(false);
             }
         });

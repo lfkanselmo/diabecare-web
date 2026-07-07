@@ -2,18 +2,20 @@ import { Component, Input, OnChanges, inject } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
 import { DatePipe, KeyValuePipe, TitleCasePipe } from '@angular/common';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MenstrualCycleStatusResponse, CyclePhase } from '../../../../shared/models/menstrual-cycle.model';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { MetadataService } from '../../../../core/services/metadata.service';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { toLocalDateString } from '../../../../shared/utils/date.utils';
 import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
 @Component({
     selector: 'app-cycle-calendar',
     standalone: true,
-    imports: [NgxEchartsDirective, DatePipe, KeyValuePipe, TitleCasePipe],
+    imports: [NgxEchartsDirective, DatePipe, KeyValuePipe, TitleCasePipe, TranslocoPipe],
     templateUrl: './cycle-calendar.component.html',
     styleUrl: './cycle-calendar.component.scss'
 })
@@ -24,6 +26,8 @@ export class CycleCalendarComponent implements OnChanges {
     private readonly systemConfig = inject(SystemConfigService);
     private readonly cycleService = inject(MenstrualCycleService);
     private readonly authService = inject(AuthService);
+    private readonly transloco = inject(TranslocoService);
+    private readonly languageService = inject(LanguageService);
     readonly metadata = inject(MetadataService);
 
     wheelOptions: EChartsOption = {};
@@ -32,6 +36,13 @@ export class CycleCalendarComponent implements OnChanges {
 
     get phaseConfig() {
         return this.systemConfig.phaseConfig;
+    }
+
+    get weekdayLabels(): string[] {
+        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
+        const formatter = new Intl.DateTimeFormat(locale, { weekday: 'short' });
+        // 1970-01-04 fue domingo — genera Dom..Sáb (o Sun..Sat) respetando el idioma activo.
+        return Array.from({ length: 7 }, (_, i) => formatter.format(new Date(1970, 0, 4 + i)));
     }
 
     getPhaseLabel(phase: string): string {
@@ -74,10 +85,12 @@ export class CycleCalendarComponent implements OnChanges {
                 formatter: (p: any) => {
                     const phase = phases[p.dataIndex];
                     const pCfg = cfg[phase.phase];
+                    const daysRange = this.transloco.translate('profile.cycleCalendar.daysRange', { range: pCfg.days });
+                    const percent = this.transloco.translate('profile.cycleCalendar.percentOfCycle', { percent: p.percent.toFixed(0) });
                     return `<div style="font-size:13px">
                         <strong>${pCfg.icon} ${phase.name}</strong><br/>
-                        Días ${pCfg.days}<br/>
-                        ${p.percent.toFixed(0)}% del ciclo
+                        ${daysRange}<br/>
+                        ${percent}
                     </div>`;
                 }
             },
@@ -86,7 +99,7 @@ export class CycleCalendarComponent implements OnChanges {
                 left: 'center',
                 top: 'middle',
                 style: {
-                    text: `Día\n${dayOfCycle}`,
+                    text: `${this.transloco.translate('profile.cycleCalendar.dayLabel')}\n${dayOfCycle}`,
                     fill: cfg[currentPhase].color,
                     fontSize: 20,
                     fontWeight: 'bold',

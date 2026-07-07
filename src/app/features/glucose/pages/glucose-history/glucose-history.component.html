@@ -1,7 +1,7 @@
 <div class="glucose-history">
   <div class="glucose-history__header">
     <div>
-      <h1 class="glucose-history__title">Historial de glucosa</h1>
+      <h1 class="glucose-history__title">{{ 'glucose.history.title' | transloco }}</h1>
       <p class="glucose-history__subtitle">{{ selectedRangeLabel() }}</p>
     </div>
     <div class="glucose-history__header-actions">
@@ -12,29 +12,29 @@
 
       <mat-menu #rangeMenu="matMenu" class="glucose-history__range-menu">
         @for (range of quickRanges; track range.days) {
-        <button mat-menu-item (click)="applyQuickRange(range.label, range.days)">
-          {{ range.label }}
+        <button mat-menu-item (click)="applyQuickRange(range.labelKey, range.days)">
+          {{ range.labelKey | transloco }}
         </button>
         }
         <mat-divider />
         <div class="glucose-history__custom-range" (click)="$event.stopPropagation()">
-          <span class="glucose-history__custom-range-label">Rango personalizado</span>
+          <span class="glucose-history__custom-range-label">{{ 'glucose.history.customRange' | transloco }}</span>
           <form [formGroup]="rangeForm" class="glucose-history__custom-range-form">
             <mat-form-field appearance="outline">
-              <mat-label>Desde</mat-label>
+              <mat-label>{{ 'glucose.history.from' | transloco }}</mat-label>
               <input matInput [matDatepicker]="fromPicker" formControlName="from">
               <mat-datepicker-toggle matSuffix [for]="fromPicker"></mat-datepicker-toggle>
               <mat-datepicker #fromPicker></mat-datepicker>
             </mat-form-field>
             <mat-form-field appearance="outline">
-              <mat-label>Hasta</mat-label>
+              <mat-label>{{ 'glucose.history.to' | transloco }}</mat-label>
               <input matInput [matDatepicker]="toPicker" formControlName="to">
               <mat-datepicker-toggle matSuffix [for]="toPicker"></mat-datepicker-toggle>
               <mat-datepicker #toPicker></mat-datepicker>
             </mat-form-field>
             <button mat-raised-button color="primary" type="button" [disabled]="rangeForm.invalid"
               (click)="applyCustomRange()">
-              Aplicar
+              {{ 'glucose.history.apply' | transloco }}
             </button>
           </form>
         </div>
@@ -43,47 +43,47 @@
       <mat-button-toggle-group [value]="view()" (change)="view.set($event.value)">
         <mat-button-toggle value="chart">
           <mat-icon>show_chart</mat-icon>
-          Gráfica
+          {{ 'glucose.history.chart' | transloco }}
         </mat-button-toggle>
         <mat-button-toggle value="table">
           <mat-icon>table_rows</mat-icon>
-          Tabla
+          {{ 'glucose.history.table' | transloco }}
         </mat-button-toggle>
       </mat-button-toggle-group>
 
       <button mat-stroked-button [matMenuTriggerFor]="exportMenu">
         <mat-icon>download</mat-icon>
-        Exportar
+        {{ 'glucose.history.export' | transloco }}
       </button>
 
       <mat-menu #exportMenu="matMenu">
         <button mat-menu-item (click)="onExportCsv()">
           <mat-icon>table_chart</mat-icon>
-          <span>Descargar CSV</span>
+          <span>{{ 'glucose.history.downloadCsv' | transloco }}</span>
         </button>
         <button mat-menu-item (click)="onExportJson()">
           <mat-icon>data_object</mat-icon>
-          <span>Descargar JSON</span>
+          <span>{{ 'glucose.history.downloadJson' | transloco }}</span>
         </button>
       </mat-menu>
 
       <a mat-raised-button color="primary" routerLink="/app/glucose/register">
         <mat-icon>add</mat-icon>
-        Nueva lectura
+        {{ 'glucose.history.newReading' | transloco }}
       </a>
     </div>
   </div>
 
   @if (loading()) {
   <div class="glucose-history__loading">
-    <p>Cargando...</p>
+    <p>{{ 'common.loading' | transloco }}</p>
   </div>
   } @else if (readings().length === 0) {
   <div class="glucose-history__empty">
     <mat-icon>water_drop</mat-icon>
-    <p>No hay lecturas registradas en este rango de fechas</p>
+    <p>{{ 'glucose.history.empty' | transloco }}</p>
     <a mat-raised-button color="primary" routerLink="/app/glucose/register">
-      Registrar primera lectura
+      {{ 'glucose.history.registerFirst' | transloco }}
     </a>
   </div>
   } @else {
@@ -95,14 +95,14 @@
   <div class="glucose-history__table-container">
     <table mat-table [dataSource]="readings()">
       <ng-container matColumnDef="measuredAt">
-        <th mat-header-cell *matHeaderCellDef>Fecha y hora</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'glucose.history.colDateTime' | transloco }}</th>
         <td mat-cell *matCellDef="let row">
           {{ row.measuredAt | date:'dd/MM/yyyy HH:mm' }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="value">
-        <th mat-header-cell *matHeaderCellDef>Valor</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'glucose.history.colValue' | transloco }}</th>
         <td mat-cell *matCellDef="let row">
           <span class="glucose-history__value">
             {{ row.value | number:'1.0-1' }} {{ row.unit === 'MG_DL' ? 'mg/dL' : 'mmol/L' }}
@@ -111,14 +111,14 @@
       </ng-container>
 
       <ng-container matColumnDef="readingType">
-        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'glucose.history.colType' | transloco }}</th>
         <td mat-cell *matCellDef="let row">
           {{ getReadingTypeLabel(row.readingType) }}
         </td>
       </ng-container>
 
       <ng-container matColumnDef="status">
-        <th mat-header-cell *matHeaderCellDef>Estado</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'glucose.history.colStatus' | transloco }}</th>
         <td mat-cell *matCellDef="let row">
           <span class="glucose-history__status" [ngClass]="getStatusClass(row.status)">
             {{ getStatusLabel(row.status) }}
@@ -127,14 +127,14 @@
       </ng-container>
 
       <ng-container matColumnDef="notes">
-        <th mat-header-cell *matHeaderCellDef>Notas</th>
+        <th mat-header-cell *matHeaderCellDef>{{ 'glucose.history.colNotes' | transloco }}</th>
         <td mat-cell *matCellDef="let row">{{ row.notes || '—' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button color="warn" (click)="onDelete(row.readingId)" aria-label="Eliminar lectura">
+          <button mat-icon-button color="warn" (click)="onDelete(row.readingId)" [attr.aria-label]="'common.delete' | transloco">
             <mat-icon>delete_outline</mat-icon>
           </button>
         </td>

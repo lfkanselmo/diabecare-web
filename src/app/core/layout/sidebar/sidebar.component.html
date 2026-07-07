@@ -6,11 +6,10 @@
             <a class="sidebar__link" [routerLink]="item.route" routerLinkActive="sidebar__link--active">
                 <mat-icon class="sidebar__icon">{{ item.icon }}</mat-icon>
                 @if (isOpen) {
-                <span class="sidebar__label">{{ item.label }}</span>
+                <span class="sidebar__label">{{ item.labelKey | transloco }}</span>
                 }
             </a>
         </li>
         }
     </ul>
 </nav>
-```

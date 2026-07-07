@@ -1,42 +1,42 @@
 <div class="insulin-profile">
     <h2 class="insulin-profile__title">
         <mat-icon>tune</mat-icon>
-        Perfil de insulina
+        {{ 'medications.insulinProfile.title' | transloco }}
     </h2>
     <p class="insulin-profile__subtitle">
-        Configura estos valores con tu médico para activar la calculadora.
+        {{ 'medications.insulinProfile.subtitle' | transloco }}
     </p>
 
     <form [formGroup]="form" (ngSubmit)="onSave()">
         <mat-form-field appearance="outline">
-            <mat-label>Factor de sensibilidad (mg/dL por unidad)</mat-label>
+            <mat-label>{{ 'medications.insulinProfile.sensitivityFactor' | transloco }}</mat-label>
             <input matInput formControlName="sensitivityFactor" type="number" step="0.5" />
-            <mat-hint>Cuánto baja tu glucosa con 1 unidad de insulina</mat-hint>
+            <mat-hint>{{ 'medications.insulinProfile.sensitivityFactorHint' | transloco }}</mat-hint>
             @if (form.get('sensitivityFactor')?.hasError('required')) {
-            <mat-error>Este campo es obligatorio</mat-error>
+            <mat-error>{{ 'medications.insulinProfile.fieldRequired' | transloco }}</mat-error>
             }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Ratio insulina:carbohidratos (g por unidad)</mat-label>
+            <mat-label>{{ 'medications.insulinProfile.carbRatio' | transloco }}</mat-label>
             <input matInput formControlName="carbRatio" type="number" step="0.5" />
-            <mat-hint>Gramos de carbs que cubre 1 unidad de insulina</mat-hint>
+            <mat-hint>{{ 'medications.insulinProfile.carbRatioHint' | transloco }}</mat-hint>
             @if (form.get('carbRatio')?.hasError('required')) {
-            <mat-error>Este campo es obligatorio</mat-error>
+            <mat-error>{{ 'medications.insulinProfile.fieldRequired' | transloco }}</mat-error>
             }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
-            <mat-label>Glucosa objetivo para corrección (mg/dL)</mat-label>
+            <mat-label>{{ 'medications.insulinProfile.targetGlucose' | transloco }}</mat-label>
             <input matInput formControlName="targetGlucose" type="number" />
-            <mat-hint>Generalmente entre 100 y 120 mg/dL</mat-hint>
+            <mat-hint>{{ 'medications.insulinProfile.targetGlucoseHint' | transloco }}</mat-hint>
             @if (form.get('targetGlucose')?.hasError('required')) {
-            <mat-error>Este campo es obligatorio</mat-error>
+            <mat-error>{{ 'medications.insulinProfile.fieldRequired' | transloco }}</mat-error>
             }
         </mat-form-field>
 
         <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
-            @if (loading()) { Guardando... } @else { Guardar perfil }
+            @if (loading()) { {{ 'medications.insulinProfile.saving' | transloco }} } @else { {{ 'medications.insulinProfile.save' | transloco }} }
         </button>
     </form>
 </div>

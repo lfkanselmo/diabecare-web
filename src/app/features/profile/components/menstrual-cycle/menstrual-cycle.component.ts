@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MenstrualCycleService } from '../../services/menstrual-cycle.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -36,7 +37,8 @@ import { toLocalDateString } from '../../../../shared/utils/date.utils';
         MatIconModule,
         MatDividerModule,
         MatChipsModule,
-        CycleCalendarComponent
+        CycleCalendarComponent,
+        TranslocoPipe
     ],
     templateUrl: './menstrual-cycle.component.html',
     styleUrl: './menstrual-cycle.component.scss'
@@ -48,6 +50,7 @@ export class MenstrualCycleComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
     private readonly systemConfig = inject(SystemConfigService);
+    private readonly transloco = inject(TranslocoService);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -117,11 +120,11 @@ export class MenstrualCycleComponent implements OnInit {
             next: data => {
                 this.status.set(data);
                 this.noData.set(false);
-                this.notificationService.success('Período registrado correctamente');
+                this.notificationService.success(this.transloco.translate('profile.cycle.periodRegisteredSuccess'));
                 this.saving.set(false);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar el período');
+                this.notificationService.danger(this.transloco.translate('profile.cycle.periodRegisterError'));
                 this.saving.set(false);
             }
         });
@@ -143,12 +146,12 @@ export class MenstrualCycleComponent implements OnInit {
             symptoms
         }).subscribe({
             next: () => {
-                this.notificationService.success('Registro de hoy guardado');
+                this.notificationService.success(this.transloco.translate('profile.cycle.todayEntrySaved'));
                 this.saving.set(false);
                 this.loadStatus();
             },
             error: () => {
-                this.notificationService.danger('Error al guardar el registro de hoy');
+                this.notificationService.danger(this.transloco.translate('profile.cycle.todayEntryError'));
                 this.saving.set(false);
             }
         });
@@ -168,12 +171,12 @@ export class MenstrualCycleComponent implements OnInit {
         this.cycleService.finishPeriod(patientId, this.finishForm.getRawValue()).subscribe({
             next: data => {
                 this.status.set(data);
-                this.notificationService.success('Período finalizado. Ahora conocemos tu duración real.');
+                this.notificationService.success(this.transloco.translate('profile.cycle.periodFinishedSuccess'));
                 this.finishingPeriod.set(false);
                 this.confirmFinish.set(false);
             },
             error: (err) => {
-                const message = err?.error?.message ?? 'Error al finalizar el período';
+                const message = err?.error?.message ?? this.transloco.translate('profile.cycle.periodFinishError');
                 this.notificationService.danger(message);
                 this.finishingPeriod.set(false);
                 this.confirmFinish.set(false);

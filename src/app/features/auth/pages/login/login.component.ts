@@ -6,6 +6,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 
@@ -19,7 +20,8 @@ import { AuthService } from '../../../../core/auth/auth.service';
         MatInputModule,
         MatButtonModule,
         MatIconModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        TranslocoPipe
     ],
     templateUrl: './login.component.html',
     styleUrl: './login.component.scss',
@@ -31,6 +33,7 @@ export class LoginComponent {
     private readonly authApiService = inject(AuthApiService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly transloco = inject(TranslocoService);
 
     form: FormGroup = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
@@ -55,11 +58,11 @@ export class LoginComponent {
             error: err => {
                 const code = err?.error?.code;
                 if (code === 'ACCOUNT_SUSPENDED') {
-                    this.errorMessage = 'Tu cuenta está suspendida. Contacta soporte para reactivarla.';
+                    this.errorMessage = this.transloco.translate('auth.login.errorSuspended');
                 } else if (code === 'INVALID_CREDENTIALS') {
-                    this.errorMessage = 'Correo o contraseña incorrectos.';
+                    this.errorMessage = this.transloco.translate('auth.login.errorInvalidCredentials');
                 } else {
-                    this.errorMessage = 'Error al iniciar sesión. Intenta de nuevo.';
+                    this.errorMessage = this.transloco.translate('auth.login.errorGeneric');
                 }
                 this.loading = false;
             }

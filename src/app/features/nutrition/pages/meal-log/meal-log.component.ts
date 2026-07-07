@@ -9,6 +9,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
@@ -32,7 +33,8 @@ import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
         MatSelectModule,
         MatDividerModule,
         MatTooltipModule,
-        FoodSearchComponent
+        FoodSearchComponent,
+        TranslocoPipe
     ],
     templateUrl: './meal-log.component.html',
     styleUrl: './meal-log.component.scss'
@@ -44,6 +46,7 @@ export class MealLogComponent {
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
     private readonly router = inject(Router);
     readonly metadata = inject(MetadataService);
 
@@ -175,11 +178,11 @@ export class MealLogComponent {
 
         this.nutritionService.registerMeal(patientId, request).subscribe({
             next: () => {
-                this.notificationService.success('Comida registrada correctamente');
+                this.notificationService.success(this.transloco.translate('nutrition.mealLog.successMessage'));
                 this.notifyNewAlertsThenNavigate(patientId);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar la comida');
+                this.notificationService.danger(this.transloco.translate('nutrition.mealLog.errorMessage'));
                 this.loading.set(false);
             }
         });

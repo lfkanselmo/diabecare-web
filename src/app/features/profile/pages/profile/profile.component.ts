@@ -11,6 +11,7 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatDialogModule } from '@angular/material/dialog';
 import { DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ProfileService } from '../../services/profile.service';
 import { AccountService } from '../../../../core/services/account.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -36,7 +37,8 @@ import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstr
         MatChipsModule,
         MatTabsModule,
         MatDialogModule,
-        MenstrualCycleComponent
+        MenstrualCycleComponent,
+        TranslocoPipe
     ],
     templateUrl: './profile.component.html',
     styleUrl: './profile.component.scss',
@@ -50,6 +52,7 @@ export class ProfileComponent implements OnInit {
     private readonly authService = inject(AuthService);
     private readonly authApiService = inject(AuthApiService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
     private readonly router = inject(Router);
     private readonly cdr = inject(ChangeDetectorRef);
     readonly metadata = inject(MetadataService);
@@ -97,11 +100,11 @@ export class ProfileComponent implements OnInit {
             next: updated => {
                 this.patient.set(updated);
                 this.authService.saveSession(this.authService.getToken()!, updated);
-                this.notificationService.success('Perfil actualizado correctamente');
+                this.notificationService.success(this.transloco.translate('profile.account.updateSuccess'));
                 this.saving.set(false);
             },
             error: () => {
-                this.notificationService.danger('Error al actualizar el perfil');
+                this.notificationService.danger(this.transloco.translate('profile.account.updateError'));
                 this.saving.set(false);
             }
         });
@@ -120,14 +123,14 @@ export class ProfileComponent implements OnInit {
 
         this.accountService.suspend(userId).subscribe({
             next: () => {
-                this.notificationService.success('Cuenta suspendida. Cerrando sesión...');
+                this.notificationService.success(this.transloco.translate('profile.account.suspendedSuccess'));
                 setTimeout(() => {
                     this.authService.logout();
                     this.router.navigate(['/auth/login']);
                 }, 2000);
             },
             error: () => {
-                this.notificationService.danger('Error al suspender la cuenta');
+                this.notificationService.danger(this.transloco.translate('profile.account.suspendError'));
                 this.suspending.set(false);
                 this.confirmSuspend.set(false);
             }
@@ -147,14 +150,14 @@ export class ProfileComponent implements OnInit {
 
         this.accountService.delete(userId).subscribe({
             next: () => {
-                this.notificationService.success('Cuenta eliminada. Hasta luego.');
+                this.notificationService.success(this.transloco.translate('profile.account.deletedSuccess'));
                 setTimeout(() => {
                     this.authService.logout();
                     this.router.navigate(['/auth/login']);
                 }, 2000);
             },
             error: () => {
-                this.notificationService.danger('Error al eliminar la cuenta');
+                this.notificationService.danger(this.transloco.translate('profile.account.deleteError'));
                 this.deleting.set(false);
                 this.confirmDelete.set(false);
             }
@@ -182,12 +185,12 @@ export class ProfileComponent implements OnInit {
 
         this.authApiService.logoutAll(userId).subscribe({
             next: () => {
-                this.notificationService.success('Sesión cerrada en todos los dispositivos.');
+                this.notificationService.success(this.transloco.translate('profile.account.logoutAllSuccess'));
                 this.authService.clearSession();
                 this.router.navigate(['/auth/login']);
             },
             error: () => {
-                this.notificationService.danger('Error al cerrar sesión en los demás dispositivos');
+                this.notificationService.danger(this.transloco.translate('profile.account.logoutAllError'));
                 this.loggingOutAll.set(false);
                 this.confirmLogoutAll.set(false);
             }

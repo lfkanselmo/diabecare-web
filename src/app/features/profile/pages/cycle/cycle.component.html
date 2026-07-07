@@ -1,12 +1,12 @@
 <div class="page-container">
     <div class="cycle-page__header">
         <div>
-            <h1 class="cycle-page__title">Ciclo menstrual</h1>
-            <p class="cycle-page__subtitle">Seguimiento y predicción de tu ciclo</p>
+            <h1 class="cycle-page__title">{{ 'profile.cycle.title' | transloco }}</h1>
+            <p class="cycle-page__subtitle">{{ 'profile.cycle.subtitle' | transloco }}</p>
         </div>
         <a mat-stroked-button routerLink="/app/profile">
             <mat-icon>person</mat-icon>
-            Mi perfil
+            {{ 'profile.cycle.myProfile' | transloco }}
         </a>
     </div>
     <app-menstrual-cycle />

@@ -1,6 +1,6 @@
 <div class="nutrition-history">
     <div class="nutrition-history__header">
-        <h1 class="nutrition-history__title">Historial de comidas</h1>
+        <h1 class="nutrition-history__title">{{ 'nutrition.history.title' | transloco }}</h1>
 
         <button mat-stroked-button [matMenuTriggerFor]="rangeMenu">
             <mat-icon>date_range</mat-icon>
@@ -8,34 +8,34 @@
         </button>
 
         <mat-menu #rangeMenu="matMenu">
-            @for (range of quickRanges; track range.label) {
-            <button mat-menu-item (click)="applyQuickRange(range.label, range.days)">
-                {{ range.label }}
+            @for (range of quickRanges; track range.labelKey) {
+            <button mat-menu-item (click)="applyQuickRange(range.labelKey, range.days)">
+                {{ range.labelKey | transloco }}
             </button>
             }
             <button mat-menu-item [matMenuTriggerFor]="customRangeMenu">
-                Rango personalizado
+                {{ 'nutrition.history.customRange' | transloco }}
             </button>
         </mat-menu>
 
         <mat-menu #customRangeMenu="matMenu">
             <div class="nutrition-history__custom-range" [formGroup]="rangeForm" (click)="$event.stopPropagation()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Desde</mat-label>
+                    <mat-label>{{ 'nutrition.history.from' | transloco }}</mat-label>
                     <input matInput [matDatepicker]="fromPicker" formControlName="from">
                     <mat-datepicker-toggle matSuffix [for]="fromPicker" />
                     <mat-datepicker #fromPicker />
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Hasta</mat-label>
+                    <mat-label>{{ 'nutrition.history.to' | transloco }}</mat-label>
                     <input matInput [matDatepicker]="toPicker" formControlName="to">
                     <mat-datepicker-toggle matSuffix [for]="toPicker" />
                     <mat-datepicker #toPicker />
                 </mat-form-field>
 
                 <button mat-raised-button color="primary" (click)="applyCustomRange()">
-                    Aplicar
+                    {{ 'nutrition.history.apply' | transloco }}
                 </button>
             </div>
         </mat-menu>
@@ -48,7 +48,7 @@
     } @else if (meals().length === 0) {
     <div class="nutrition-history__empty">
         <mat-icon>restaurant</mat-icon>
-        <span>No hay comidas registradas en este rango</span>
+        <span>{{ 'nutrition.history.empty' | transloco }}</span>
     </div>
     } @else {
     <div class="nutrition-history__list">

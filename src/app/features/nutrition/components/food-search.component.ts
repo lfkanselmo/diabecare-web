@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { debounceTime, distinctUntilChanged, filter, switchMap } from 'rxjs/operators';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { FoodResponse } from '@shared/models/food.model';
 import { FoodService } from '../services/food.service';
 
@@ -18,7 +19,8 @@ import { FoodService } from '../services/food.service';
         MatInputModule,
         MatIconModule,
         MatButtonModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        TranslocoPipe
     ],
     templateUrl: './food-search.component.html',
     styleUrl: './food-search.component.scss'

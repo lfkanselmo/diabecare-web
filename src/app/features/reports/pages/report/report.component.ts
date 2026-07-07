@@ -7,9 +7,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ReportService } from '../../services/report.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
@@ -23,7 +25,8 @@ import { toLocalDateString } from '../../../../shared/utils/date.utils';
         MatInputModule,
         MatDatepickerModule,
         MatNativeDateModule,
-        MatChipsModule
+        MatChipsModule,
+        TranslocoPipe
     ],
     templateUrl: './report.component.html',
     styleUrl: './report.component.scss'
@@ -34,6 +37,8 @@ export class ReportComponent {
     private readonly reportService = inject(ReportService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
+    private readonly languageService = inject(LanguageService);
 
     loading = signal(false);
 
@@ -43,17 +48,18 @@ export class ReportComponent {
     });
 
     readonly quickRanges = [
-        { label: 'Últimos 7 días', days: 7 },
-        { label: 'Últimos 30 días', days: 30 },
-        { label: 'Últimos 90 días', days: 90 },
-        { label: 'Últimos 6 meses', days: 180 },
+        { labelKey: 'reports.last7Days', days: 7 },
+        { labelKey: 'reports.last30Days', days: 30 },
+        { labelKey: 'reports.last90Days', days: 90 },
+        { labelKey: 'reports.last6Months', days: 180 },
     ];
 
     get selectedRange(): string {
         const from = this.form.get('from')?.value as Date;
         const to = this.form.get('to')?.value as Date;
         if (!from || !to) return '';
-        return `${from.toLocaleDateString('es-CO')} — ${to.toLocaleDateString('es-CO')}`;
+        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
+        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
     }
 
     applyQuickRange(days: number): void {
@@ -83,10 +89,10 @@ export class ReportComponent {
                 a.click();
                 window.URL.revokeObjectURL(url);
                 this.loading.set(false);
-                this.notificationService.success('Reporte descargado');
+                this.notificationService.success(this.transloco.translate('reports.downloadedSuccess'));
             },
             error: () => {
-                this.notificationService.danger('Error al generar el reporte');
+                this.notificationService.danger(this.transloco.translate('reports.errorMessage'));
                 this.loading.set(false);
             }
         });

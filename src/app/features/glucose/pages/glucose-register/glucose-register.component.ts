@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GlucoseService } from '../../services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
@@ -24,7 +25,8 @@ import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
         MatButtonModule,
         MatIconModule,
         MatSelectModule,
-        MatTooltipModule
+        MatTooltipModule,
+        TranslocoPipe
     ],
     templateUrl: './glucose-register.component.html',
     styleUrl: './glucose-register.component.scss'
@@ -36,6 +38,7 @@ export class GlucoseRegisterComponent {
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
     private readonly router = inject(Router);
     readonly metadata = inject(MetadataService);
 
@@ -71,11 +74,11 @@ export class GlucoseRegisterComponent {
 
         this.glucoseService.register(patientId, request).subscribe({
             next: () => {
-                this.notificationService.success('Lectura registrada correctamente');
+                this.notificationService.success(this.transloco.translate('glucose.register.successMessage'));
                 this.notifyNewAlertsThenNavigate(patientId);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar la lectura');
+                this.notificationService.danger(this.transloco.translate('glucose.register.errorMessage'));
                 this.loading.set(false);
             }
         });

@@ -1,6 +1,7 @@
 import { Component, inject, ViewEncapsulation } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { TranslocoPipe } from '@jsverse/transloco';
 import { AlertSeverity } from '../../../shared/models/alert.model';
 import { NotificationService } from '../../../core/services/notification.service';
 import { SystemConfigService } from '../../../core/services/system-config.service';
@@ -8,7 +9,7 @@ import { SystemConfigService } from '../../../core/services/system-config.servic
 @Component({
     selector: 'app-notification-banner',
     standalone: true,
-    imports: [MatIconModule, MatButtonModule],
+    imports: [MatIconModule, MatButtonModule, TranslocoPipe],
     templateUrl: './notification-banner.component.html',
     styleUrl: './notification-banner.component.scss',
     encapsulation: ViewEncapsulation.None

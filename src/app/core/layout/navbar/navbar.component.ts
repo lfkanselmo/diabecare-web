@@ -6,12 +6,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../auth/auth.service';
 import { AuthApiService } from '../../auth/auth-api.service';
 import { ThemeService } from '../../services/theme.service';
 import { GlucoseStateService } from '../../services/glucose-state.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { NotificationService } from '../../services/notification.service';
+import { LanguageService, AppLanguage } from '../../services/language.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -24,7 +26,8 @@ import { Router } from '@angular/router';
         MatButtonModule,
         MatMenuModule,
         MatDividerModule,
-        MatTooltipModule
+        MatTooltipModule,
+        TranslocoPipe
     ],
     templateUrl: './navbar.component.html',
     styleUrl: './navbar.component.scss'
@@ -38,11 +41,18 @@ export class NavbarComponent implements OnInit {
     private readonly router = inject(Router);
     private readonly notificationService = inject(NotificationService);
     private readonly pushService = inject(PushNotificationService);
+    private readonly transloco = inject(TranslocoService);
     readonly themeService = inject(ThemeService);
     readonly glucoseState = inject(GlucoseStateService);
+    readonly languageService = inject(LanguageService);
 
     notificationsEnabled = signal(false);
     showNotifButton = signal(false);
+
+    readonly languages: { value: AppLanguage; label: string }[] = [
+        { value: 'es', label: 'Español' },
+        { value: 'en', label: 'English' }
+    ];
 
     ngOnInit(): void {
         if ('Notification' in window && 'serviceWorker' in navigator) {
@@ -55,20 +65,24 @@ export class NavbarComponent implements OnInit {
         if (this.notificationsEnabled()) {
             await this.pushService.unsubscribe();
             this.notificationsEnabled.set(false);
-            this.notificationService.info('Notificaciones desactivadas');
+            this.notificationService.info(this.transloco.translate('navbar.notificationsDisabled'));
         } else {
             const ok = await this.pushService.requestPermissionAndSubscribe();
             this.notificationsEnabled.set(ok);
             if (ok) {
-                this.notificationService.success('¡Notificaciones activadas!');
+                this.notificationService.success(this.transloco.translate('navbar.notificationsEnabled'));
             } else {
-                this.notificationService.danger('No se pudo activar las notificaciones');
+                this.notificationService.danger(this.transloco.translate('navbar.notificationsFailed'));
             }
         }
     }
 
     onMenuToggle(): void {
         this.menuToggle.emit();
+    }
+
+    onSelectLanguage(lang: AppLanguage): void {
+        this.languageService.setLanguage(lang);
     }
 
     onLogout(): void {

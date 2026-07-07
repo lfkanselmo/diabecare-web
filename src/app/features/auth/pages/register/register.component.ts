@@ -1,4 +1,4 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatStepperModule } from '@angular/material/stepper';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
@@ -28,19 +29,27 @@ import { MetadataService } from '@core/services/metadata.service';
         MatDatepickerModule,
         MatNativeDateModule,
         MatProgressSpinnerModule,
-        MatStepperModule
+        MatStepperModule,
+        TranslocoPipe
     ],
     templateUrl: './register.component.html',
     styleUrl: './register.component.scss',
     encapsulation: ViewEncapsulation.None
 })
-export class RegisterComponent {
+export class RegisterComponent implements OnInit {
 
     private readonly fb = inject(FormBuilder);
     private readonly authApiService = inject(AuthApiService);
     private readonly authService = inject(AuthService);
     private readonly router = inject(Router);
+    private readonly transloco = inject(TranslocoService);
     readonly metadata = inject(MetadataService);
+
+    ngOnInit(): void {
+        // El shell (que carga metadatos al iniciar sesión) no envuelve las rutas /auth/**,
+        // así que el registro necesita cargarlos por su cuenta para el select de tipo de diabetes.
+        this.metadata.loadAll();
+    }
 
     accountForm: FormGroup = this.fb.group({
         email: ['', [Validators.required, Validators.email]],
@@ -56,14 +65,6 @@ export class RegisterComponent {
         heightCm: ['', [Validators.required, Validators.min(50), Validators.max(250)]],
         biologicalSex: ['NOT_SPECIFIED']
     });
-
-    readonly diabetesTypes = [
-        { value: 'TYPE_1', label: 'Tipo 1' },
-        { value: 'TYPE_2', label: 'Tipo 2' },
-        { value: 'GESTATIONAL', label: 'Gestacional' },
-        { value: 'LADA', label: 'LADA' },
-        { value: 'MODY', label: 'MODY' }
-    ];
 
     loading = false;
     errorMessage = '';
@@ -95,7 +96,7 @@ export class RegisterComponent {
                 this.router.navigate(['/app/dashboard']);
             },
             error: () => {
-                this.errorMessage = 'Error al crear la cuenta. Verifica los datos e intenta de nuevo.';
+                this.errorMessage = this.transloco.translate('auth.register.errorGeneric');
                 this.loading = false;
             }
         });

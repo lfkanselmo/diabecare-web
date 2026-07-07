@@ -5,112 +5,112 @@
         <mat-icon class="register__logo">monitor_heart</mat-icon>
       </div>
       <h1 class="register__title">DiabeCare</h1>
-      <p class="register__subtitle">Crea tu cuenta</p>
+      <p class="register__subtitle">{{ 'auth.register.subtitle' | transloco }}</p>
     </div>
 
     <mat-stepper orientation="vertical" #stepper>
-      <mat-step [stepControl]="accountForm" label="Datos de acceso">
+      <mat-step [stepControl]="accountForm" [label]="'auth.register.stepAccount' | transloco">
         <form [formGroup]="accountForm">
           <div class="register__fields">
             <mat-form-field appearance="outline">
-              <mat-label>Correo electrónico</mat-label>
+              <mat-label>{{ 'auth.register.email' | transloco }}</mat-label>
               <input matInput formControlName="email" type="email" />
               <mat-icon matSuffix>mail</mat-icon>
               @if (accountForm.get('email')?.hasError('required')) {
-              <mat-error>El correo es obligatorio</mat-error>
+              <mat-error>{{ 'auth.register.emailRequired' | transloco }}</mat-error>
               }
               @if (accountForm.get('email')?.hasError('email')) {
-              <mat-error>Ingresa un correo válido</mat-error>
+              <mat-error>{{ 'auth.register.emailInvalid' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Contraseña</mat-label>
+              <mat-label>{{ 'auth.register.password' | transloco }}</mat-label>
               <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" />
               <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
-                [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'">
+                [attr.aria-label]="(hidePassword ? 'auth.login.showPassword' : 'auth.login.hidePassword') | transloco">
                 <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
               </button>
               @if (accountForm.get('password')?.hasError('minlength')) {
-              <mat-error>Mínimo 8 caracteres</mat-error>
+              <mat-error>{{ 'auth.register.passwordMinLength' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Confirmar contraseña</mat-label>
+              <mat-label>{{ 'auth.register.confirmPassword' | transloco }}</mat-label>
               <input matInput formControlName="confirmPassword" type="password" />
               @if (accountForm.hasError('passwordMismatch')) {
-              <mat-error>Las contraseñas no coinciden</mat-error>
+              <mat-error>{{ 'auth.register.passwordMismatch' | transloco }}</mat-error>
               }
             </mat-form-field>
           </div>
 
           <div class="register__actions">
             <button mat-raised-button color="primary" matStepperNext type="button">
-              Siguiente
+              {{ 'auth.register.next' | transloco }}
             </button>
           </div>
         </form>
       </mat-step>
 
-      <mat-step [stepControl]="profileForm" label="Perfil médico">
+      <mat-step [stepControl]="profileForm" [label]="'auth.register.stepProfile' | transloco">
         <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
           <div class="register__fields">
             <mat-form-field appearance="outline">
-              <mat-label>Nombre completo</mat-label>
+              <mat-label>{{ 'auth.register.fullName' | transloco }}</mat-label>
               <input matInput formControlName="fullName" />
               @if (profileForm.get('fullName')?.hasError('required')) {
-              <mat-error>El nombre es obligatorio</mat-error>
+              <mat-error>{{ 'auth.register.fullNameRequired' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Fecha de nacimiento</mat-label>
+              <mat-label>{{ 'auth.register.dateOfBirth' | transloco }}</mat-label>
               <input matInput [matDatepicker]="dobPicker" formControlName="dateOfBirth" />
               <mat-datepicker-toggle matIconSuffix [for]="dobPicker" />
               <mat-datepicker #dobPicker />
               @if (profileForm.get('dateOfBirth')?.hasError('required')) {
-              <mat-error>La fecha de nacimiento es obligatoria</mat-error>
+              <mat-error>{{ 'auth.register.dateOfBirthRequired' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Tipo de diabetes</mat-label>
+              <mat-label>{{ 'auth.register.diabetesType' | transloco }}</mat-label>
               <mat-select formControlName="diabetesType">
-                @for (type of diabetesTypes; track type.value) {
+                @for (type of metadata.diabetesTypes(); track type.value) {
                 <mat-option [value]="type.value">{{ type.label }}</mat-option>
                 }
               </mat-select>
               @if (profileForm.get('diabetesType')?.hasError('required')) {
-              <mat-error>Selecciona el tipo de diabetes</mat-error>
+              <mat-error>{{ 'auth.register.diabetesTypeRequired' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Fecha de diagnóstico</mat-label>
+              <mat-label>{{ 'auth.register.diagnosisDate' | transloco }}</mat-label>
               <input matInput [matDatepicker]="diagPicker" formControlName="diagnosisDate" />
               <mat-datepicker-toggle matIconSuffix [for]="diagPicker" />
               <mat-datepicker #diagPicker />
               @if (profileForm.get('diagnosisDate')?.hasError('required')) {
-              <mat-error>La fecha de diagnóstico es obligatoria</mat-error>
+              <mat-error>{{ 'auth.register.diagnosisDateRequired' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Talla (cm)</mat-label>
+              <mat-label>{{ 'auth.register.heightCm' | transloco }}</mat-label>
               <input matInput formControlName="heightCm" type="number" />
               <mat-icon matSuffix>height</mat-icon>
               @if (profileForm.get('heightCm')?.hasError('required')) {
-              <mat-error>La talla es obligatoria</mat-error>
+              <mat-error>{{ 'auth.register.heightRequired' | transloco }}</mat-error>
               }
             </mat-form-field>
 
             <mat-form-field appearance="outline">
-              <mat-label>Sexo biológico</mat-label>
+              <mat-label>{{ 'auth.register.biologicalSex' | transloco }}</mat-label>
               <mat-select formControlName="biologicalSex">
-                <mat-option value="FEMALE">Femenino</mat-option>
-                <mat-option value="MALE">Masculino</mat-option>
-                <mat-option value="NOT_SPECIFIED">Prefiero no especificar</mat-option>
+                <mat-option value="FEMALE">{{ 'auth.register.sexFemale' | transloco }}</mat-option>
+                <mat-option value="MALE">{{ 'auth.register.sexMale' | transloco }}</mat-option>
+                <mat-option value="NOT_SPECIFIED">{{ 'auth.register.sexUnspecified' | transloco }}</mat-option>
               </mat-select>
             </mat-form-field>
           </div>
@@ -123,12 +123,12 @@
           }
 
           <div class="register__actions">
-            <button mat-button matStepperPrevious type="button">Atrás</button>
+            <button mat-button matStepperPrevious type="button">{{ 'auth.register.back' | transloco }}</button>
             <button mat-raised-button color="primary" type="submit" [disabled]="loading">
               @if (loading) {
               <mat-spinner diameter="20" />
               } @else {
-              Crear cuenta
+              {{ 'auth.register.submit' | transloco }}
               }
             </button>
           </div>
@@ -137,8 +137,8 @@
     </mat-stepper>
 
     <p class="register__footer">
-      ¿Ya tienes cuenta?
-      <a routerLink="/auth/login">Inicia sesión</a>
+      {{ 'auth.register.hasAccount' | transloco }}
+      <a routerLink="/auth/login">{{ 'auth.register.loginHere' | transloco }}</a>
     </p>
   </div>
 </div>

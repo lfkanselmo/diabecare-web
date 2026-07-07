@@ -1,6 +1,7 @@
-import { Component, Input, OnChanges } from '@angular/core';
+import { Component, Input, OnChanges, inject } from '@angular/core';
 import { NgxEchartsDirective } from 'ngx-echarts';
 import { EChartsOption } from 'echarts';
+import { TranslocoService } from '@jsverse/transloco';
 import { Hba1cTrendResponse } from '../../../../shared/models/vitals.model';
 import { getCssColor } from '../../../../shared/utils/css-color.utils';
 
@@ -14,6 +15,8 @@ import { getCssColor } from '../../../../shared/utils/css-color.utils';
 export class Hba1cChartComponent implements OnChanges {
 
     @Input() trend: Hba1cTrendResponse[] = [];
+
+    private readonly transloco = inject(TranslocoService);
 
     chartOptions: EChartsOption = {};
 
@@ -36,12 +39,14 @@ export class Hba1cChartComponent implements OnChanges {
         const tealColor = getCssColor('--color-info', dark ? '#2DD4CF' : '#0EA5A0');
         const barColor = dark ? 'rgba(14,165,160,0.35)' : '#A2D9CE';
         const goalColor = getCssColor('--color-success', dark ? '#4ADE98' : '#22A96A');
+        const estimatedSeries = this.transloco.translate('vitals.hba1cChart.estimatedSeries');
+        const averageGlucoseSeries = this.transloco.translate('vitals.hba1cChart.averageGlucoseSeries');
 
         this.chartOptions = {
             backgroundColor: 'transparent',
             grid: { top: 50, right: 60, bottom: 60, left: 60 },
             legend: {
-                data: ['HbA1c estimada (%)', 'Glucosa promedio (mg/dL)'],
+                data: [estimatedSeries, averageGlucoseSeries],
                 top: 0,
                 textStyle: { fontSize: 11, color: labelColor }
             },
@@ -87,7 +92,7 @@ export class Hba1cChartComponent implements OnChanges {
             ],
             series: [
                 {
-                    name: 'HbA1c estimada (%)',
+                    name: estimatedSeries,
                     type: 'line',
                     yAxisIndex: 0,
                     data: hba1c,
@@ -101,13 +106,13 @@ export class Hba1cChartComponent implements OnChanges {
                         silent: true,
                         data: [{
                             yAxis: 7.0,
-                            label: { formatter: 'Meta 7%', fontSize: 9, color: goalColor },
+                            label: { formatter: this.transloco.translate('vitals.hba1cChart.goalLabel'), fontSize: 9, color: goalColor },
                             lineStyle: { color: goalColor, type: 'dashed', opacity: 0.6 }
                         }]
                     }
                 },
                 {
-                    name: 'Glucosa promedio (mg/dL)',
+                    name: averageGlucoseSeries,
                     type: 'bar',
                     yAxisIndex: 1,
                     data: glucose,

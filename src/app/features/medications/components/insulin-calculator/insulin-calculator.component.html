@@ -1,35 +1,34 @@
 <div class="insulin-calc">
     <h2 class="insulin-calc__title">
         <mat-icon>calculate</mat-icon>
-        Calculadora de insulina
+        {{ 'medications.insulinCalculator.title' | transloco }}
     </h2>
     <p class="insulin-calc__subtitle">
-        Calcula tu dosis sugerida basada en tu glucosa actual y los carbohidratos a consumir.
+        {{ 'medications.insulinCalculator.subtitle' | transloco }}
     </p>
 
     <p class="insulin-calc__notice">
         <mat-icon>info</mat-icon>
-        Herramienta educativa: aplica una fórmula sobre los parámetros de tu perfil de insulina,
-        configurados junto con tu médico. No sustituye el criterio de tu equipo médico.
+        {{ 'medications.insulinCalculator.educationalNotice' | transloco }}
     </p>
 
     <form [formGroup]="form" (ngSubmit)="onCalculate()">
         <mat-form-field appearance="outline">
-            <mat-label>Glucosa actual (mg/dL)</mat-label>
+            <mat-label>{{ 'medications.insulinCalculator.currentGlucose' | transloco }}</mat-label>
             <input matInput formControlName="currentGlucose" type="number" />
             <mat-icon matSuffix>water_drop</mat-icon>
             @if (form.get('currentGlucose')?.hasError('required')) {
-            <mat-error>El valor de glucosa es obligatorio</mat-error>
+            <mat-error>{{ 'medications.insulinCalculator.currentGlucoseRequired' | transloco }}</mat-error>
             }
         </mat-form-field>
 
         <mat-checkbox formControlName="beforeMeal" color="primary">
-            Voy a comer (calcular dosis de comida)
+            {{ 'medications.insulinCalculator.beforeMeal' | transloco }}
         </mat-checkbox>
 
         @if (form.get('beforeMeal')?.value) {
         <mat-form-field appearance="outline">
-            <mat-label>Carbohidratos a consumir (g)</mat-label>
+            <mat-label>{{ 'medications.insulinCalculator.carbsToEat' | transloco }}</mat-label>
             <input matInput formControlName="carbsToEat" type="number" min="0" />
             <mat-icon matSuffix>restaurant</mat-icon>
         </mat-form-field>
@@ -37,10 +36,14 @@
 
         <div class="insulin-calc__actions">
             <button mat-stroked-button type="button" (click)="onReset()">
-                Limpiar
+                {{ 'medications.insulinCalculator.clear' | transloco }}
             </button>
             <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
-                @if (loading()) { Calculando... } @else { Calcular dosis }
+                @if (loading()) {
+                {{ 'medications.insulinCalculator.calculating' | transloco }}
+                } @else {
+                {{ 'medications.insulinCalculator.calculate' | transloco }}
+                }
             </button>
         </div>
     </form>
@@ -50,19 +53,19 @@
     <div class="insulin-calc__result">
         <div class="insulin-calc__result-grid">
             <div class="insulin-calc__result-item">
-                <span class="insulin-calc__result-label">Dosis corrección</span>
+                <span class="insulin-calc__result-label">{{ 'medications.insulinCalculator.correctionDose' | transloco }}</span>
                 <span class="insulin-calc__result-value">
                     {{ result()!.correctionDose | number:'1.0-1' }} U
                 </span>
             </div>
             <div class="insulin-calc__result-item">
-                <span class="insulin-calc__result-label">Dosis comida</span>
+                <span class="insulin-calc__result-label">{{ 'medications.insulinCalculator.mealDose' | transloco }}</span>
                 <span class="insulin-calc__result-value">
                     {{ result()!.mealDose | number:'1.0-1' }} U
                 </span>
             </div>
             <div class="insulin-calc__result-item insulin-calc__result-item--total">
-                <span class="insulin-calc__result-label">Dosis total</span>
+                <span class="insulin-calc__result-label">{{ 'medications.insulinCalculator.totalDose' | transloco }}</span>
                 <span class="insulin-calc__result-value insulin-calc__result-value--total">
                     {{ result()!.totalDose | number:'1.0-1' }} U
                 </span>

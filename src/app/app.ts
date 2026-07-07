@@ -7,11 +7,8 @@ import { NotificationBannerComponent } from './shared/components/notification-ba
   selector: 'app-root',
   standalone: true,
   imports: [RouterOutlet, NotificationBannerComponent],
-  template: `
-    <app-notification-banner />
-    <router-outlet />
-  `,
-  styles: []
+  templateUrl: './app.html',
+  styleUrl: './app.scss'
 })
 export class AppComponent implements OnInit {
 

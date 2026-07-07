@@ -4,6 +4,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { InsulinService } from '../../services/insulin.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -16,7 +17,8 @@ import { NotificationService } from '../../../../core/services/notification.serv
         MatFormFieldModule,
         MatInputModule,
         MatButtonModule,
-        MatIconModule
+        MatIconModule,
+        TranslocoPipe
     ],
     templateUrl: './insulin-profile.component.html',
     styleUrl: './insulin-profile.component.scss'
@@ -27,6 +29,7 @@ export class InsulinProfileComponent {
     private readonly insulinService = inject(InsulinService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
 
     loading = signal(false);
     saved = signal(false);
@@ -48,11 +51,11 @@ export class InsulinProfileComponent {
         this.insulinService.updateInsulinProfile(patientId, this.form.getRawValue()).subscribe({
             next: () => {
                 this.saved.set(true);
-                this.notificationService.success('Perfil de insulina guardado');
+                this.notificationService.success(this.transloco.translate('medications.insulinProfile.successMessage'));
                 this.loading.set(false);
             },
             error: () => {
-                this.notificationService.danger('Error al guardar el perfil');
+                this.notificationService.danger(this.transloco.translate('medications.insulinProfile.errorMessage'));
                 this.loading.set(false);
             }
         });

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MedicationsService } from '../../services/medications.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
@@ -34,7 +35,8 @@ import { MetadataService } from '@core/services/metadata.service';
         MatChipsModule,
         MatTabsModule,
         InsulinCalculatorComponent,
-        InsulinProfileComponent
+        InsulinProfileComponent,
+        TranslocoPipe
     ],
     templateUrl: './medications.component.html',
     styleUrl: './medications.component.scss'
@@ -45,6 +47,7 @@ export class MedicationsComponent implements OnInit {
     private readonly medicationsService = inject(MedicationsService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
     private readonly route = inject(ActivatedRoute);
     readonly metadata = inject(MetadataService);
 
@@ -81,11 +84,11 @@ export class MedicationsComponent implements OnInit {
             next: (med) => {
                 this.medications.update(list => [med, ...list]);
                 this.form.reset();
-                this.notificationService.success('Medicamento registrado');
+                this.notificationService.success(this.transloco.translate('medications.successAdd'));
                 this.loading.set(false);
             },
             error: () => {
-                this.notificationService.danger('Error al registrar el medicamento');
+                this.notificationService.danger(this.transloco.translate('medications.errorAdd'));
                 this.loading.set(false);
             }
         });
@@ -98,10 +101,10 @@ export class MedicationsComponent implements OnInit {
         this.medicationsService.deactivate(patientId, medicationId).subscribe({
             next: () => {
                 this.medications.update(list => list.filter(m => m.medicationId !== medicationId));
-                this.notificationService.success('Medicamento desactivado');
+                this.notificationService.success(this.transloco.translate('medications.successDeactivate'));
             },
             error: () => {
-                this.notificationService.danger('Error al desactivar el medicamento');
+                this.notificationService.danger(this.transloco.translate('medications.errorDeactivate'));
             }
         });
     }

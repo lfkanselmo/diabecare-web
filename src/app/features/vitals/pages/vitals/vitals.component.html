@@ -1,62 +1,62 @@
 <div class="vitals">
-  <h1 class="vitals__title">Signos vitales</h1>
+  <h1 class="vitals__title">{{ 'vitals.title' | transloco }}</h1>
 
   <mat-tab-group>
-    <mat-tab label="Signos vitales">
+    <mat-tab [label]="'vitals.tabVitals' | transloco">
       <div class="vitals__tab-content">
         <div class="vitals__layout">
           <div class="vitals__card">
-            <h2 class="vitals__section-title">Nuevo registro</h2>
+            <h2 class="vitals__section-title">{{ 'vitals.newRecord' | transloco }}</h2>
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
               <div class="vitals__row">
                 <mat-form-field appearance="outline">
-                  <mat-label>Peso (kg)</mat-label>
+                  <mat-label>{{ 'vitals.weight' | transloco }}</mat-label>
                   <input matInput formControlName="weightKg" type="number" step="0.1" />
                   <mat-icon matSuffix>monitor_weight</mat-icon>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Talla (cm)</mat-label>
+                  <mat-label>{{ 'vitals.height' | transloco }}</mat-label>
                   <input matInput formControlName="heightCm" type="number" />
                   <mat-icon matSuffix>height</mat-icon>
                 </mat-form-field>
               </div>
               <div class="vitals__row">
                 <mat-form-field appearance="outline">
-                  <mat-label>Presión sistólica (mmHg)</mat-label>
+                  <mat-label>{{ 'vitals.systolicBp' | transloco }}</mat-label>
                   <input matInput formControlName="systolicBp" type="number" />
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>Presión diastólica (mmHg)</mat-label>
+                  <mat-label>{{ 'vitals.diastolicBp' | transloco }}</mat-label>
                   <input matInput formControlName="diastolicBp" type="number" />
                 </mat-form-field>
               </div>
               <div class="vitals__row">
                 <mat-form-field appearance="outline">
-                  <mat-label>Frecuencia cardíaca (bpm)</mat-label>
+                  <mat-label>{{ 'vitals.heartRate' | transloco }}</mat-label>
                   <input matInput formControlName="heartRate" type="number" />
                   <mat-icon matSuffix>favorite</mat-icon>
                 </mat-form-field>
                 <mat-form-field appearance="outline">
-                  <mat-label>HbA1c (%)</mat-label>
+                  <mat-label>{{ 'vitals.hba1c' | transloco }}</mat-label>
                   <input matInput formControlName="hba1c" type="number" step="0.1" />
                 </mat-form-field>
               </div>
               <mat-form-field appearance="outline">
-                <mat-label>Notas (opcional)</mat-label>
+                <mat-label>{{ 'vitals.notes' | transloco }}</mat-label>
                 <textarea matInput formControlName="notes" rows="2"></textarea>
               </mat-form-field>
               <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
-                @if (loading()) { Guardando... } @else { Guardar registro }
+                @if (loading()) { {{ 'vitals.saving' | transloco }} } @else { {{ 'vitals.save' | transloco }} }
               </button>
             </form>
           </div>
 
           <div class="vitals__card">
-            <h2 class="vitals__section-title">Historial</h2>
+            <h2 class="vitals__section-title">{{ 'vitals.history' | transloco }}</h2>
             @if (history().length === 0) {
             <div class="vitals__empty">
               <mat-icon>favorite_border</mat-icon>
-              <p>Sin registros todavía</p>
+              <p>{{ 'vitals.noRecordsYet' | transloco }}</p>
             </div>
             } @else {
             <div class="vitals__history">
@@ -104,11 +104,11 @@
 
         <div class="vitals__trend-card">
           <div class="vitals__trend-header">
-            <h2 class="vitals__section-title">Tendencia HbA1c estimada</h2>
+            <h2 class="vitals__section-title">{{ 'vitals.hba1cTrendTitle' | transloco }}</h2>
             <mat-button-toggle-group [value]="trendMonths()" (change)="onTrendMonthsChange($event.value)">
-              <mat-button-toggle [value]="3">3 meses</mat-button-toggle>
-              <mat-button-toggle [value]="6">6 meses</mat-button-toggle>
-              <mat-button-toggle [value]="12">12 meses</mat-button-toggle>
+              <mat-button-toggle [value]="3">{{ 'vitals.months3' | transloco }}</mat-button-toggle>
+              <mat-button-toggle [value]="6">{{ 'vitals.months6' | transloco }}</mat-button-toggle>
+              <mat-button-toggle [value]="12">{{ 'vitals.months12' | transloco }}</mat-button-toggle>
             </mat-button-toggle-group>
           </div>
           <app-hba1c-chart [trend]="hba1cTrend()" />
@@ -116,7 +116,7 @@
       </div>
     </mat-tab>
 
-    <mat-tab label="Ejercicio">
+    <mat-tab [label]="'vitals.tabExercise' | transloco">
       <div class="vitals__tab-content">
         <app-exercise-log />
       </div>

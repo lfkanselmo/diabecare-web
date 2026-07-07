@@ -1,6 +1,6 @@
 <div class="cycle-cal">
     <div class="cycle-cal__wheel-section">
-        <h3 class="cycle-cal__subtitle">Tu ciclo actual</h3>
+        <h3 class="cycle-cal__subtitle">{{ 'profile.cycleCalendar.currentCycle' | transloco }}</h3>
         <div echarts [options]="wheelOptions" class="cycle-cal__wheel"></div>
 
         <div class="cycle-cal__legend">
@@ -9,7 +9,7 @@
                 <span class="cycle-cal__legend-dot" [style.background]="entry.value.color"></span>
                 <span class="cycle-cal__legend-text">
                     {{ entry.value.icon }} {{ getPhaseLabel(entry.key) }}
-                    <span class="cycle-cal__legend-days">días {{ entry.value.days }}</span>
+                    <span class="cycle-cal__legend-days">{{ 'profile.cycleCalendar.daysRange' | transloco: { range: entry.value.days } }}</span>
                 </span>
             </div>
             }
@@ -18,11 +18,11 @@
 
     <div class="cycle-cal__calendar-section">
         <h3 class="cycle-cal__subtitle">
-            {{ currentMonth | date:'MMMM yyyy':'':'es' | titlecase }}
+            {{ currentMonth | date:'MMMM yyyy' | titlecase }}
         </h3>
 
         <div class="cycle-cal__weekdays">
-            @for (day of ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb']; track day) {
+            @for (day of weekdayLabels; track $index) {
             <span class="cycle-cal__weekday">{{ day }}</span>
             }
         </div>
@@ -46,11 +46,11 @@
         <div class="cycle-cal__calendar-legend">
             <div class="cycle-cal__cal-legend-item">
                 <span class="cycle-cal__cal-dot cycle-cal__cal-dot--today"></span>
-                <span>Hoy</span>
+                <span>{{ 'profile.cycleCalendar.today' | transloco }}</span>
             </div>
             <div class="cycle-cal__cal-legend-item">
                 <span class="cycle-cal__cal-dot cycle-cal__cal-dot--predicted">🩸</span>
-                <span>Próximo período predicho</span>
+                <span>{{ 'profile.cycleCalendar.predictedNextPeriod' | transloco }}</span>
             </div>
         </div>
     </div>

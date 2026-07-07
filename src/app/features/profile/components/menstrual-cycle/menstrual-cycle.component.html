@@ -1,33 +1,31 @@
 <div class="cycle">
     @if (loading()) {
-    <p class="cycle__loading-text">Cargando...</p>
+    <p class="cycle__loading-text">{{ 'profile.cycle.loading' | transloco }}</p>
     } @else if (noData() || !status()) {
     <div class="cycle__layout">
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>calendar_month</mat-icon>
-                Registrar tu período
+                {{ 'profile.cycle.registerPeriodTitle' | transloco }}
             </h2>
             <p class="cycle__hint">
-                Registra el día en que comenzó tu período. A partir de ahí podrás
-                registrar cada día cómo te sientes, y cuando termine, marcar la fecha
-                exacta de finalización para que el seguimiento sea preciso para tu cuerpo.
+                {{ 'profile.cycle.registerPeriodHint' | transloco }}
             </p>
 
             <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Fecha de inicio del período</mat-label>
+                    <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
                     <input matInput formControlName="startDate" type="date" />
                     <mat-icon matSuffix>event</mat-icon>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Notas adicionales (opcional)</mat-label>
+                    <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
                     <textarea matInput formControlName="notes" rows="2"></textarea>
                 </mat-form-field>
 
                 <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { Registrando... } @else { Registrar inicio de período }
+                    @if (saving()) { {{ 'profile.cycle.registering' | transloco }} } @else { {{ 'profile.cycle.registerPeriodStart' | transloco }} }
                 </button>
             </form>
         </div>
@@ -37,19 +35,18 @@
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>calendar_month</mat-icon>
-                Registrar tu próximo período
+                {{ 'profile.cycle.registerNextPeriodTitle' | transloco }}
             </h2>
             <p class="cycle__hint">
-                Tu último período terminó el {{ status()!.history[0]?.endDate | date:'dd/MM/yyyy' }}.
-                Cuando comience tu próximo período, regístralo aquí.
+                {{ 'profile.cycle.lastPeriodEnded' | transloco: { date: (status()!.history[0]?.endDate | date:'dd/MM/yyyy') } }}
             </p>
 
             <div class="cycle__stat cycle__stat--inline">
                 <span class="cycle__stat-label">
                     @if (status()!.isProjectionStale) {
-                    Estimación aproximada (sin registros recientes)
+                    {{ 'profile.cycle.staleEstimate' | transloco }}
                     } @else {
-                    Próximo período estimado
+                    {{ 'profile.cycle.nextPeriodEstimated' | transloco }}
                     }
                 </span>
                 <span class="cycle__stat-value">
@@ -59,25 +56,24 @@
 
             @if (status()!.isProjectionStale) {
             <p class="cycle__hint cycle__hint--muted">
-                Como ha pasado tiempo desde tu último registro, esta fecha es solo una proyección
-                basada en tu promedio histórico, no en un seguimiento reciente.
+                {{ 'profile.cycle.staleHint' | transloco }}
             </p>
             }
 
             <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Fecha de inicio del período</mat-label>
+                    <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
                     <input matInput formControlName="startDate" type="date" />
                     <mat-icon matSuffix>event</mat-icon>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Notas adicionales (opcional)</mat-label>
+                    <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
                     <textarea matInput formControlName="notes" rows="2"></textarea>
                 </mat-form-field>
 
                 <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { Registrando... } @else { Registrar inicio de período }
+                    @if (saving()) { {{ 'profile.cycle.registering' | transloco }} } @else { {{ 'profile.cycle.registerPeriodStart' | transloco }} }
                 </button>
             </form>
         </div>
@@ -85,7 +81,7 @@
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>history</mat-icon>
-                Tu historial
+                {{ 'profile.cycle.yourHistory' | transloco }}
             </h2>
 
             @if (status()!.history.length > 0) {
@@ -100,9 +96,9 @@
                     </span>
                     <span class="cycle__history-detail">
                         @if (item.actualPeriodLengthDays) {
-                        {{ item.actualPeriodLengthDays }} días de período (real)
+                        {{ 'profile.cycle.periodDaysReal' | transloco: { days: item.actualPeriodLengthDays } }}
                         } @else {
-                        Período en curso o sin finalizar
+                        {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
                         }
                     </span>
                 </div>
@@ -112,8 +108,8 @@
 
             @if (status()!.averageCycleLength) {
             <div class="cycle__stat">
-                <span class="cycle__stat-label">Duración promedio del ciclo</span>
-                <span class="cycle__stat-value">{{ status()!.averageCycleLength }} días</span>
+                <span class="cycle__stat-label">{{ 'profile.cycle.averageCycleLength' | transloco }}</span>
+                <span class="cycle__stat-value">{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span>
             </div>
             }
         </div>
@@ -127,21 +123,20 @@
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>insights</mat-icon>
-                Estado actual del ciclo
+                {{ 'profile.cycle.currentStatusTitle' | transloco }}
             </h2>
 
             @if (status()!.isOpenTooLong) {
             <div class="cycle__open-too-long-banner">
                 <mat-icon>warning</mat-icon>
                 <div class="cycle__open-too-long-text">
-                    <strong>¿Ya terminó tu período?</strong>
+                    <strong>{{ 'profile.cycle.periodAlreadyEnded' | transloco }}</strong>
                     <span>
-                        Llevas {{ status()!.dayOfCycle }} días con tu período abierto.
-                        Si ya terminó, regístralo para que tu seguimiento sea más preciso.
+                        {{ 'profile.cycle.openTooLongText' | transloco: { days: status()!.dayOfCycle } }}
                     </span>
                 </div>
                 <button mat-stroked-button color="warn" type="button" (click)="onJumpToFinishPeriod()">
-                    Finalizar ahora
+                    {{ 'profile.cycle.finishNow' | transloco }}
                 </button>
             </div>
             }
@@ -156,9 +151,9 @@
                             {{ status()!.currentPhaseLabel }}
                         </span>
                         <span class="cycle__phase-day">
-                            Día {{ status()!.dayOfCycle }} del ciclo
+                            {{ 'profile.cycle.dayOfCycle' | transloco: { day: status()!.dayOfCycle } }}
                             @if (status()!.isOngoing) {
-                            · Período en curso
+                            · {{ 'profile.cycle.ongoingPeriod' | transloco }}
                             }
                         </span>
                     </div>
@@ -168,26 +163,26 @@
 
             <div class="cycle__stats">
                 <div class="cycle__stat">
-                    <span class="cycle__stat-label">Próximo ciclo</span>
+                    <span class="cycle__stat-label">{{ 'profile.cycle.nextCycle' | transloco }}</span>
                     <span class="cycle__stat-value">
                         {{ status()!.nextCycleStart | date:'dd MMM yyyy' }}
                     </span>
                     <span class="cycle__stat-sub">
                         @if (status()!.daysUntilNextCycle > 0) {
-                        En {{ status()!.daysUntilNextCycle }} días
+                        {{ 'profile.cycle.inDays' | transloco: { days: status()!.daysUntilNextCycle } }}
                         } @else {
-                        Hoy o próximamente
+                        {{ 'profile.cycle.todayOrSoon' | transloco }}
                         }
                     </span>
                 </div>
                 <div class="cycle__stat">
-                    <span class="cycle__stat-label">Duración promedio</span>
+                    <span class="cycle__stat-label">{{ 'profile.cycle.averageCycleLength' | transloco }}</span>
                     @if (status()!.averageCycleLength) {
-                    <span class="cycle__stat-value">{{ status()!.averageCycleLength }} días</span>
-                    <span class="cycle__stat-sub">Basado en tu historial</span>
+                    <span class="cycle__stat-value">{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span>
+                    <span class="cycle__stat-sub">{{ 'profile.cycle.basedOnHistory' | transloco }}</span>
                     } @else {
                     <span class="cycle__stat-value cycle__stat-value--muted">—</span>
-                    <span class="cycle__stat-sub">Aún no hay suficientes datos</span>
+                    <span class="cycle__stat-sub">{{ 'profile.cycle.notEnoughData' | transloco }}</span>
                     }
                 </div>
             </div>
@@ -195,33 +190,32 @@
             @if (status()!.isOngoing) {
             <mat-divider />
             <div class="cycle__finish-section" id="finish-period-section">
-                <h3 class="cycle__subsection-title">¿Tu período ya terminó?</h3>
+                <h3 class="cycle__subsection-title">{{ 'profile.cycle.periodEndedQuestion' | transloco }}</h3>
                 <p class="cycle__hint">
-                    Marca la fecha exacta en que terminó tu sangrado. Esto nos permite calcular
-                    la duración real de tu período, específica para tu cuerpo, en vez de asumir un valor fijo.
+                    {{ 'profile.cycle.finishHint' | transloco }}
                 </p>
                 <form [formGroup]="finishForm" class="cycle__finish-form">
                     <mat-form-field appearance="outline">
-                        <mat-label>Fecha de fin del período</mat-label>
+                        <mat-label>{{ 'profile.cycle.periodEndDate' | transloco }}</mat-label>
                         <input matInput formControlName="endDate" type="date" />
                     </mat-form-field>
 
                     @if (!confirmFinish()) {
                     <button mat-stroked-button color="primary" type="button" [disabled]="finishingPeriod()"
                         (click)="onFinishPeriod()">
-                        Finalizar período
+                        {{ 'profile.cycle.finishPeriod' | transloco }}
                     </button>
                     } @else {
                     <div class="cycle__finish-confirm">
-                        <span>¿Confirmas que tu período terminó en esta fecha?</span>
+                        <span>{{ 'profile.cycle.finishConfirm' | transloco }}</span>
                         <div class="cycle__finish-confirm-actions">
                             <button mat-stroked-button type="button" (click)="cancelFinish()"
                                 [disabled]="finishingPeriod()">
-                                Cancelar
+                                {{ 'profile.cycle.cancel' | transloco }}
                             </button>
                             <button mat-raised-button color="primary" type="button" [disabled]="finishingPeriod()"
                                 (click)="onFinishPeriod()">
-                                @if (finishingPeriod()) { Guardando... } @else { Sí, confirmar }
+                                @if (finishingPeriod()) { {{ 'profile.saving' | transloco }} } @else { {{ 'profile.cycle.yesConfirm' | transloco }} }
                             </button>
                         </div>
                     </div>
@@ -232,7 +226,7 @@
 
             @if (status()!.history.length > 0) {
             <mat-divider />
-            <h3 class="cycle__history-title">Historial reciente</h3>
+            <h3 class="cycle__history-title">{{ 'profile.cycle.recentHistory' | transloco }}</h3>
             <div class="cycle__history">
                 @for (item of status()!.history; track item.cycleId) {
                 <div class="cycle__history-item">
@@ -244,9 +238,9 @@
                     </span>
                     <span class="cycle__history-detail">
                         @if (item.actualPeriodLengthDays) {
-                        {{ item.actualPeriodLengthDays }} días de período (real)
+                        {{ 'profile.cycle.periodDaysReal' | transloco: { days: item.actualPeriodLengthDays } }}
                         } @else {
-                        Período en curso o sin finalizar
+                        {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
                         }
                     </span>
                 </div>
@@ -265,16 +259,15 @@
         <div class="cycle__card">
             <h2 class="cycle__section-title">
                 <mat-icon>edit_calendar</mat-icon>
-                Registro de hoy
+                {{ 'profile.cycle.todayEntryTitle' | transloco }}
             </h2>
             <p class="cycle__hint">
-                Cuéntanos cómo te sientes hoy. Esto nos ayuda a entender mejor tu ciclo
-                y, a futuro, su relación con tu glucosa.
+                {{ 'profile.cycle.todayEntryHint' | transloco }}
             </p>
 
             <form [formGroup]="dayEntryForm" (ngSubmit)="onSaveDayEntry()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Intensidad del flujo hoy</mat-label>
+                    <mat-label>{{ 'profile.cycle.flowIntensityToday' | transloco }}</mat-label>
                     <mat-select formControlName="flowIntensity">
                         @for (option of metadata.flowIntensities(); track option.value) {
                         <mat-option [value]="option.value">{{ option.label }}</mat-option>
@@ -283,7 +276,7 @@
                 </mat-form-field>
 
                 <div class="cycle__symptoms-section">
-                    <label class="cycle__symptoms-label">Síntomas de hoy</label>
+                    <label class="cycle__symptoms-label">{{ 'profile.cycle.symptomsToday' | transloco }}</label>
                     <div class="cycle__symptoms-grid">
                         @for (symptomItem of metadata.cycleSymptoms(); track symptomItem.value) {
                         <button type="button" class="cycle__symptom-chip"
@@ -297,7 +290,7 @@
 
                 @if (selectedSymptoms().size > 0) {
                 <div class="cycle__severity-section">
-                    <label class="cycle__symptoms-label">¿Qué tan intenso es cada síntoma?</label>
+                    <label class="cycle__symptoms-label">{{ 'profile.cycle.howIntenseSymptom' | transloco }}</label>
                     @for (entry of selectedSymptoms().entries(); track entry[0]) {
                     <div class="cycle__severity-row">
                         <span class="cycle__severity-symptom">{{ getSymptomLabel(entry[0]) }}</span>
@@ -316,12 +309,12 @@
                 }
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Notas de hoy (opcional)</mat-label>
+                    <mat-label>{{ 'profile.cycle.todayNotes' | transloco }}</mat-label>
                     <textarea matInput formControlName="notes" rows="2"></textarea>
                 </mat-form-field>
 
                 <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { Guardando... } @else { Guardar registro de hoy }
+                    @if (saving()) { {{ 'profile.saving' | transloco }} } @else { {{ 'profile.cycle.saveTodayEntry' | transloco }} }
                 </button>
             </form>
         </div>

@@ -12,11 +12,13 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { forkJoin } from 'rxjs';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GlucoseService } from '../../services/glucose.service';
 import { ExerciseService } from '../../../vitals/services/exercise.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { NotificationService } from '../../../../core/services/notification.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import {
     GlucoseReadingResponse,
     GlucoseStatus,
@@ -45,7 +47,8 @@ import { MatDividerModule } from '@angular/material/divider';
         MatFormFieldModule,
         MatInputModule,
         MatDividerModule,
-        GlucoseChartComponent
+        GlucoseChartComponent,
+        TranslocoPipe
     ],
     templateUrl: './glucose-history.component.html',
     styleUrl: './glucose-history.component.scss'
@@ -57,6 +60,8 @@ export class GlucoseHistoryComponent implements OnInit {
     private readonly exerciseService = inject(ExerciseService);
     private readonly authService = inject(AuthService);
     private readonly notificationService = inject(NotificationService);
+    private readonly transloco = inject(TranslocoService);
+    private readonly languageService = inject(LanguageService);
     readonly metadata = inject(MetadataService);
 
     readings = signal<GlucoseReadingResponse[]>([]);
@@ -68,10 +73,10 @@ export class GlucoseHistoryComponent implements OnInit {
     readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
 
     readonly quickRanges = [
-        { label: 'Últimos 7 días', days: 7 },
-        { label: 'Últimos 30 días', days: 30 },
-        { label: 'Últimos 90 días', days: 90 },
-        { label: 'Últimos 6 meses', days: 180 }
+        { labelKey: 'glucose.history.last7Days', days: 7 },
+        { labelKey: 'glucose.history.last30Days', days: 30 },
+        { labelKey: 'glucose.history.last90Days', days: 90 },
+        { labelKey: 'glucose.history.last6Months', days: 180 }
     ];
 
     rangeForm: FormGroup = this.fb.group({
@@ -79,17 +84,17 @@ export class GlucoseHistoryComponent implements OnInit {
         to: [new Date(), Validators.required]
     });
 
-    selectedRangeLabel = signal('Últimos 30 días');
+    selectedRangeLabel = signal(this.transloco.translate('glucose.history.last30Days'));
 
     ngOnInit(): void {
         this.loadHistory();
     }
 
-    applyQuickRange(label: string, days: number): void {
+    applyQuickRange(labelKey: string, days: number): void {
         const to = new Date();
         const from = this.daysAgo(days);
         this.rangeForm.patchValue({ from, to });
-        this.selectedRangeLabel.set(label);
+        this.selectedRangeLabel.set(this.transloco.translate(labelKey));
         this.loadHistory();
     }
 
@@ -106,10 +111,10 @@ export class GlucoseHistoryComponent implements OnInit {
         this.glucoseService.delete(patientId, readingId).subscribe({
             next: () => {
                 this.readings.update(list => list.filter(r => r.readingId !== readingId));
-                this.notificationService.success('Lectura eliminada');
+                this.notificationService.success(this.transloco.translate('glucose.history.deletedSuccess'));
             },
             error: () => {
-                this.notificationService.danger('Error al eliminar la lectura');
+                this.notificationService.danger(this.transloco.translate('glucose.history.deleteError'));
             }
         });
     }
@@ -196,7 +201,8 @@ export class GlucoseHistoryComponent implements OnInit {
     private formatCustomLabel(): string {
         const from: Date = this.rangeForm.get('from')?.value;
         const to: Date = this.rangeForm.get('to')?.value;
-        return `${from.toLocaleDateString('es-CO')} — ${to.toLocaleDateString('es-CO')}`;
+        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
+        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
     }
 
     private downloadFile(blob: Blob, filename: string, type: string): void {

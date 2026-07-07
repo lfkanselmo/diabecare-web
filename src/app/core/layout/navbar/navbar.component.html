@@ -1,5 +1,5 @@
 <mat-toolbar class="navbar">
-  <button mat-icon-button (click)="onMenuToggle()" aria-label="Abrir menú">
+  <button mat-icon-button (click)="onMenuToggle()" [attr.aria-label]="'navbar.openMenu' | transloco">
     <mat-icon>menu</mat-icon>
   </button>
 
@@ -28,32 +28,47 @@
   }
 
   @if (showNotifButton()) {
-  <button mat-icon-button [matTooltip]="notificationsEnabled() ? 'Desactivar notificaciones' : 'Activar notificaciones'"
-    [attr.aria-label]="notificationsEnabled() ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+  <button mat-icon-button
+    [matTooltip]="(notificationsEnabled() ? 'navbar.disableNotifications' : 'navbar.enableNotifications') | transloco"
+    [attr.aria-label]="(notificationsEnabled() ? 'navbar.disableNotifications' : 'navbar.enableNotifications') | transloco"
     (click)="onToggleNotifications()">
     <mat-icon>{{ notificationsEnabled() ? 'notifications_active' : 'notifications_none' }}</mat-icon>
   </button>
   }
 
-  <button mat-icon-button [matTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
-    [attr.aria-label]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
+  <button mat-icon-button [matTooltip]="(themeService.isDark() ? 'navbar.lightMode' : 'navbar.darkMode') | transloco"
+    [attr.aria-label]="(themeService.isDark() ? 'navbar.lightMode' : 'navbar.darkMode') | transloco"
     (click)="themeService.toggleTheme()">
     <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
 
-  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
+  <button mat-icon-button [matMenuTriggerFor]="languageMenu" [matTooltip]="'navbar.language' | transloco"
+    [attr.aria-label]="'navbar.language' | transloco">
+    <mat-icon>language</mat-icon>
+  </button>
+
+  <mat-menu #languageMenu="matMenu">
+    @for (lang of languages; track lang.value) {
+    <button mat-menu-item (click)="onSelectLanguage(lang.value)"
+      [class.navbar__lang-active]="languageService.currentLang() === lang.value">
+      <span>{{ lang.label }}</span>
+    </button>
+    }
+  </mat-menu>
+
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" [attr.aria-label]="'navbar.userMenu' | transloco">
     <mat-icon>account_circle</mat-icon>
   </button>
 
   <mat-menu #userMenu="matMenu">
     <button mat-menu-item routerLink="/app/profile">
       <mat-icon>person</mat-icon>
-      <span>Mi perfil</span>
+      <span>{{ 'navbar.myProfile' | transloco }}</span>
     </button>
     <mat-divider />
     <button mat-menu-item (click)="onLogout()">
       <mat-icon>logout</mat-icon>
-      <span>Cerrar sesión</span>
+      <span>{{ 'navbar.logout' | transloco }}</span>
     </button>
   </mat-menu>
 </mat-toolbar>

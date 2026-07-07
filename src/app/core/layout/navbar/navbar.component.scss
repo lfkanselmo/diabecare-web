@@ -90,3 +90,10 @@
   background-color: #2A2060 !important;
   border-bottom-color: rgba(255, 255, 255, 0.08);
 }
+
+// Los mat-menu-item del selector de idioma se renderizan en el overlay de Angular
+// Material (fuera del árbol de .navbar), por eso esta regla vive fuera del bloque .navbar.
+.navbar__lang-active {
+  color: var(--color-primary) !important;
+  font-weight: var(--font-weight-medium);
+}

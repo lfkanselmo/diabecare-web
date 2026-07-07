@@ -1,23 +1,23 @@
 <div class="exercise-log">
     <div class="exercise-log__layout">
         <div class="exercise-log__card">
-            <h2 class="exercise-log__section-title">Registrar ejercicio</h2>
+            <h2 class="exercise-log__section-title">{{ 'vitals.exerciseLog.registerTitle' | transloco }}</h2>
 
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
                 <mat-form-field appearance="outline">
-                    <mat-label>Tipo de ejercicio</mat-label>
+                    <mat-label>{{ 'vitals.exerciseLog.exerciseType' | transloco }}</mat-label>
                     <mat-select formControlName="exerciseType">
                         @for (type of metadata.exerciseTypes(); track type.value) {
                         <mat-option [value]="type.value">{{ type.label }}</mat-option>
                         }
                     </mat-select>
                     @if (form.get('exerciseType')?.hasError('required')) {
-                    <mat-error>Selecciona el tipo de ejercicio</mat-error>
+                    <mat-error>{{ 'vitals.exerciseLog.exerciseTypeRequired' | transloco }}</mat-error>
                     }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Intensidad</mat-label>
+                    <mat-label>{{ 'vitals.exerciseLog.intensity' | transloco }}</mat-label>
                     <mat-select formControlName="intensity">
                         @for (i of metadata.exerciseIntensities(); track i.value) {
                         <mat-option [value]="i.value">{{ i.label }}</mat-option>
@@ -26,28 +26,28 @@
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Duración (minutos)</mat-label>
+                    <mat-label>{{ 'vitals.exerciseLog.duration' | transloco }}</mat-label>
                     <input matInput formControlName="durationMinutes" type="number" min="1" />
                     <mat-icon matSuffix>timer</mat-icon>
                     @if (form.get('durationMinutes')?.hasError('required')) {
-                    <mat-error>La duración es obligatoria</mat-error>
+                    <mat-error>{{ 'vitals.exerciseLog.durationRequired' | transloco }}</mat-error>
                     }
                     @if (form.get('durationMinutes')?.hasError('min')) {
-                    <mat-error>Mínimo 1 minuto</mat-error>
+                    <mat-error>{{ 'vitals.exerciseLog.durationMin' | transloco }}</mat-error>
                     }
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Fecha y hora</mat-label>
+                    <mat-label>{{ 'vitals.exerciseLog.dateTime' | transloco }}</mat-label>
                     <input matInput formControlName="performedAt" type="datetime-local" />
                     <button mat-icon-button matSuffix type="button" (click)="setNow()"
-                        matTooltip="Usar fecha y hora actual" aria-label="Usar fecha y hora actual">
+                        [matTooltip]="'common.now' | transloco" [attr.aria-label]="'common.now' | transloco">
                         <mat-icon>schedule</mat-icon>
                     </button>
                 </mat-form-field>
 
                 <mat-form-field appearance="outline">
-                    <mat-label>Notas (opcional)</mat-label>
+                    <mat-label>{{ 'vitals.notes' | transloco }}</mat-label>
                     <textarea matInput formControlName="notes" rows="2"></textarea>
                 </mat-form-field>
 
@@ -56,38 +56,37 @@
                         (click)="toggleCustomCalories()">
                         <mat-icon>{{ customCalories() ? 'remove_circle_outline' : 'tune' }}</mat-icon>
                         @if (customCalories()) {
-                        No quiero ajustar las calorías
+                        {{ 'vitals.exerciseLog.wantDefaultCalories' | transloco }}
                         } @else {
-                        Ajustar calorías estimadas
+                        {{ 'vitals.exerciseLog.adjustCalories' | transloco }}
                         }
                     </button>
                     <p class="exercise-log__calories-hint">
-                        Por defecto calculamos las calorías quemadas automáticamente. Si tienes
-                        un dato más preciso (por ejemplo, de un reloj inteligente), puedes ingresarlo aquí.
+                        {{ 'vitals.exerciseLog.caloriesHint' | transloco }}
                     </p>
                 </div>
 
                 @if (customCalories()) {
                 <mat-form-field appearance="outline">
-                    <mat-label>Calorías quemadas</mat-label>
+                    <mat-label>{{ 'vitals.exerciseLog.caloriesBurned' | transloco }}</mat-label>
                     <input matInput formControlName="caloriesBurned" type="number" min="0" step="1" />
                     <mat-icon matSuffix>local_fire_department</mat-icon>
                 </mat-form-field>
                 }
 
                 <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid || loading()">
-                    @if (loading()) { Guardando... } @else { Registrar ejercicio }
+                    @if (loading()) { {{ 'vitals.exerciseLog.saving' | transloco }} } @else { {{ 'vitals.exerciseLog.save' | transloco }} }
                 </button>
             </form>
         </div>
 
         <div class="exercise-log__card">
-            <h2 class="exercise-log__section-title">Historial (30 días)</h2>
+            <h2 class="exercise-log__section-title">{{ 'vitals.exerciseLog.historyTitle' | transloco }}</h2>
 
             @if (history().length === 0) {
             <div class="exercise-log__empty">
                 <mat-icon>directions_run</mat-icon>
-                <p>Sin registros de ejercicio</p>
+                <p>{{ 'vitals.exerciseLog.noRecords' | transloco }}</p>
             </div>
             } @else {
             <div class="exercise-log__history">
@@ -98,9 +97,11 @@
                             {{ getExerciseLabel(log.exerciseType) }}
                         </span>
                         <span class="exercise-log__item-detail">
-                            {{ log.durationMinutes }} min ·
-                            Intensidad {{ getIntensityLabel(log.intensity) }} ·
-                            {{ log.caloriesBurned | number:'1.0-0' }} kcal quemadas
+                            {{ 'vitals.exerciseLog.minutesIntensityCalories' | transloco: {
+                                minutes: log.durationMinutes,
+                                intensity: getIntensityLabel(log.intensity),
+                                calories: (log.caloriesBurned | number:'1.0-0')
+                            } }}
                         </span>
                         <span class="exercise-log__item-date">
                             {{ log.performedAt | date:'dd/MM/yyyy HH:mm' }}

@@ -19,7 +19,7 @@
         </button>
         }
         <button mat-icon-button class="notification-banner__close" (click)="close(item.id)"
-            aria-label="Cerrar notificación">
+            [attr.aria-label]="'common.closeNotification' | transloco">
             <mat-icon>close</mat-icon>
         </button>
     </div>

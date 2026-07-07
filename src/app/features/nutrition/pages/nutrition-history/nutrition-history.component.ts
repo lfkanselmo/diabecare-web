@@ -9,9 +9,11 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
+import { LanguageService } from '../../../../core/services/language.service';
 import { MealEntryResponse } from '../../../../shared/models/nutrition.model';
 import { toLocalDateString } from '../../../../shared/utils/date.utils';
 
@@ -29,7 +31,8 @@ import { toLocalDateString } from '../../../../shared/utils/date.utils';
         MatNativeDateModule,
         MatFormFieldModule,
         MatInputModule,
-        MatProgressSpinnerModule
+        MatProgressSpinnerModule,
+        TranslocoPipe
     ],
     templateUrl: './nutrition-history.component.html',
     styleUrl: './nutrition-history.component.scss'
@@ -39,15 +42,17 @@ export class NutritionHistoryComponent implements OnInit {
     private readonly fb = inject(FormBuilder);
     private readonly nutritionService = inject(NutritionService);
     private readonly authService = inject(AuthService);
+    private readonly transloco = inject(TranslocoService);
+    private readonly languageService = inject(LanguageService);
     readonly metadata = inject(MetadataService);
 
     meals = signal<MealEntryResponse[]>([]);
     loading = signal(true);
 
     readonly quickRanges = [
-        { label: 'Últimos 7 días', days: 7 },
-        { label: 'Últimos 30 días', days: 30 },
-        { label: 'Últimos 90 días', days: 90 }
+        { labelKey: 'nutrition.history.last7Days', days: 7 },
+        { labelKey: 'nutrition.history.last30Days', days: 30 },
+        { labelKey: 'nutrition.history.last90Days', days: 90 }
     ];
 
     rangeForm: FormGroup = this.fb.group({
@@ -55,17 +60,17 @@ export class NutritionHistoryComponent implements OnInit {
         to: [new Date(), Validators.required]
     });
 
-    selectedRangeLabel = signal('Últimos 7 días');
+    selectedRangeLabel = signal(this.transloco.translate('nutrition.history.last7Days'));
 
     ngOnInit(): void {
         this.loadHistory();
     }
 
-    applyQuickRange(label: string, days: number): void {
+    applyQuickRange(labelKey: string, days: number): void {
         const to = new Date();
         const from = this.daysAgo(days);
         this.rangeForm.patchValue({ from, to });
-        this.selectedRangeLabel.set(label);
+        this.selectedRangeLabel.set(this.transloco.translate(labelKey));
         this.loadHistory();
     }
 
@@ -119,6 +124,7 @@ export class NutritionHistoryComponent implements OnInit {
     private formatCustomLabel(): string {
         const from: Date = this.rangeForm.get('from')?.value;
         const to: Date = this.rangeForm.get('to')?.value;
-        return `${from.toLocaleDateString('es-CO')} — ${to.toLocaleDateString('es-CO')}`;
+        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
+        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
     }
 }

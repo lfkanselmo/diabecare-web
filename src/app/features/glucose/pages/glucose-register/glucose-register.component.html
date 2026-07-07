@@ -1,27 +1,27 @@
 <div class="glucose-register">
   <div class="glucose-register__header">
-    <button mat-icon-button (click)="onCancel()" aria-label="Volver">
+    <button mat-icon-button (click)="onCancel()" [attr.aria-label]="'common.back' | transloco">
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <h1 class="glucose-register__title">Registrar glucosa</h1>
+    <h1 class="glucose-register__title">{{ 'glucose.register.title' | transloco }}</h1>
   </div>
 
   <div class="glucose-register__card">
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="glucose-register__row">
         <mat-form-field appearance="outline" class="glucose-register__value">
-          <mat-label>Valor</mat-label>
+          <mat-label>{{ 'glucose.register.value' | transloco }}</mat-label>
           <input matInput formControlName="value" type="number" />
           @if (form.get('value')?.hasError('required')) {
-          <mat-error>El valor es obligatorio</mat-error>
+          <mat-error>{{ 'glucose.register.valueRequired' | transloco }}</mat-error>
           }
           @if (form.get('value')?.hasError('min') || form.get('value')?.hasError('max')) {
-          <mat-error>El valor debe estar entre 20 y 600</mat-error>
+          <mat-error>{{ 'glucose.register.valueRange' | transloco }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline" class="glucose-register__unit">
-          <mat-label>Unidad</mat-label>
+          <mat-label>{{ 'glucose.register.unit' | transloco }}</mat-label>
           <mat-select formControlName="unit">
             @for (unit of metadata.glucoseUnits(); track unit.value) {
             <mat-option [value]="unit.value">{{ unit.label }}</mat-option>
@@ -31,47 +31,47 @@
       </div>
 
       <mat-form-field appearance="outline">
-        <mat-label>Tipo de medición</mat-label>
+        <mat-label>{{ 'glucose.register.readingType' | transloco }}</mat-label>
         <mat-select formControlName="readingType">
           @for (type of metadata.readingTypes(); track type.value) {
           <mat-option [value]="type.value">{{ type.label }}</mat-option>
           }
         </mat-select>
         @if (form.get('readingType')?.hasError('required')) {
-        <mat-error>Selecciona el tipo de medición</mat-error>
+        <mat-error>{{ 'glucose.register.readingTypeRequired' | transloco }}</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Fecha y hora</mat-label>
+        <mat-label>{{ 'glucose.register.dateTime' | transloco }}</mat-label>
         <input matInput formControlName="measuredAt" type="datetime-local" />
-        <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual"
-          aria-label="Usar fecha y hora actual">
+        <button mat-icon-button matSuffix type="button" (click)="setNow()" [matTooltip]="'common.now' | transloco"
+          [attr.aria-label]="'common.now' | transloco">
           <mat-icon>schedule</mat-icon>
         </button>
         @if (form.get('measuredAt')?.hasError('required')) {
-        <mat-error>La fecha y hora son obligatorias</mat-error>
+        <mat-error>{{ 'glucose.register.dateTimeRequired' | transloco }}</mat-error>
         }
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Notas (opcional)</mat-label>
+        <mat-label>{{ 'glucose.register.notes' | transloco }}</mat-label>
         <textarea matInput formControlName="notes" rows="3"></textarea>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Fuente del dispositivo (opcional)</mat-label>
-        <input matInput formControlName="deviceSource" placeholder="Glucómetro, CGM, manual..." />
+        <mat-label>{{ 'glucose.register.deviceSource' | transloco }}</mat-label>
+        <input matInput formControlName="deviceSource" [placeholder]="'glucose.register.deviceSourcePlaceholder' | transloco" />
         <mat-icon matSuffix>devices</mat-icon>
       </mat-form-field>
 
       <div class="glucose-register__actions">
-        <button mat-stroked-button type="button" (click)="onCancel()">Cancelar</button>
+        <button mat-stroked-button type="button" (click)="onCancel()">{{ 'common.cancel' | transloco }}</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="loading()">
           @if (loading()) {
-          Guardando...
+          {{ 'glucose.register.saving' | transloco }}
           } @else {
-          Guardar lectura
+          {{ 'glucose.register.save' | transloco }}
           }
         </button>
       </div>

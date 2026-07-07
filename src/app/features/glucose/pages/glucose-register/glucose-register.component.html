@@ -1,6 +1,6 @@
 <div class="glucose-register">
   <div class="glucose-register__header">
-    <button mat-icon-button (click)="onCancel()">
+    <button mat-icon-button (click)="onCancel()" aria-label="Volver">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <h1 class="glucose-register__title">Registrar glucosa</h1>
@@ -45,7 +45,8 @@
       <mat-form-field appearance="outline">
         <mat-label>Fecha y hora</mat-label>
         <input matInput formControlName="measuredAt" type="datetime-local" />
-        <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual">
+        <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual"
+          aria-label="Usar fecha y hora actual">
           <mat-icon>schedule</mat-icon>
         </button>
         @if (form.get('measuredAt')?.hasError('required')) {

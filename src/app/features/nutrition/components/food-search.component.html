@@ -5,7 +5,7 @@
     @if (searching()) {
       <mat-spinner matSuffix diameter="20" />
     } @else if (searchControl.value) {
-      <button mat-icon-button matSuffix (click)="onClear()">
+      <button mat-icon-button matSuffix (click)="onClear()" aria-label="Limpiar búsqueda">
         <mat-icon>close</mat-icon>
       </button>
     } @else {

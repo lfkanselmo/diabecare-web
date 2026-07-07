@@ -1,5 +1,5 @@
 <mat-toolbar class="navbar">
-  <button mat-icon-button (click)="onMenuToggle()">
+  <button mat-icon-button (click)="onMenuToggle()" aria-label="Abrir menú">
     <mat-icon>menu</mat-icon>
   </button>
 
@@ -29,17 +29,19 @@
 
   @if (showNotifButton()) {
   <button mat-icon-button [matTooltip]="notificationsEnabled() ? 'Desactivar notificaciones' : 'Activar notificaciones'"
+    [attr.aria-label]="notificationsEnabled() ? 'Desactivar notificaciones' : 'Activar notificaciones'"
     (click)="onToggleNotifications()">
     <mat-icon>{{ notificationsEnabled() ? 'notifications_active' : 'notifications_none' }}</mat-icon>
   </button>
   }
 
   <button mat-icon-button [matTooltip]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
+    [attr.aria-label]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'"
     (click)="themeService.toggleTheme()">
     <mat-icon>{{ themeService.isDark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
   </button>
 
-  <button mat-icon-button [matMenuTriggerFor]="userMenu">
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" aria-label="Menú de usuario">
     <mat-icon>account_circle</mat-icon>
   </button>
 

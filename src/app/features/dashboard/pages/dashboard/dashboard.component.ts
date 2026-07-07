@@ -1,4 +1,5 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
@@ -51,6 +52,7 @@ export class DashboardComponent implements OnInit {
     private readonly glucoseStateService = inject(GlucoseStateService);
     private readonly systemConfig = inject(SystemConfigService);
     private readonly store = inject(Store);
+    private readonly destroyRef = inject(DestroyRef);
 
     readonly today = new Date();
     readonly patientId = this.authService.getPatientId();
@@ -87,7 +89,7 @@ export class DashboardComponent implements OnInit {
 
         this.store.dispatch(GlucoseActions.loadStats({ patientId: this.patientId, from, to }));
 
-        this.store.select(selectStats).subscribe({
+        this.store.select(selectStats).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
             next: stats => {
                 this.glucoseStats.set(stats);
                 this.glucoseStatsLoading.set(false);

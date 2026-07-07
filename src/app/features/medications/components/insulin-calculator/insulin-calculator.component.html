@@ -7,6 +7,12 @@
         Calcula tu dosis sugerida basada en tu glucosa actual y los carbohidratos a consumir.
     </p>
 
+    <p class="insulin-calc__notice">
+        <mat-icon>info</mat-icon>
+        Herramienta educativa: aplica una fórmula sobre los parámetros de tu perfil de insulina,
+        configurados junto con tu médico. No sustituye el criterio de tu equipo médico.
+    </p>
+
     <form [formGroup]="form" (ngSubmit)="onCalculate()">
         <mat-form-field appearance="outline">
             <mat-label>Glucosa actual (mg/dL)</mat-label>
@@ -65,7 +71,7 @@
         <p class="insulin-calc__explanation">{{ result()!.explanation }}</p>
         <p class="insulin-calc__disclaimer">
             <mat-icon>info</mat-icon>
-            Esta es una sugerencia basada en tu perfil. Consulta siempre con tu médico antes de ajustar dosis.
+            {{ result()!.disclaimer }}
         </p>
     </div>
     }

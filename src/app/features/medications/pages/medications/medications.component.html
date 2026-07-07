@@ -79,7 +79,8 @@
                   </span>
                   <span class="medications__item-type">{{ getMedicationTypeLabel(med.type) }}</span>
                 </div>
-                <button mat-icon-button color="warn" (click)="onDeactivate(med.medicationId)">
+                <button mat-icon-button color="warn" (click)="onDeactivate(med.medicationId)"
+                  [attr.aria-label]="'Desactivar ' + med.name">
                   <mat-icon>close</mat-icon>
                 </button>
               </div>

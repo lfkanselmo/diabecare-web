@@ -25,7 +25,8 @@
         <mat-label>Contraseña</mat-label>
         <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'"
           autocomplete="current-password" />
-        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword"
+          [attr.aria-label]="hidePassword ? 'Mostrar contraseña' : 'Ocultar contraseña'">
           <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
         </button>
         @if (form.get('password')?.hasError('required')) {

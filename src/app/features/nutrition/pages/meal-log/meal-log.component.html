@@ -1,6 +1,6 @@
 <div class="meal-log">
   <div class="meal-log__header">
-    <button mat-icon-button (click)="onCancel()">
+    <button mat-icon-button (click)="onCancel()" aria-label="Volver">
       <mat-icon>arrow_back</mat-icon>
     </button>
     <h1 class="meal-log__title">Registrar comida</h1>
@@ -26,7 +26,8 @@
         <mat-form-field appearance="outline">
           <mat-label>Fecha y hora</mat-label>
           <input matInput formControlName="consumedAt" type="datetime-local" />
-          <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual">
+          <button mat-icon-button matSuffix type="button" (click)="setNow()" matTooltip="Usar fecha y hora actual"
+            aria-label="Usar fecha y hora actual">
             <mat-icon>schedule</mat-icon>
           </button>
         </mat-form-field>
@@ -55,7 +56,7 @@
               G: {{ selectedFood()!.fatsPer100g }}g
             </span>
           </div>
-          <button mat-icon-button (click)="onClearFood()">
+          <button mat-icon-button (click)="onClearFood()" aria-label="Quitar alimento seleccionado">
             <mat-icon>close</mat-icon>
           </button>
         </div>
@@ -157,7 +158,8 @@
               G: {{ item.fats | number:'1.0-1' }}g
             </span>
           </div>
-          <button mat-icon-button color="warn" (click)="onRemoveItem(i)">
+          <button mat-icon-button color="warn" (click)="onRemoveItem(i)"
+            [attr.aria-label]="'Eliminar ' + item.foodName">
             <mat-icon>delete_outline</mat-icon>
           </button>
         </div>

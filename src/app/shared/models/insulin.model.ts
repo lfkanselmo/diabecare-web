@@ -9,6 +9,7 @@ export interface InsulinCalculationResponse {
     mealDose: number;
     totalDose: number;
     explanation: string;
+    disclaimer: string;
 }
 
 export interface UpdateInsulinProfileRequest {

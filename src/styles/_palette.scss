@@ -1,0 +1,61 @@
+// Fuente única de verdad para los colores de marca de DiabeCare.
+// Tanto _tokens.scss (custom properties leídas por componentes propios) como
+// _theme.scss (paletas de Angular Material) derivan de estas mismas variables —
+// antes cada uno declaraba su propio color por separado y podían divergir.
+@use 'sass:color';
+
+// ── Marca — modo claro
+$color-primary:       #5B4FCF;
+$color-primary-mid:   #7B6FE0;
+$color-primary-light: #EEF0FF;
+$color-primary-dark:  #3D3399;
+
+$color-success: #22A96A;
+$color-warning: #E8A020;
+$color-danger:  #E04B4B;
+$color-info:    #0EA5A0;
+
+// ── Marca — modo oscuro (variantes ya aclaradas para contraste sobre fondo negro)
+$color-primary-dark-mode: #776CDA;
+$color-success-dark-mode: #4ADE98;
+$color-warning-dark-mode: #FABD4A;
+$color-danger-dark-mode:  #F07070;
+$color-info-dark-mode:    #2DD4CF;
+
+// Construye un mapa de paleta M2 completo (50-900 + acentos) a partir de un único
+// color de marca, para que Angular Material use exactamente el mismo hex que los
+// design tokens en vez de una paleta de stock (deep-purple, teal, red) sin relación.
+@function m2-palette-from($base) {
+  @return (
+    50:  color.scale($base, $lightness: 85%),
+    100: color.scale($base, $lightness: 70%),
+    200: color.scale($base, $lightness: 50%),
+    300: color.scale($base, $lightness: 30%),
+    400: color.scale($base, $lightness: 15%),
+    500: $base,
+    600: color.scale($base, $lightness: -10%),
+    700: color.scale($base, $lightness: -20%),
+    800: color.scale($base, $lightness: -30%),
+    900: color.scale($base, $lightness: -40%),
+    A100: color.scale($base, $lightness: 45%, $saturation: 10%),
+    A200: color.scale($base, $lightness: 25%, $saturation: 10%),
+    A400: color.scale($base, $lightness: -10%, $saturation: 10%),
+    A700: color.scale($base, $lightness: -25%, $saturation: 10%),
+    contrast: (
+      50:  rgba(black, 0.87),
+      100: rgba(black, 0.87),
+      200: rgba(black, 0.87),
+      300: white,
+      400: white,
+      500: white,
+      600: white,
+      700: white,
+      800: white,
+      900: white,
+      A100: rgba(black, 0.87),
+      A200: white,
+      A400: white,
+      A700: white,
+    )
+  );
+}

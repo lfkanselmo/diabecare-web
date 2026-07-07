@@ -1,18 +1,20 @@
+@use 'palette' as p;
+
 :root {
-  // ── Colores primarios — Índigo
-  --color-primary:          #5B4FCF;
-  --color-primary-mid:      #7B6FE0;
-  --color-primary-light:    #EEF0FF;
-  --color-primary-dark:     #3D3399;
+  // ── Colores primarios — Índigo (fuente única: _palette.scss)
+  --color-primary:          #{p.$color-primary};
+  --color-primary-mid:      #{p.$color-primary-mid};
+  --color-primary-light:    #{p.$color-primary-light};
+  --color-primary-dark:     #{p.$color-primary-dark};
 
   // ── Colores semánticos
-  --color-success:          #22A96A;
+  --color-success:          #{p.$color-success};
   --color-success-light:    #E3F7EE;
-  --color-warning:          #E8A020;
+  --color-warning:          #{p.$color-warning};
   --color-warning-light:    #FEF5E0;
-  --color-danger:           #E04B4B;
+  --color-danger:           #{p.$color-danger};
   --color-danger-light:     #FEECEC;
-  --color-info:             #0EA5A0;
+  --color-info:             #{p.$color-info};
   --color-info-light:       #E0F5F4;
 
   // ── Estados de glucosa
@@ -89,18 +91,18 @@
 }
 
 [data-theme="dark"] {
-  --color-primary:          #776CDA;
+  --color-primary:          #{p.$color-primary-dark-mode};
   --color-primary-mid:      #9588ED;
   --color-primary-light:    rgba(91, 79, 207, 0.12);
-  --color-primary-dark:     #5B4FCF;
+  --color-primary-dark:     #{p.$color-primary};
 
-  --color-success:          #4ADE98;
+  --color-success:          #{p.$color-success-dark-mode};
   --color-success-light:    rgba(34, 169, 106, 0.12);
-  --color-warning:          #FABD4A;
+  --color-warning:          #{p.$color-warning-dark-mode};
   --color-warning-light:    rgba(232, 160, 32, 0.12);
-  --color-danger:           #F07070;
+  --color-danger:           #{p.$color-danger-dark-mode};
   --color-danger-light:     rgba(224, 75, 75, 0.12);
-  --color-info:             #2DD4CF;
+  --color-info:             #{p.$color-info-dark-mode};
   --color-info-light:       rgba(14, 165, 160, 0.12);
 
   --glucose-critically-low:  #F48FB1;

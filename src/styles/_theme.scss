@@ -1,8 +1,14 @@
 @use '@angular/material' as mat;
+@use 'palette' as p;
 
-$diabecare-primary: mat.m2-define-palette(mat.$m2-deep-purple-palette, 600, 400, 800);
-$diabecare-accent:  mat.m2-define-palette(mat.$m2-teal-palette, 600);
-$diabecare-warn:    mat.m2-define-palette(mat.$m2-red-palette, 700);
+// Antes: mat.$m2-deep-purple-palette / $m2-teal-palette / $m2-red-palette — una paleta
+// de stock de Material, configurada sin relación con los design tokens de _tokens.scss.
+// Ahora: las paletas de Material se generan desde los MISMOS colores de marca que los
+// custom properties (--color-primary, --color-info, --color-danger), vía
+// p.m2-palette-from() — una sola fuente de verdad para ambos mecanismos de theming.
+$diabecare-primary: mat.m2-define-palette(p.m2-palette-from(p.$color-primary), 500);
+$diabecare-accent:  mat.m2-define-palette(p.m2-palette-from(p.$color-info), 500);
+$diabecare-warn:    mat.m2-define-palette(p.m2-palette-from(p.$color-danger), 500);
 
 $diabecare-light-theme: mat.m2-define-light-theme((
   color: (
@@ -16,11 +22,15 @@ $diabecare-light-theme: mat.m2-define-light-theme((
   density: 0,
 ));
 
+$diabecare-primary-dark: mat.m2-define-palette(p.m2-palette-from(p.$color-primary-dark-mode), 500);
+$diabecare-accent-dark:  mat.m2-define-palette(p.m2-palette-from(p.$color-info-dark-mode), 500);
+$diabecare-warn-dark:    mat.m2-define-palette(p.m2-palette-from(p.$color-danger-dark-mode), 500);
+
 $diabecare-dark-theme: mat.m2-define-dark-theme((
   color: (
-    primary: mat.m2-define-palette(mat.$m2-deep-purple-palette, 200),
-    accent:  mat.m2-define-palette(mat.$m2-teal-palette, 200),
-    warn:    mat.m2-define-palette(mat.$m2-red-palette, 200),
+    primary: $diabecare-primary-dark,
+    accent:  $diabecare-accent-dark,
+    warn:    $diabecare-warn-dark,
   ),
   typography: mat.m2-define-typography-config(
     $font-family: 'Inter, sans-serif'

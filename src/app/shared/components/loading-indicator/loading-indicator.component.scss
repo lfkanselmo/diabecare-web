@@ -1,0 +1,16 @@
+.loading-indicator {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 2000;
+  height: 3px;
+
+  ::ng-deep .mdc-linear-progress__bar-inner {
+    border-color: var(--color-primary);
+  }
+
+  ::ng-deep .mdc-linear-progress__buffer-bar {
+    background-color: var(--color-primary-light);
+  }
+}

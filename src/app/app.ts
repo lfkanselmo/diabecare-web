@@ -2,11 +2,12 @@ import { Component, inject, OnInit } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
 import { NotificationBannerComponent } from './shared/components/notification-banner/notification-banner.component';
+import { LoadingIndicatorComponent } from './shared/components/loading-indicator/loading-indicator.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NotificationBannerComponent],
+  imports: [RouterOutlet, NotificationBannerComponent, LoadingIndicatorComponent],
   templateUrl: './app.html',
   styleUrl: './app.scss'
 })

@@ -14,6 +14,7 @@ import { routes } from './app.routes';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
 import { errorInterceptor } from './core/interceptors/error.interceptor';
 import { languageInterceptor } from './core/interceptors/language.interceptor';
+import { loadingInterceptor } from './core/interceptors/loading.interceptor';
 import { provideServiceWorker } from '@angular/service-worker';
 import { glucoseFeature } from './store/glucose/glucose.reducer';
 import { GlucoseEffects } from './store/glucose/glucose.effects';
@@ -30,7 +31,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([languageInterceptor, jwtInterceptor, errorInterceptor])),
+    provideHttpClient(withInterceptors([loadingInterceptor, languageInterceptor, jwtInterceptor, errorInterceptor])),
     provideAnimationsAsync(),
     provideStore({ glucose: glucoseFeature.reducer }),
     provideEffects([GlucoseEffects]),

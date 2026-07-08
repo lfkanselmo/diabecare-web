@@ -55,6 +55,7 @@ export class NavbarComponent implements OnInit {
     readonly languageService = inject(LanguageService);
 
     readonly latestReading = toSignal(this.store.select(selectLatestReading), { initialValue: null });
+    readonly isAdmin = this.authService.isAdmin();
 
     notificationsEnabled = signal(false);
     showNotifButton = signal(false);

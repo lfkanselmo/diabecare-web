@@ -37,8 +37,37 @@
     "darkMode": "Dark mode",
     "userMenu": "User menu",
     "myProfile": "My profile",
+    "admin": "Admin panel",
     "logout": "Log out",
     "language": "Language"
+  },
+  "admin": {
+    "title": "Admin panel",
+    "tabUsers": "Users",
+    "tabConfig": "System configuration",
+    "users": {
+      "colEmail": "Email",
+      "colRole": "Role",
+      "colStatus": "Status",
+      "colCreatedAt": "Registered",
+      "statusActive": "Active",
+      "statusSuspended": "Suspended",
+      "statusDeleted": "Deleted",
+      "thatsYou": "That's you",
+      "promote": "Make admin",
+      "demote": "Remove admin role",
+      "confirmChange": "Confirm the role change?",
+      "roleChanged": "Role updated",
+      "roleChangeError": "Error updating the role"
+    },
+    "config": {
+      "reload": "Reload configuration",
+      "reloaded": "Configuration reloaded",
+      "colKey": "Key",
+      "colValue": "Value",
+      "colCategory": "Category",
+      "colDescription": "Description"
+    }
   },
   "auth": {
     "login": {

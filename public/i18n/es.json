@@ -37,8 +37,37 @@
     "darkMode": "Modo oscuro",
     "userMenu": "Menú de usuario",
     "myProfile": "Mi perfil",
+    "admin": "Panel de administración",
     "logout": "Cerrar sesión",
     "language": "Idioma"
+  },
+  "admin": {
+    "title": "Panel de administración",
+    "tabUsers": "Usuarios",
+    "tabConfig": "Configuración del sistema",
+    "users": {
+      "colEmail": "Correo",
+      "colRole": "Rol",
+      "colStatus": "Estado",
+      "colCreatedAt": "Registrado",
+      "statusActive": "Activo",
+      "statusSuspended": "Suspendido",
+      "statusDeleted": "Eliminado",
+      "thatsYou": "Eres tú",
+      "promote": "Hacer administrador",
+      "demote": "Quitar rol de administrador",
+      "confirmChange": "¿Confirmas el cambio de rol?",
+      "roleChanged": "Rol actualizado",
+      "roleChangeError": "Error al actualizar el rol"
+    },
+    "config": {
+      "reload": "Recargar configuración",
+      "reloaded": "Configuración recargada",
+      "colKey": "Clave",
+      "colValue": "Valor",
+      "colCategory": "Categoría",
+      "colDescription": "Descripción"
+    }
   },
   "auth": {
     "login": {

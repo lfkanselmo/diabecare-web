@@ -16,7 +16,7 @@ export class SystemConfigService {
     private readonly http = inject(HttpClient);
     private readonly baseUrl = `${environment.apiUrl}/system-config`;
 
-    private readonly configs = signal<SystemConfigItem[]>([]);
+    readonly configs = signal<SystemConfigItem[]>([]);
     readonly loaded = signal(false);
 
     readonly phaseConfig: Record<string, PhaseConfig> = {

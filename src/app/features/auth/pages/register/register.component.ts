@@ -96,7 +96,7 @@ export class RegisterComponent implements OnInit {
 
         this.authApiService.register(request).subscribe({
             next: (response) => {
-                this.authService.saveSession(response.accessToken, response.patient, response.refreshToken);
+                this.authService.saveSession(response.accessToken, response.patient, response.refreshToken, response.role);
                 this.router.navigate(['/app/dashboard']);
             },
             error: () => {

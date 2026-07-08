@@ -4,6 +4,7 @@ import { PatientResponse } from '../../shared/models/patient.model';
 const TOKEN_KEY = 'dc_access_token';
 const REFRESH_TOKEN_KEY = 'dc_refresh_token';
 const PATIENT_KEY = 'dc_patient';
+const ROLE_KEY = 'dc_role';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,12 +23,16 @@ export class AuthService {
         return localStorage.getItem(REFRESH_TOKEN_KEY);
     }
 
-    saveSession(token: string, patient: unknown, refreshToken?: string): void {
+    saveSession(token: string, patient: unknown, refreshToken?: string, role?: string): void {
         localStorage.setItem(TOKEN_KEY, token);
         localStorage.setItem(PATIENT_KEY, JSON.stringify(patient));
 
         if (refreshToken) {
             localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+        }
+
+        if (role) {
+            localStorage.setItem(ROLE_KEY, role);
         }
 
         this._isAuthenticated.set(true);
@@ -43,6 +48,7 @@ export class AuthService {
         localStorage.removeItem(TOKEN_KEY);
         localStorage.removeItem(REFRESH_TOKEN_KEY);
         localStorage.removeItem(PATIENT_KEY);
+        localStorage.removeItem(ROLE_KEY);
         this._isAuthenticated.set(false);
     }
 
@@ -69,6 +75,14 @@ export class AuthService {
         } catch {
             return null;
         }
+    }
+
+    getRole(): string | null {
+        return localStorage.getItem(ROLE_KEY);
+    }
+
+    isAdmin(): boolean {
+        return this.getRole() === 'ADMIN';
     }
 
     getUserId(): string | null {

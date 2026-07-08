@@ -24,6 +24,7 @@ export interface AuthResponse {
     refreshToken: string;
     refreshExpiresIn: number;
     patient: PatientResponse | null;
+    role: string;
 }
 
 export interface RefreshTokenRequest {

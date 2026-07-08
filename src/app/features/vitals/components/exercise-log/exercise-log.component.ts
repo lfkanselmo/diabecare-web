@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { ExerciseService } from '../../services/exercise.service';
@@ -32,6 +33,7 @@ import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
         MatSelectModule,
         MatDividerModule,
         MatTooltipModule,
+        MatPaginatorModule,
         TranslocoPipe
     ],
     templateUrl: './exercise-log.component.html',
@@ -50,6 +52,9 @@ export class ExerciseLogComponent implements OnInit {
 
     loading = signal(false);
     history = signal<ExerciseLogResponse[]>([]);
+    totalElements = signal(0);
+    pageIndex = signal(0);
+    pageSize = signal(20);
 
     form: FormGroup = this.fb.group({
         exerciseType: ['', Validators.required],
@@ -96,8 +101,9 @@ export class ExerciseLogComponent implements OnInit {
         const caloriesBurned = this.customCalories() ? value.caloriesBurned : null;
 
         this.exerciseService.register(patientId, { ...value, performedAt, caloriesBurned }).subscribe({
-            next: log => {
-                this.history.update(list => [log, ...list]);
+            next: () => {
+                this.pageIndex.set(0);
+                this.loadHistory();
                 this.form.patchValue({ durationMinutes: null, notes: '', performedAt: nowAsLocalIso(), caloriesBurned: null });
                 this.customCalories.set(false);
                 this.notificationService.success(this.transloco.translate('vitals.exerciseLog.successMessage'));
@@ -131,6 +137,12 @@ export class ExerciseLogComponent implements OnInit {
         });
     }
 
+    onPageChange(event: PageEvent): void {
+        this.pageIndex.set(event.pageIndex);
+        this.pageSize.set(event.pageSize);
+        this.loadHistory();
+    }
+
     private loadHistory(): void {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
@@ -139,8 +151,13 @@ export class ExerciseLogComponent implements OnInit {
         const from = new Date();
         from.setDate(from.getDate() - 30);
 
-        this.exerciseService.getHistory(patientId, from.toISOString(), to).subscribe({
-            next: data => this.history.set(data),
+        this.exerciseService.getHistory(
+            patientId, from.toISOString(), to, this.pageIndex(), this.pageSize()
+        ).subscribe({
+            next: page => {
+                this.history.set(page.content);
+                this.totalElements.set(page.totalElements);
+            },
             error: () => { }
         });
     }

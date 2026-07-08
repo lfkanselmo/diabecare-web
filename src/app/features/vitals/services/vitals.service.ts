@@ -7,6 +7,7 @@ import {
     RegisterVitalSignRequest,
     VitalSignResponse
 } from '../../../shared/models/vitals.model';
+import { PageResponse } from '../../../shared/models/page.model';
 
 @Injectable({ providedIn: 'root' })
 export class VitalsService {
@@ -18,8 +19,9 @@ export class VitalsService {
         return this.http.post<VitalSignResponse>(`${this.baseUrl}/${patientId}`, request);
     }
 
-    getAll(patientId: string): Observable<VitalSignResponse[]> {
-        return this.http.get<VitalSignResponse[]>(`${this.baseUrl}/${patientId}`);
+    getAll(patientId: string, page = 0, size = 20): Observable<PageResponse<VitalSignResponse>> {
+        const params = new HttpParams().set('page', page).set('size', size);
+        return this.http.get<PageResponse<VitalSignResponse>>(`${this.baseUrl}/${patientId}`, { params });
     }
 
     getLatest(patientId: string): Observable<VitalSignResponse | null> {

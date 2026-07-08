@@ -9,6 +9,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NutritionService } from '../../services/nutrition.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -32,6 +33,7 @@ import { toLocalDateString } from '../../../../shared/utils/date.utils';
         MatFormFieldModule,
         MatInputModule,
         MatProgressSpinnerModule,
+        MatPaginatorModule,
         TranslocoPipe
     ],
     templateUrl: './nutrition-history.component.html',
@@ -48,6 +50,9 @@ export class NutritionHistoryComponent implements OnInit {
 
     meals = signal<MealEntryResponse[]>([]);
     loading = signal(true);
+    totalElements = signal(0);
+    pageIndex = signal(0);
+    pageSize = signal(20);
 
     readonly quickRanges = [
         { labelKey: 'nutrition.history.last7Days', days: 7 },
@@ -71,17 +76,25 @@ export class NutritionHistoryComponent implements OnInit {
         const from = this.daysAgo(days);
         this.rangeForm.patchValue({ from, to });
         this.selectedRangeLabel.set(this.transloco.translate(labelKey));
+        this.pageIndex.set(0);
         this.loadHistory();
     }
 
     applyCustomRange(): void {
         if (this.rangeForm.invalid) return;
         this.selectedRangeLabel.set(this.formatCustomLabel());
+        this.pageIndex.set(0);
         this.loadHistory();
     }
 
     getMealTypeLabel(type: string): string {
         return this.metadata.getLabelByValue(this.metadata.mealTypes(), type);
+    }
+
+    onPageChange(event: PageEvent): void {
+        this.pageIndex.set(event.pageIndex);
+        this.pageSize.set(event.pageSize);
+        this.loadHistory();
     }
 
     private loadHistory(): void {
@@ -91,9 +104,12 @@ export class NutritionHistoryComponent implements OnInit {
         const { from, to } = this.getRangeIso();
         this.loading.set(true);
 
-        this.nutritionService.getMealHistory(patientId, from, to).subscribe({
-            next: meals => {
-                this.meals.set(this.sortByDateDesc(meals));
+        this.nutritionService.getMealHistory(
+            patientId, from, to, this.pageIndex(), this.pageSize()
+        ).subscribe({
+            next: page => {
+                this.meals.set(this.sortByDateDesc(page.content));
+                this.totalElements.set(page.totalElements);
                 this.loading.set(false);
             },
             error: () => this.loading.set(false)

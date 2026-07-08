@@ -7,6 +7,7 @@ import {
     MealEntryResponse,
     RegisterMealRequest
 } from '@shared/models/nutrition.model';
+import { PageResponse } from '@shared/models/page.model';
 
 @Injectable({ providedIn: 'root' })
 export class NutritionService {
@@ -25,9 +26,14 @@ export class NutritionService {
             `${this.baseUrl}/${patientId}/summary`, { params });
     }
 
-    getMealHistory(patientId: string, from: string, to: string): Observable<MealEntryResponse[]> {
-        const params = new HttpParams().set('from', from).set('to', to);
-        return this.http.get<MealEntryResponse[]>(
+    getMealHistory(
+        patientId: string, from: string, to: string,
+        page = 0, size = 20
+    ): Observable<PageResponse<MealEntryResponse>> {
+        const params = new HttpParams()
+            .set('from', from).set('to', to)
+            .set('page', page).set('size', size);
+        return this.http.get<PageResponse<MealEntryResponse>>(
             `${this.baseUrl}/${patientId}/meals`, { params });
     }
 }

@@ -170,13 +170,13 @@ export class GlucoseHistoryComponent implements OnInit {
         this.loading.set(true);
 
         forkJoin({
-            glucose: this.glucoseService.getHistory(patientId, from, to),
-            exercise: this.exerciseService.getHistory(patientId, from, to)
+            glucose: this.glucoseService.getHistory(patientId, from, to, 0, 500),
+            exercise: this.exerciseService.getHistory(patientId, from, to, 0, 500)
         }).subscribe({
             next: ({ glucose, exercise }) => {
-                this.readings.set(glucose.readings);
+                this.readings.set(glucose.readings.content);
                 this.mealMarkers.set(glucose.mealMarkers);
-                this.exerciseLogs.set(exercise);
+                this.exerciseLogs.set(exercise.content);
                 this.loading.set(false);
             },
             error: () => this.loading.set(false)

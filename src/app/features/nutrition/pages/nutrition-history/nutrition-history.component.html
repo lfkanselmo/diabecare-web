@@ -80,5 +80,12 @@
         </div>
         }
     </div>
+    <mat-paginator
+        [length]="totalElements()"
+        [pageIndex]="pageIndex()"
+        [pageSize]="pageSize()"
+        [pageSizeOptions]="[10, 20, 50]"
+        (page)="onPageChange($event)">
+    </mat-paginator>
     }
 </div>

@@ -1,3 +1,5 @@
+import { PageResponse } from './page.model';
+
 export type GlucoseUnit = 'MG_DL' | 'MMOL_L';
 export type ReadingType = 'FASTING' | 'PRE_MEAL' | 'POST_MEAL' | 'BEDTIME' | 'RANDOM';
 export type GlucoseStatus = 'CRITICALLY_LOW' | 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICALLY_HIGH';
@@ -41,7 +43,7 @@ export interface MealMarkerResponse {
 }
 
 export interface GlucoseCorrelationResponse {
-    readings: GlucoseReadingResponse[];
+    readings: PageResponse<GlucoseReadingResponse>;
     mealMarkers: MealMarkerResponse[];
 }
 

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { VitalsService } from '../../services/vitals.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -29,6 +30,7 @@ import { MatTabsModule } from '@angular/material/tabs';
         MatIconModule,
         MatDividerModule,
         MatButtonToggleModule,
+        MatPaginatorModule,
         MatTabsModule,
         Hba1cChartComponent,
         ExerciseLogComponent,
@@ -47,6 +49,9 @@ export class VitalsComponent implements OnInit {
 
     loading = signal(false);
     history = signal<VitalSignResponse[]>([]);
+    totalElements = signal(0);
+    pageIndex = signal(0);
+    pageSize = signal(20);
     hba1cTrend = signal<Hba1cTrendResponse[]>([]);
     trendMonths = signal<3 | 6 | 12>(6);
 
@@ -81,9 +86,10 @@ export class VitalsComponent implements OnInit {
         this.loading.set(true);
 
         this.vitalsService.register(patientId, this.form.getRawValue()).subscribe({
-            next: (vital) => {
-                this.history.update(list => [vital, ...list]);
+            next: () => {
                 this.form.reset();
+                this.pageIndex.set(0);
+                this.loadHistory();
                 this.loadTrend();
                 this.notificationService.success(this.transloco.translate('vitals.successMessage'));
                 this.loading.set(false);
@@ -100,11 +106,20 @@ export class VitalsComponent implements OnInit {
         this.loadTrend();
     }
 
+    onPageChange(event: PageEvent): void {
+        this.pageIndex.set(event.pageIndex);
+        this.pageSize.set(event.pageSize);
+        this.loadHistory();
+    }
+
     private loadHistory(): void {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
-        this.vitalsService.getAll(patientId).subscribe({
-            next: (data) => this.history.set(data),
+        this.vitalsService.getAll(patientId, this.pageIndex(), this.pageSize()).subscribe({
+            next: (page) => {
+                this.history.set(page.content);
+                this.totalElements.set(page.totalElements);
+            },
             error: () => { }
         });
     }

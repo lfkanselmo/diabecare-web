@@ -20,8 +20,13 @@ export class GlucoseService {
         return this.http.post(`${this.baseUrl}/${patientId}`, request);
     }
 
-    getHistory(patientId: string, from: string, to: string): Observable<GlucoseCorrelationResponse> {
-        const params = new HttpParams().set('from', from).set('to', to);
+    getHistory(
+        patientId: string, from: string, to: string,
+        page = 0, size = 50
+    ): Observable<GlucoseCorrelationResponse> {
+        const params = new HttpParams()
+            .set('from', from).set('to', to)
+            .set('page', page).set('size', size);
         return this.http.get<GlucoseCorrelationResponse>(
             `${this.baseUrl}/${patientId}/history`, { params });
     }

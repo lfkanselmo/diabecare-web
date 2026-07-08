@@ -4,7 +4,8 @@ export const {
     selectStats,
     selectLoading,
     selectError,
-    selectLastLoaded
+    selectLastLoaded,
+    selectLatestReading
 } = glucoseFeature;
 
 export const selectIsStale = (ttlMs = 5 * 60 * 1000) =>

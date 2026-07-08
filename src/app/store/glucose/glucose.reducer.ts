@@ -1,5 +1,5 @@
 import { createFeature, createReducer, on } from '@ngrx/store';
-import { GlucoseStatsResponse } from '../../shared/models/glucose.model';
+import { GlucoseReadingResponse, GlucoseStatsResponse } from '../../shared/models/glucose.model';
 import { GlucoseActions } from './glucose.actions';
 
 export interface GlucoseState {
@@ -7,13 +7,15 @@ export interface GlucoseState {
     loading: boolean;
     error: string | null;
     lastLoaded: number | null;
+    latestReading: GlucoseReadingResponse | null;
 }
 
 const initialState: GlucoseState = {
     stats: null,
     loading: false,
     error: null,
-    lastLoaded: null
+    lastLoaded: null,
+    latestReading: null
 };
 
 export const glucoseFeature = createFeature({
@@ -35,6 +37,10 @@ export const glucoseFeature = createFeature({
             ...state,
             loading: false,
             error
+        })),
+        on(GlucoseActions.loadLatestSuccess, (state, { reading }) => ({
+            ...state,
+            latestReading: reading
         })),
         on(GlucoseActions.invalidateCache, state => ({
             ...state,

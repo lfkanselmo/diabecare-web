@@ -1,5 +1,7 @@
 import { Component, EventEmitter, Output, inject, signal, OnInit } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
+import { Store } from '@ngrx/store';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -10,10 +12,14 @@ import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { AuthService } from '../../auth/auth.service';
 import { AuthApiService } from '../../auth/auth-api.service';
 import { ThemeService } from '../../services/theme.service';
-import { GlucoseStateService } from '../../services/glucose-state.service';
+import { SystemConfigService } from '../../services/system-config.service';
+import { MetadataService } from '../../services/metadata.service';
 import { PushNotificationService } from '../../services/push-notification.service';
 import { NotificationService } from '../../services/notification.service';
 import { LanguageService, AppLanguage } from '../../services/language.service';
+import { GlucoseActions } from '../../../store/glucose/glucose.actions';
+import { selectLatestReading } from '../../../store/glucose/glucose.selectors';
+import { GlucoseStatus } from '../../../shared/models/glucose.model';
 import { Router } from '@angular/router';
 
 @Component({
@@ -42,9 +48,13 @@ export class NavbarComponent implements OnInit {
     private readonly notificationService = inject(NotificationService);
     private readonly pushService = inject(PushNotificationService);
     private readonly transloco = inject(TranslocoService);
+    private readonly systemConfig = inject(SystemConfigService);
+    private readonly metadata = inject(MetadataService);
+    private readonly store = inject(Store);
     readonly themeService = inject(ThemeService);
-    readonly glucoseState = inject(GlucoseStateService);
     readonly languageService = inject(LanguageService);
+
+    readonly latestReading = toSignal(this.store.select(selectLatestReading), { initialValue: null });
 
     notificationsEnabled = signal(false);
     showNotifButton = signal(false);
@@ -59,6 +69,23 @@ export class NavbarComponent implements OnInit {
             this.showNotifButton.set(true);
             this.notificationsEnabled.set(Notification.permission === 'granted');
         }
+
+        const patientId = this.authService.getPatientId();
+        if (patientId) {
+            this.store.dispatch(GlucoseActions.loadLatest({ patientId }));
+        }
+    }
+
+    getChipColor(status: GlucoseStatus): string {
+        return this.systemConfig.getGlucoseStatusColor(status, false);
+    }
+
+    getChipBg(status: GlucoseStatus): string {
+        return this.systemConfig.getGlucoseStatusBg(status);
+    }
+
+    getStatusLabel(status: GlucoseStatus): string {
+        return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
     }
 
     async onToggleNotifications(): Promise<void> {

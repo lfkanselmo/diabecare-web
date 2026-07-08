@@ -11,13 +11,11 @@ import { NutritionService } from '../../../nutrition/services/nutrition.service'
 import { VitalsService } from '../../../vitals/services/vitals.service';
 import { ProfileService } from '../../../profile/services/profile.service';
 import { MenstrualCycleService } from '../../../profile/services/menstrual-cycle.service';
-import { GlucoseService } from '../../../glucose/services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
-import { GlucoseStateService } from '../../../../core/services/glucose-state.service';
 import { SystemConfigService } from '../../../../core/services/system-config.service';
 import { GlucoseActions } from '../../../../store/glucose/glucose.actions';
-import { selectStats } from '../../../../store/glucose/glucose.selectors';
+import { selectLoading, selectStats } from '../../../../store/glucose/glucose.selectors';
 import { GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
 import { DailySummaryResponse } from '../../../../shared/models/nutrition.model';
 import { VitalSignResponse } from '../../../../shared/models/vitals.model';
@@ -48,10 +46,8 @@ export class DashboardComponent implements OnInit {
     private readonly vitalsService = inject(VitalsService);
     private readonly profileService = inject(ProfileService);
     private readonly cycleService = inject(MenstrualCycleService);
-    private readonly glucoseService = inject(GlucoseService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
-    private readonly glucoseStateService = inject(GlucoseStateService);
     private readonly systemConfig = inject(SystemConfigService);
     private readonly store = inject(Store);
     private readonly destroyRef = inject(DestroyRef);
@@ -87,13 +83,13 @@ export class DashboardComponent implements OnInit {
         const todayStr = toLocalDateString(now);
 
         this.store.dispatch(GlucoseActions.loadStats({ patientId: this.patientId, from, to }));
+        this.store.dispatch(GlucoseActions.loadLatest({ patientId: this.patientId }));
 
-        this.store.select(selectStats).pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
-            next: stats => {
-                this.glucoseStats.set(stats);
-                this.glucoseStatsLoading.set(false);
-            }
-        });
+        this.store.select(selectStats).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(stats => this.glucoseStats.set(stats));
+
+        this.store.select(selectLoading).pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe(loading => this.glucoseStatsLoading.set(loading));
 
         this.profileService.getById(this.patientId).subscribe({
             next: patient => {
@@ -108,15 +104,6 @@ export class DashboardComponent implements OnInit {
                 this.cycleStatusLoading.set(false);
             },
             error: () => this.cycleStatusLoading.set(false)
-        });
-
-        this.glucoseService.getLatest(this.patientId).subscribe({
-            next: latest => {
-                if (latest) {
-                    this.glucoseStateService.setLatestReading(latest);
-                }
-            },
-            error: () => { }
         });
 
         this.nutritionService.getDailySummary(this.patientId, todayStr).subscribe({

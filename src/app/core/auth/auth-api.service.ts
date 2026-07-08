@@ -40,4 +40,12 @@ export class AuthApiService {
     getActiveSessions(userId: string): Observable<ActiveSession[]> {
         return this.http.get<ActiveSession[]>(`${this.baseUrl}/sessions/${userId}`);
     }
+
+    forgotPassword(email: string): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/forgot-password`, { email });
+    }
+
+    resetPassword(token: string, newPassword: string): Observable<void> {
+        return this.http.post<void>(`${this.baseUrl}/reset-password`, { token, newPassword });
+    }
 }

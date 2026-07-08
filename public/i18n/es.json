@@ -84,7 +84,28 @@
       "registerHere": "Regístrate aquí",
       "errorSuspended": "Tu cuenta está suspendida. Contacta soporte para reactivarla.",
       "errorInvalidCredentials": "Correo o contraseña incorrectos.",
-      "errorGeneric": "Error al iniciar sesión. Intenta de nuevo."
+      "errorGeneric": "Error al iniciar sesión. Intenta de nuevo.",
+      "forgotPassword": "¿Olvidaste tu contraseña?"
+    },
+    "forgotPassword": {
+      "title": "Recuperar contraseña",
+      "subtitle": "Ingresa tu correo y te enviaremos un enlace para restablecerla",
+      "submit": "Enviar enlace",
+      "successMessage": "Si ese correo está registrado, te enviamos un enlace para restablecer tu contraseña. Revisa tu bandeja de entrada.",
+      "errorRateLimit": "Demasiados intentos. Espera un momento antes de volver a intentarlo.",
+      "backToLogin": "Volver a iniciar sesión"
+    },
+    "resetPassword": {
+      "title": "Restablecer contraseña",
+      "subtitle": "Ingresa tu nueva contraseña",
+      "newPassword": "Nueva contraseña",
+      "confirmPassword": "Confirmar nueva contraseña",
+      "passwordTooShort": "Mínimo 8 caracteres",
+      "passwordMismatch": "Las contraseñas no coinciden",
+      "submit": "Restablecer contraseña",
+      "successMessage": "Tu contraseña fue actualizada. Ya puedes iniciar sesión.",
+      "invalidLink": "Este enlace de recuperación es inválido, ya fue usado o expiró.",
+      "requestNewLink": "Solicitar un nuevo enlace"
     },
     "register": {
       "subtitle": "Crea tu cuenta",

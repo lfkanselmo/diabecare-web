@@ -84,7 +84,28 @@
       "registerHere": "Sign up here",
       "errorSuspended": "Your account is suspended. Contact support to reactivate it.",
       "errorInvalidCredentials": "Incorrect email or password.",
-      "errorGeneric": "Couldn't sign in. Please try again."
+      "errorGeneric": "Couldn't sign in. Please try again.",
+      "forgotPassword": "Forgot your password?"
+    },
+    "forgotPassword": {
+      "title": "Recover password",
+      "subtitle": "Enter your email and we'll send you a link to reset it",
+      "submit": "Send link",
+      "successMessage": "If that email is registered, we sent a link to reset your password. Check your inbox.",
+      "errorRateLimit": "Too many attempts. Wait a moment before trying again.",
+      "backToLogin": "Back to sign in"
+    },
+    "resetPassword": {
+      "title": "Reset password",
+      "subtitle": "Enter your new password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "passwordTooShort": "At least 8 characters",
+      "passwordMismatch": "Passwords don't match",
+      "submit": "Reset password",
+      "successMessage": "Your password was updated. You can now sign in.",
+      "invalidLink": "This recovery link is invalid, was already used, or expired.",
+      "requestNewLink": "Request a new link"
     },
     "register": {
       "subtitle": "Create your account",

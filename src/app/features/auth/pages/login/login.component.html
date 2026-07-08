@@ -34,6 +34,10 @@
         }
       </mat-form-field>
 
+      <a class="login__forgot-password" routerLink="/auth/forgot-password">
+        {{ 'auth.login.forgotPassword' | transloco }}
+      </a>
+
       @if (errorMessage) {
       <div class="login__error">
         <mat-icon>error_outline</mat-icon>

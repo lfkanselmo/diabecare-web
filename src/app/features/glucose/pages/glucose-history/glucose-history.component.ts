@@ -11,6 +11,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { forkJoin } from 'rxjs';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GlucoseService } from '../../services/glucose.service';
@@ -47,6 +48,7 @@ import { MatDividerModule } from '@angular/material/divider';
         MatFormFieldModule,
         MatInputModule,
         MatDividerModule,
+        MatTooltipModule,
         GlucoseChartComponent,
         TranslocoPipe
     ],
@@ -69,6 +71,7 @@ export class GlucoseHistoryComponent implements OnInit {
     exerciseLogs = signal<ExerciseLogResponse[]>([]);
     loading = signal(true);
     view = signal<'chart' | 'table'>('chart');
+    armedDeleteReadingId = signal<string | null>(null);
 
     readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
 
@@ -104,6 +107,14 @@ export class GlucoseHistoryComponent implements OnInit {
         this.loadHistory();
     }
 
+    onArmDelete(readingId: string): void {
+        this.armedDeleteReadingId.set(readingId);
+    }
+
+    onCancelDelete(): void {
+        this.armedDeleteReadingId.set(null);
+    }
+
     onDelete(readingId: string): void {
         const patientId = this.authService.getPatientId();
         if (!patientId) return;
@@ -111,9 +122,11 @@ export class GlucoseHistoryComponent implements OnInit {
         this.glucoseService.delete(patientId, readingId).subscribe({
             next: () => {
                 this.readings.update(list => list.filter(r => r.readingId !== readingId));
+                this.armedDeleteReadingId.set(null);
                 this.notificationService.success(this.transloco.translate('glucose.history.deletedSuccess'));
             },
             error: () => {
+                this.armedDeleteReadingId.set(null);
                 this.notificationService.danger(this.transloco.translate('glucose.history.deleteError'));
             }
         });

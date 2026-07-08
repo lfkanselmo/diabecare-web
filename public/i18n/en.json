@@ -176,6 +176,7 @@
       "colNotes": "Notes",
       "deletedSuccess": "Reading deleted",
       "deleteError": "Couldn't delete the reading",
+      "confirmDeleteQuestion": "Are you sure you want to delete this reading?",
       "last7Days": "Last 7 days",
       "last30Days": "Last 30 days",
       "last90Days": "Last 90 days",

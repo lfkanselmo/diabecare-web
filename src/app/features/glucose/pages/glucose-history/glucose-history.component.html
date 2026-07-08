@@ -134,9 +134,21 @@
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let row">
-          <button mat-icon-button color="warn" (click)="onDelete(row.readingId)" [attr.aria-label]="'common.delete' | transloco">
+          @if (armedDeleteReadingId() !== row.readingId) {
+          <button mat-icon-button color="warn" (click)="onArmDelete(row.readingId)"
+            [matTooltip]="'common.delete' | transloco" [attr.aria-label]="'common.delete' | transloco">
             <mat-icon>delete_outline</mat-icon>
           </button>
+          } @else {
+          <button mat-icon-button (click)="onCancelDelete()"
+            [matTooltip]="'common.cancel' | transloco" [attr.aria-label]="'common.cancel' | transloco">
+            <mat-icon>close</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onDelete(row.readingId)"
+            [matTooltip]="'glucose.history.confirmDeleteQuestion' | transloco" [attr.aria-label]="'common.confirm' | transloco">
+            <mat-icon>check</mat-icon>
+          </button>
+          }
         </td>
       </ng-container>
 

@@ -24,7 +24,7 @@ import { VitalSignResponse } from '../../../../shared/models/vitals.model';
 import { AlertResponse } from '../../../../shared/models/alert.model';
 import { MenstrualCycleStatusResponse } from '../../../../shared/models/menstrual-cycle.model';
 import { AlertsPanelComponent } from '../../../../shared/components/alerts-panel/alerts-panel.component';
-import { toLocalDateString } from '../../../../shared/utils/date.utils';
+import { daysAgo, toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-dashboard',
@@ -82,10 +82,7 @@ export class DashboardComponent implements OnInit {
         if (!this.patientId) return;
 
         const now = new Date();
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-
-        const from = weekAgo.toISOString();
+        const from = daysAgo(7).toISOString();
         const to = now.toISOString();
         const todayStr = toLocalDateString(now);
 

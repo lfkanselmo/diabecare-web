@@ -16,7 +16,7 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { MealEntryResponse } from '../../../../shared/models/nutrition.model';
-import { toLocalDateString } from '../../../../shared/utils/date.utils';
+import { daysAgo, formatDateRangeLabel, toLocalDateString } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-nutrition-history',
@@ -61,7 +61,7 @@ export class NutritionHistoryComponent implements OnInit {
     ];
 
     rangeForm: FormGroup = this.fb.group({
-        from: [this.daysAgo(7), Validators.required],
+        from: [daysAgo(7), Validators.required],
         to: [new Date(), Validators.required]
     });
 
@@ -73,7 +73,7 @@ export class NutritionHistoryComponent implements OnInit {
 
     applyQuickRange(labelKey: string, days: number): void {
         const to = new Date();
-        const from = this.daysAgo(days);
+        const from = daysAgo(days);
         this.rangeForm.patchValue({ from, to });
         this.selectedRangeLabel.set(this.transloco.translate(labelKey));
         this.pageIndex.set(0);
@@ -131,16 +131,9 @@ export class NutritionHistoryComponent implements OnInit {
         };
     }
 
-    private daysAgo(days: number): Date {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        return date;
-    }
-
     private formatCustomLabel(): string {
         const from: Date = this.rangeForm.get('from')?.value;
         const to: Date = this.rangeForm.get('to')?.value;
-        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
-        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
+        return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
     }
 }

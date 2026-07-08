@@ -14,7 +14,7 @@ import { GlucoseService } from '../../../glucose/services/glucose.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LanguageService } from '../../../../core/services/language.service';
-import { toLocalDateString } from '../../../../shared/utils/date.utils';
+import { daysAgo, formatDateRangeLabel, toLocalDateString } from '../../../../shared/utils/date.utils';
 import { AgpBucketResponse } from '../../../../shared/models/glucose.model';
 
 @Component({
@@ -71,14 +71,12 @@ export class ReportComponent implements OnInit {
         const from = this.form.get('from')?.value as Date;
         const to = this.form.get('to')?.value as Date;
         if (!from || !to) return '';
-        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
-        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
+        return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
     }
 
     applyQuickRange(days: number): void {
         const to = new Date();
-        const from = new Date();
-        from.setDate(from.getDate() - days);
+        const from = daysAgo(days);
         this.form.patchValue({ from, to });
     }
 

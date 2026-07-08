@@ -12,6 +12,7 @@ import { PatientResponse } from '../../../../shared/models/patient.model';
 import { GlucoseReadingResponse, GlucoseStatsResponse } from '../../../../shared/models/glucose.model';
 import { AlertResponse } from '../../../../shared/models/alert.model';
 import { MetadataService } from '@core/services/metadata.service';
+import { daysAgo } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-caregiver-view',
@@ -59,8 +60,7 @@ export class CaregiverViewComponent implements OnInit {
         });
 
         const to = new Date();
-        const from = new Date();
-        from.setDate(from.getDate() - 14);
+        const from = daysAgo(14);
 
         this.glucoseService.getStats(patientId, from.toISOString(), to.toISOString()).subscribe({
             next: (data) => this.stats.set(data),

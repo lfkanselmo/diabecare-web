@@ -28,6 +28,7 @@ import {
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
 import { MatDividerModule } from '@angular/material/divider';
+import { daysAgo, formatDateRangeLabel } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-glucose-history',
@@ -83,7 +84,7 @@ export class GlucoseHistoryComponent implements OnInit {
     ];
 
     rangeForm: FormGroup = this.fb.group({
-        from: [this.daysAgo(30), Validators.required],
+        from: [daysAgo(30), Validators.required],
         to: [new Date(), Validators.required]
     });
 
@@ -95,7 +96,7 @@ export class GlucoseHistoryComponent implements OnInit {
 
     applyQuickRange(labelKey: string, days: number): void {
         const to = new Date();
-        const from = this.daysAgo(days);
+        const from = daysAgo(days);
         this.rangeForm.patchValue({ from, to });
         this.selectedRangeLabel.set(this.transloco.translate(labelKey));
         this.loadHistory();
@@ -205,17 +206,10 @@ export class GlucoseHistoryComponent implements OnInit {
         };
     }
 
-    private daysAgo(days: number): Date {
-        const date = new Date();
-        date.setDate(date.getDate() - days);
-        return date;
-    }
-
     private formatCustomLabel(): string {
         const from: Date = this.rangeForm.get('from')?.value;
         const to: Date = this.rangeForm.get('to')?.value;
-        const locale = this.languageService.getActiveLang() === 'en' ? 'en-US' : 'es-CO';
-        return `${from.toLocaleDateString(locale)} — ${to.toLocaleDateString(locale)}`;
+        return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
     }
 
     private downloadFile(blob: Blob, filename: string, type: string): void {

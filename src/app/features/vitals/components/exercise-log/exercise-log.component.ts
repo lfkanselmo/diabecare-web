@@ -17,7 +17,7 @@ import { AlertService } from '../../../../core/services/alert.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { MetadataService } from '../../../../core/services/metadata.service';
-import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
+import { daysAgo, nowAsLocalIso } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-exercise-log',
@@ -148,11 +148,10 @@ export class ExerciseLogComponent implements OnInit {
         if (!patientId) return;
 
         const to = new Date().toISOString();
-        const from = new Date();
-        from.setDate(from.getDate() - 30);
+        const from = daysAgo(30).toISOString();
 
         this.exerciseService.getHistory(
-            patientId, from.toISOString(), to, this.pageIndex(), this.pageSize()
+            patientId, from, to, this.pageIndex(), this.pageSize()
         ).subscribe({
             next: page => {
                 this.history.set(page.content);

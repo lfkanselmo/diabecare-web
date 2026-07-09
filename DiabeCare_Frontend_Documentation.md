@@ -38,6 +38,7 @@
 21. [Recuperación de Contraseña](#21-recuperación-de-contraseña)
 22. [Recordatorios Proactivos](#22-recordatorios-proactivos)
 23. [Escaneo de Código de Barras](#23-escaneo-de-código-de-barras)
+24. [Glucómetro por Bluetooth y API Keys de Dispositivo](#24-glucómetro-por-bluetooth-y-api-keys-de-dispositivo)
 
 ---
 
@@ -947,6 +948,46 @@ export class FoodLookupService {
 ```
 
 El código escaneado se envía al backend, que lo resuelve contra un catálogo externo de productos y devuelve un `ExternalFoodResponse` con la información nutricional — se integra en el flujo de registro de comidas (`meal-log`) como una vía alternativa al buscador de texto libre.
+
+---
+
+## 24. Glucómetro por Bluetooth y API Keys de Dispositivo
+
+Preparación de infraestructura para automatizar la carga de glucosa desde CGMs/glucómetros a futuro — sin usuarios reales todavía, así que se priorizaron las dos rutas sin costo ni negociación con fabricantes (ver la sección equivalente en la documentación del backend para el detalle completo de opciones evaluadas: Dexcom API, Abbott/Libre, Nightscout, Terra).
+
+### 24.1 `BleGlucoseMeterService` — Web Bluetooth
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class BleGlucoseMeterService {
+    isSupported(): boolean {
+        return !!navigator.bluetooth;
+    }
+
+    async readLatestMeasurement(): Promise<BleGlucoseMeasurement> {
+        const device = await navigator.bluetooth.requestDevice({ filters: [{ services: ['glucose'] }] });
+        const server = await device.gatt!.connect();
+        // ... suscribe a 'glucose_measurement', pide el último registro vía
+        // 'record_access_control_point' (opcode 1, operador 6 = "Last record")
+    }
+}
+```
+
+Usa el **Glucose Service estándar del Bluetooth SIG** (UUID `0x1808`) — funciona con cualquier glucómetro BLE que lo implemente, sin SDK propietario. `parseGlucoseMeasurement(dataView, deviceName)` está exportada aparte de la clase específicamente para poder testearla con bytes fijos (flags + SFLOAT de 16 bits IEEE 11073-20601) sin necesitar una conexión Bluetooth real — son los únicos tests posibles en este entorno; la conexión real a un glucómetro físico no se pudo validar end-to-end.
+
+`GlucoseRegisterComponent.bluetoothSupported` oculta el botón "Conectar glucómetro" con un aviso cuando `navigator.bluetooth` no existe (Safari/iOS no soportan Web Bluetooth). Al conectar exitosamente, precarga `value`, `unit`, `measuredAt` (convertido con el nuevo `toLocalIso()` de `date.utils.ts`, ahora generalizado a partir de `nowAsLocalIso()`) y `deviceSource` con el nombre del dispositivo.
+
+### 24.2 `DeviceApiKeysComponent` — tab "Dispositivos" del perfil
+
+Gestiona las API keys que habilitan la importación automática desde un bridge externo (endpoint `POST /api/v1/glucose/import` del backend, sin JWT):
+
+```typescript
+generate(patientId, label): Observable<GeneratedDeviceApiKeyResponse>;  // POST /device-keys/{patientId}
+getAll(patientId): Observable<DeviceApiKeyResponse[]>;                  // GET  /device-keys/{patientId}
+revoke(patientId, keyId): Observable<void>;                             // DELETE /device-keys/{patientId}/{keyId}
+```
+
+La key cruda (`rawKey`) solo viaja en la respuesta de `generate()` — el componente la expone en un banner de "cópiala ahora, no se puede volver a ver" con un botón que usa `navigator.clipboard.writeText()`, y nunca la vuelve a pedir al backend (las siguientes cargas de la lista solo traen metadatos: label, fechas, si está revocada).
 
 ---
 

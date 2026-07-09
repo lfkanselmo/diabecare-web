@@ -9,11 +9,12 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { GlucoseService } from '../../services/glucose.service';
+import { BleGlucoseMeterService } from '../../services/ble-glucose-meter.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MetadataService } from '@core/services/metadata.service';
-import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
+import { nowAsLocalIso, toLocalIso } from '../../../../shared/utils/date.utils';
 
 @Component({
     selector: 'app-glucose-register',
@@ -35,6 +36,7 @@ export class GlucoseRegisterComponent {
 
     private readonly fb = inject(FormBuilder);
     private readonly glucoseService = inject(GlucoseService);
+    private readonly bleGlucoseMeterService = inject(BleGlucoseMeterService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly notificationService = inject(NotificationService);
@@ -43,6 +45,8 @@ export class GlucoseRegisterComponent {
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
+    connectingMeter = signal(false);
+    readonly bluetoothSupported = this.bleGlucoseMeterService.isSupported();
 
     form: FormGroup = this.fb.group({
         value: [null, [Validators.required, Validators.min(20), Validators.max(600)]],
@@ -55,6 +59,28 @@ export class GlucoseRegisterComponent {
 
     setNow(): void {
         this.form.patchValue({ measuredAt: nowAsLocalIso() });
+    }
+
+    async onConnectMeter(): Promise<void> {
+        this.connectingMeter.set(true);
+
+        try {
+            const measurement = await this.bleGlucoseMeterService.readLatestMeasurement();
+
+            this.form.patchValue({
+                value: measurement.value,
+                unit: measurement.unit,
+                measuredAt: toLocalIso(measurement.measuredAt),
+                deviceSource: measurement.deviceName
+            });
+
+            this.notificationService.success(
+                this.transloco.translate('glucose.register.meterConnectedSuccess', { device: measurement.deviceName }));
+        } catch {
+            this.notificationService.danger(this.transloco.translate('glucose.register.meterConnectError'));
+        } finally {
+            this.connectingMeter.set(false);
+        }
     }
 
     onSubmit(): void {

@@ -1,0 +1,75 @@
+<div class="device-api-keys">
+  <p class="device-api-keys__desc">{{ 'profile.deviceKeys.description' | transloco }}</p>
+
+  @if (generatedKey()) {
+  <div class="device-api-keys__generated">
+    <mat-icon>vpn_key</mat-icon>
+    <div class="device-api-keys__generated-content">
+      <span class="device-api-keys__generated-warning">{{ 'profile.deviceKeys.generatedWarning' | transloco }}</span>
+      <code class="device-api-keys__generated-key">{{ generatedKey()!.rawKey }}</code>
+    </div>
+    <button mat-icon-button (click)="onCopyKey(generatedKey()!.rawKey)"
+      [attr.aria-label]="'profile.deviceKeys.copy' | transloco">
+      <mat-icon>content_copy</mat-icon>
+    </button>
+    <button mat-icon-button (click)="onDismissGeneratedKey()" [attr.aria-label]="'common.close' | transloco">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  }
+
+  @if (!loading()) {
+  <ul class="device-api-keys__list">
+    @for (key of keys(); track key.id) {
+    <li class="device-api-keys__item" [class.device-api-keys__item--revoked]="key.revoked">
+      <div class="device-api-keys__info">
+        <span class="device-api-keys__label">{{ key.label }}</span>
+        <span class="device-api-keys__meta">
+          @if (key.revoked) {
+          {{ 'profile.deviceKeys.revoked' | transloco }}
+          } @else if (key.lastUsedAt) {
+          {{ 'profile.deviceKeys.lastUsed' | transloco: { date: (key.lastUsedAt | date:'short') } }}
+          } @else {
+          {{ 'profile.deviceKeys.neverUsed' | transloco }}
+          }
+        </span>
+      </div>
+
+      @if (!key.revoked) {
+      <div class="device-api-keys__actions">
+        @if (armedRevokeId() !== key.id) {
+        <button mat-icon-button color="warn" (click)="onArmRevoke(key.id)"
+          [attr.aria-label]="'profile.deviceKeys.revoke' | transloco">
+          <mat-icon>block</mat-icon>
+        </button>
+        } @else {
+        <button mat-icon-button (click)="onCancelRevoke()" [attr.aria-label]="'common.cancel' | transloco">
+          <mat-icon>close</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="onRevoke(key.id)"
+          [attr.aria-label]="'common.confirm' | transloco">
+          <mat-icon>check</mat-icon>
+        </button>
+        }
+      </div>
+      }
+    </li>
+    } @empty {
+    <li class="device-api-keys__empty">{{ 'profile.deviceKeys.empty' | transloco }}</li>
+    }
+  </ul>
+  }
+
+  <form class="device-api-keys__form" [formGroup]="form" (ngSubmit)="onGenerate()">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.deviceKeys.labelField' | transloco }}</mat-label>
+      <input matInput formControlName="label" maxlength="100"
+        [placeholder]="'profile.deviceKeys.labelPlaceholder' | transloco" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      <mat-icon>add</mat-icon>
+      {{ 'profile.deviceKeys.generate' | transloco }}
+    </button>
+  </form>
+</div>

@@ -203,7 +203,12 @@
       "saving": "Saving...",
       "save": "Save reading",
       "successMessage": "Reading logged successfully",
-      "errorMessage": "Couldn't log the reading"
+      "errorMessage": "Couldn't log the reading",
+      "connectMeter": "Connect glucose meter via Bluetooth",
+      "connectingMeter": "Connecting...",
+      "meterConnectedSuccess": "Reading obtained from {{device}}",
+      "meterConnectError": "Couldn't connect to the glucose meter",
+      "meterUnsupported": "This browser doesn't support Bluetooth glucose meters (use Chrome or Edge)"
     },
     "history": {
       "title": "Glucose history",
@@ -488,6 +493,7 @@
     "tabProfileData": "Profile details",
     "tabCycle": "Menstrual cycle",
     "tabReminders": "Reminders",
+    "tabDeviceKeys": "Devices",
     "reminders": {
       "description": "Get a push notification at the times you choose so you don't forget to log your glucose. You won't be notified if you already logged a reading in the last 30 minutes.",
       "time": "Time",
@@ -498,6 +504,23 @@
       "toggleError": "Error updating the reminder",
       "deleteError": "Error deleting the reminder",
       "empty": "You don't have any reminders set up"
+    },
+    "deviceKeys": {
+      "description": "Generate a key so an external app (a continuous glucose sensor, a Nightscout bridge, etc.) can automatically import your glucose readings, without needing your username and password.",
+      "generatedWarning": "Copy this key now — you won't be able to see it again",
+      "copy": "Copy",
+      "copied": "Key copied to clipboard",
+      "copyError": "Couldn't copy the key",
+      "revoked": "Revoked",
+      "lastUsed": "Last used: {{date}}",
+      "neverUsed": "Never used",
+      "revoke": "Revoke",
+      "empty": "You don't have any device keys generated",
+      "labelField": "Device name",
+      "labelPlaceholder": "Dexcom G6, Nightscout, etc.",
+      "generate": "Generate key",
+      "generateError": "Error generating the key",
+      "revokeError": "Error revoking the key"
     },
     "account": {
       "management": "Account management",

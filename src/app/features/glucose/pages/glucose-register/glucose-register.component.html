@@ -7,6 +7,23 @@
   </div>
 
   <div class="glucose-register__card">
+    @if (bluetoothSupported) {
+    <button mat-stroked-button type="button" class="glucose-register__meter-button"
+      [disabled]="connectingMeter()" (click)="onConnectMeter()">
+      <mat-icon>bluetooth</mat-icon>
+      @if (connectingMeter()) {
+      {{ 'glucose.register.connectingMeter' | transloco }}
+      } @else {
+      {{ 'glucose.register.connectMeter' | transloco }}
+      }
+    </button>
+    } @else {
+    <p class="glucose-register__meter-unsupported">
+      <mat-icon>info</mat-icon>
+      {{ 'glucose.register.meterUnsupported' | transloco }}
+    </p>
+    }
+
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
       <div class="glucose-register__row">
         <mat-form-field appearance="outline" class="glucose-register__value">

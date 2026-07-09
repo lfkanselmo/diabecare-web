@@ -104,7 +104,8 @@ src/
 │   │   │                          en AppComponent), LoadingIndicator
 │   │   └── models/             ← Interfaces TypeScript por dominio (incluye
 │   │                              ActiveSession, RefreshTokenRequest/Response,
-│   │                              CaregiverInvite/Link, GlucoseReminder, ExternalFood)
+│   │                              CaregiverInvite/Link, GlucoseReminder, ExternalFood,
+│   │                              DeviceApiKey, BleGlucoseMeasurement)
 │   ├── store/
 │   │   └── glucose/            ← NgRx: actions, reducer, effects, selectors (único store
 │   │                              NgRx del proyecto — el resto de features usa Signals)
@@ -123,8 +124,9 @@ src/
 │       ├── legal/               ← Página pública de Política de Privacidad / Habeas Data
 │       │                          (Ley 1581 de 2012), enlazada desde registro y footer
 │       ├── dashboard/          ← Métricas, alertas, accesos rápidos
-│       ├── glucose/            ← Registro (botón "Ahora"), historial (selector
-│       │                          de rango + gráfica rediseñada)
+│       ├── glucose/            ← Registro (botón "Ahora"), conectar glucómetro por
+│       │                          Bluetooth (BleGlucoseMeterService, Web Bluetooth API),
+│       │                          historial (selector de rango + gráfica rediseñada)
 │       ├── nutrition/           ← Registro de comidas (botón "Ahora"), buscador de
 │       │                          alimentos, escáner de código de barras (@zxing) +
 │       │                          FoodLookupService (búsqueda por barcode en catálogo externo)
@@ -137,7 +139,9 @@ src/
 │                                  proactivos de glucosa (horarios configurables, con
 │                                  supresión si ya hubo lectura en los últimos 30 min),
 │                                  tab "Cuenta" (exportar datos, suspender/eliminar,
-│                                  sesiones activas, cerrar sesión en todos los dispositivos)
+│                                  sesiones activas, cerrar sesión en todos los dispositivos),
+│                                  tab "Dispositivos" (API keys para bridges externos
+│                                  de CGM/glucómetro — DeviceApiKeysComponent)
 ├── public/
 │   ├── manifest.webmanifest    ← PWA manifest
 │   ├── i18n/                   ← es.json / en.json — traducciones Transloco (ver
@@ -170,6 +174,7 @@ src/
 - Exportación de datos en CSV y JSON respetando el rango seleccionado
 - Estado gestionado con NgRx (caché TTL 5 minutos)
 - **Notificación inmediata**: tras registrar, si se generó una alerta nueva, aparece en el banner global de notificaciones (ver sección dedicada) — ya no usa `MatSnackBar`
+- **Conectar glucómetro por Bluetooth** (`BleGlucoseMeterService`, Web Bluetooth API): lee la última medición de un glucómetro BLE estándar (Bluetooth SIG Glucose Service, UUID `0x1808`) y precarga valor, unidad, fecha y `deviceSource` en el formulario — el botón se oculta con un aviso si el navegador no soporta Web Bluetooth (Safari/iOS)
 
 ### Calculadora de insulina
 
@@ -203,6 +208,7 @@ src/
 - **Tab "Cuenta"**: exportar todos los datos personales y de salud del paciente (derecho de acceso, Ley 1581 de 2012), suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
 - **Sesiones activas**: lista de dispositivos con sesión iniciada (etiqueta de dispositivo + última actividad) y botón "Cerrar sesión en todos los dispositivos" con la misma confirmación de dos pasos — distinto del logout normal del navbar, que solo cierra la sesión actual
 - **Tab "Recordatorios"**: recordatorios proactivos de glucosa (`GlucoseRemindersComponent`) — el paciente configura horarios (+ etiqueta opcional) en los que recibe una notificación push para registrar una lectura; el backend suprime el aviso si ya existe una lectura en los últimos 30 minutos
+- **Tab "Dispositivos"** (`DeviceApiKeysComponent`): genera/revoca API keys para que un bridge externo (CGM, Nightscout, etc. — ver sección "Importación de lecturas por dispositivo" en la documentación del backend) importe lecturas sin login interactivo; la key cruda solo se muestra una vez al generarla
 - Ciclo menstrual como página independiente (solo pacientes femeninas)
 - Fix: `(selectedTabChange)` dispara `window.dispatchEvent(new Event('resize'))` para que ECharts se redimensione correctamente al cambiar de tab
 
@@ -299,6 +305,7 @@ La aplicación es **bilingüe (español/inglés)** vía [`@jsverse/transloco`](h
 | @jsverse/transloco | ^8.4.0 | Internacionalización es/en |
 | @zxing/browser | ^0.2.1 | Acceso a cámara y decodificación de código de barras |
 | @zxing/library | ^0.23.0 | Motor de decodificación de códigos (dependencia de @zxing/browser) |
+| @types/web-bluetooth | ^0.0.21 (dev) | Tipos TypeScript para `navigator.bluetooth` (Web Bluetooth API) |
 | ngx-echarts | ^21.0.0 | Directiva Angular para ECharts |
 | ECharts | ^6.1.0 | Gráficas y visualizaciones |
 | @angular/service-worker | ^21.2.14 | PWA y Service Worker |

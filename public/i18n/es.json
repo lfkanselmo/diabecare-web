@@ -203,7 +203,12 @@
       "saving": "Guardando...",
       "save": "Guardar lectura",
       "successMessage": "Lectura registrada correctamente",
-      "errorMessage": "Error al registrar la lectura"
+      "errorMessage": "Error al registrar la lectura",
+      "connectMeter": "Conectar glucómetro por Bluetooth",
+      "connectingMeter": "Conectando...",
+      "meterConnectedSuccess": "Lectura obtenida de {{device}}",
+      "meterConnectError": "No se pudo conectar con el glucómetro",
+      "meterUnsupported": "Este navegador no soporta conexión Bluetooth con glucómetros (usa Chrome o Edge)"
     },
     "history": {
       "title": "Historial de glucosa",
@@ -488,6 +493,7 @@
     "tabProfileData": "Datos del perfil",
     "tabCycle": "Ciclo menstrual",
     "tabReminders": "Recordatorios",
+    "tabDeviceKeys": "Dispositivos",
     "reminders": {
       "description": "Recibe una notificación push en los horarios que elijas para no olvidar registrar tu glucosa. No se te notificará si ya registraste una lectura en los últimos 30 minutos.",
       "time": "Hora",
@@ -498,6 +504,23 @@
       "toggleError": "Error al actualizar el recordatorio",
       "deleteError": "Error al eliminar el recordatorio",
       "empty": "No tienes recordatorios configurados"
+    },
+    "deviceKeys": {
+      "description": "Genera una clave para que una aplicación externa (un sensor continuo, un puente con Nightscout, etc.) pueda importar tus lecturas de glucosa automáticamente, sin necesitar tu usuario y contraseña.",
+      "generatedWarning": "Copia esta clave ahora — no podrás volver a verla",
+      "copy": "Copiar",
+      "copied": "Clave copiada al portapapeles",
+      "copyError": "No se pudo copiar la clave",
+      "revoked": "Revocada",
+      "lastUsed": "Último uso: {{date}}",
+      "neverUsed": "Nunca usada",
+      "revoke": "Revocar",
+      "empty": "No tienes claves de dispositivo generadas",
+      "labelField": "Nombre del dispositivo",
+      "labelPlaceholder": "Dexcom G6, Nightscout, etc.",
+      "generate": "Generar clave",
+      "generateError": "Error al generar la clave",
+      "revokeError": "Error al revocar la clave"
     },
     "account": {
       "management": "Gestión de cuenta",

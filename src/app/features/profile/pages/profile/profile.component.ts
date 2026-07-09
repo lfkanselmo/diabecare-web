@@ -22,6 +22,7 @@ import { PatientResponse } from '../../../../shared/models/patient.model';
 import { ActiveSession } from '../../../../shared/models/auth.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
 import { GlucoseRemindersComponent } from '../../components/glucose-reminders/glucose-reminders.component';
+import { DeviceApiKeysComponent } from '../../components/device-api-keys/device-api-keys.component';
 
 @Component({
     selector: 'app-profile',
@@ -40,6 +41,7 @@ import { GlucoseRemindersComponent } from '../../components/glucose-reminders/gl
         MatDialogModule,
         MenstrualCycleComponent,
         GlucoseRemindersComponent,
+        DeviceApiKeysComponent,
         TranslocoPipe
     ],
     templateUrl: './profile.component.html',

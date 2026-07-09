@@ -82,40 +82,66 @@ src/
 ├── app/
 │   ├── core/
 │   │   ├── auth/               ← AuthService (getUserId, getPatientId, getRefreshToken,
-│   │   │                          isTokenExpired público, logout), AuthApiService
-│   │   │                          (login/register/refresh/logout/logoutAll/getActiveSessions),
-│   │   │                          TokenRefreshCoordinator (evita refrescos concurrentes
-│   │   │                          duplicados), AuthGuard
+│   │   │                          isTokenExpired público, isAdmin, logout), AuthApiService
+│   │   │                          (login/register/refresh/logout/logoutAll/getActiveSessions/
+│   │   │                          forgotPassword/resetPassword), TokenRefreshCoordinator
+│   │   │                          (evita refrescos concurrentes duplicados)
+│   │   ├── guards/             ← AuthGuard, AdminGuard (protege /app/admin por rol)
+│   │   ├── i18n/               ← TranslocoHttpLoader (carga public/i18n/{lang}.json)
 │   │   ├── interceptors/       ← JWT interceptor, Error interceptor (maneja 401 con
-│   │   │                          refresco automático + reintento; 403 con notificación)
-│   │   ├── layout/             ← Shell, Navbar (logout solo de la sesión actual), Sidebar
+│   │   │                          refresco automático + reintento; 403 con notificación),
+│   │   │                          Language interceptor (header Accept-Language),
+│   │   │                          Loading interceptor
+│   │   ├── layout/             ← Shell, Navbar (logout solo de la sesión actual, selector
+│   │   │                          de idioma, acceso a Admin si corresponde), Sidebar
 │   │   └── services/           ← AlertService (con detección de alertas nuevas),
-│   │                              ThemeService, MetadataService,
-│   │                              GlucoseStateService, PushNotificationService,
+│   │                              ThemeService, MetadataService, LanguageService
+│   │                              (es/en, recarga la página al cambiar), PushNotificationService,
 │   │                              SystemConfigService, AccountService,
 │   │                              NotificationService (banner global, sin CdkOverlay)
 │   ├── shared/
 │   │   ├── components/         ← AlertsPanel, NotificationBanner (montado una vez
-│   │   │                          en AppComponent)
+│   │   │                          en AppComponent), LoadingIndicator
 │   │   └── models/             ← Interfaces TypeScript por dominio (incluye
-│   │                              ActiveSession, RefreshTokenRequest/Response)
+│   │                              ActiveSession, RefreshTokenRequest/Response,
+│   │                              CaregiverInvite/Link, GlucoseReminder, ExternalFood)
 │   ├── store/
-│   │   └── glucose/            ← NgRx: actions, reducer, effects, selectors
+│   │   └── glucose/            ← NgRx: actions, reducer, effects, selectors (único store
+│   │                              NgRx del proyecto — el resto de features usa Signals)
 │   └── features/
 │       ├── auth/               ← Login (maneja ACCOUNT_SUSPENDED/INVALID_CREDENTIALS,
-│       │                          guarda refresh token), Register
+│       │                          guarda refresh token), Register (checkbox de aceptación
+│       │                          de Habeas Data enlazando a /legal/privacidad),
+│       │                          ForgotPassword, ResetPassword
+│       ├── admin/               ← Panel de administración (solo rol ADMIN): listado
+│       │                          paginado de usuarios, cambio de rol PATIENT/ADMIN,
+│       │                          recarga de SystemConfig en caliente
+│       ├── caregivers/          ← Compartir acceso a datos del paciente: generar/revocar
+│       │                          código de invitación, canjear código como cuidador,
+│       │                          vista de solo lectura de un paciente vinculado
+│       │                          (últimos 14 días de glucosa + alertas)
+│       ├── legal/               ← Página pública de Política de Privacidad / Habeas Data
+│       │                          (Ley 1581 de 2012), enlazada desde registro y footer
 │       ├── dashboard/          ← Métricas, alertas, accesos rápidos
 │       ├── glucose/            ← Registro (botón "Ahora"), historial (selector
-│       │                          de rango + gráfica rediseñada), calculadora
-│       ├── nutrition/          ← Registro de comidas (botón "Ahora")
+│       │                          de rango + gráfica rediseñada)
+│       ├── nutrition/           ← Registro de comidas (botón "Ahora"), buscador de
+│       │                          alimentos, escáner de código de barras (@zxing) +
+│       │                          FoodLookupService (búsqueda por barcode en catálogo externo)
 │       ├── vitals/             ← Signos vitales, ejercicio (botón "Ahora")
-│       ├── medications/        ← Medicamentos
+│       ├── medications/        ← CRUD de medicamentos (recordatorio push automático según
+│       │                          frecuencia) + calculadora de insulina e insulin profile
+│       │                          como pestañas de la misma página
 │       ├── reports/            ← Generación de reportes PDF
-│       └── profile/            ← Perfil del paciente, ciclo menstrual,
-│                                  tab "Cuenta" (suspender/eliminar, sesiones activas,
-│                                  cerrar sesión en todos los dispositivos)
+│       └── profile/            ← Perfil del paciente, ciclo menstrual, recordatorios
+│                                  proactivos de glucosa (horarios configurables, con
+│                                  supresión si ya hubo lectura en los últimos 30 min),
+│                                  tab "Cuenta" (exportar datos, suspender/eliminar,
+│                                  sesiones activas, cerrar sesión en todos los dispositivos)
 ├── public/
 │   ├── manifest.webmanifest    ← PWA manifest
+│   ├── i18n/                   ← es.json / en.json — traducciones Transloco (ver
+│   │                              sección "Internacionalización")
 │   └── icons/                  ← Íconos PWA (72px a 512px)
 └── styles/
     ├── tokens.scss             ← Design tokens "Calm Health"
@@ -147,12 +173,13 @@ src/
 
 ### Calculadora de insulina
 
-- Página independiente con dosis de corrección y dosis para comida
+- Pestaña "Calculadora" dentro de la página de Medicamentos (`/app/medications`), con dosis de corrección y dosis para comida
 
 ### Nutrición
 
 - Registro de comidas con botón "Ahora"
 - Buscador de alimentos con debounce 300ms sobre un catálogo de **635 alimentos** (colombianos, latinoamericanos e internacionales — ver sección dedicada)
+- **Escaneo de código de barras**: `BarcodeScannerComponent` abre un diálogo con acceso a la cámara (`@zxing/browser`, `BrowserMultiFormatReader`) y decodifica el código en tiempo real; el resultado se resuelve contra un catálogo externo vía `FoodLookupService` (`GET /food-lookup/barcode/{barcode}`)
 - Notificación inmediata de alertas nuevas tras registrar (banner global)
 
 ### Signos vitales y ejercicio
@@ -164,6 +191,7 @@ src/
 ### Medicamentos
 
 - CRUD completo, auditado en backend
+- Recordatorio push automático derivado de la frecuencia del medicamento (ícono informativo junto a cada medicamento activo, sin configuración adicional del usuario)
 
 ### Reportes
 
@@ -172,10 +200,35 @@ src/
 ### Perfil
 
 - Edición de datos médicos
-- **Tab "Cuenta"**: suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
-- **Sesiones activas (nuevo)**: lista de dispositivos con sesión iniciada (etiqueta de dispositivo + última actividad) y botón "Cerrar sesión en todos los dispositivos" con la misma confirmación de dos pasos — distinto del logout normal del navbar, que solo cierra la sesión actual
+- **Tab "Cuenta"**: exportar todos los datos personales y de salud del paciente (derecho de acceso, Ley 1581 de 2012), suspender o eliminar la propia cuenta, con confirmación de dos pasos en banda separada (no inline), iconografía corregida (`delete` en vez de `delete_forever`), texto blanco en botones de confirmación
+- **Sesiones activas**: lista de dispositivos con sesión iniciada (etiqueta de dispositivo + última actividad) y botón "Cerrar sesión en todos los dispositivos" con la misma confirmación de dos pasos — distinto del logout normal del navbar, que solo cierra la sesión actual
+- **Tab "Recordatorios"**: recordatorios proactivos de glucosa (`GlucoseRemindersComponent`) — el paciente configura horarios (+ etiqueta opcional) en los que recibe una notificación push para registrar una lectura; el backend suprime el aviso si ya existe una lectura en los últimos 30 minutos
 - Ciclo menstrual como página independiente (solo pacientes femeninas)
 - Fix: `(selectedTabChange)` dispara `window.dispatchEvent(new Event('resize'))` para que ECharts se redimensione correctamente al cambiar de tab
+
+### Panel de administración
+
+- Ruta `/app/admin`, protegida por `adminGuard` (requiere rol `ADMIN`, almacenado localmente tras login/registro; si no aplica, redirige a `/app/dashboard`)
+- `AdminComponent`: listado paginado de usuarios (`GET /admin/users`), cambio de rol `PATIENT ⇄ ADMIN` con confirmación de un clic armado (`armedRoleChangeUserId`), y botón para recargar `SystemConfigService` en caliente sin recargar la app
+- Enlace visible en el menú de usuario del navbar únicamente si `AuthService.isAdmin()` es verdadero
+
+### Cuidadores
+
+- Feature `caregivers`, ruta `/app/caregivers` (+ `/app/caregivers/view/:patientId`)
+- Un paciente genera un código de invitación (`CaregiversService.createInvite`) y lo comparte fuera de la app; puede revocar el vínculo en cualquier momento
+- Un cuidador canjea el código (`redeem`) para vincularse a ese paciente y ver `getMyPatients()` — la lista de pacientes a los que tiene acceso
+- `CaregiverViewComponent`: vista de solo lectura del paciente vinculado — última lectura de glucosa, estadísticas de los últimos 14 días y panel de alertas clínicas (`AlertsPanelComponent` reutilizado)
+
+### Consentimiento / Habeas Data
+
+- `PrivacyPolicyComponent` en `/legal/privacidad` — ruta pública (sin guard), pensada para enlazarse antes de que exista sesión
+- El formulario de registro incluye un checkbox obligatorio (`termsAccepted`) que enlaza a esta página antes de poder crear la cuenta
+- Contenido alineado con la Ley 1581 de 2012 (protección de datos personales en Colombia); el mismo marco legal habilita la exportación de datos personales desde el tab "Cuenta" del perfil
+
+### Recuperación de contraseña
+
+- `/auth/forgot-password`: solicita el correo y siempre responde con el mismo mensaje de éxito exista o no la cuenta (mitigación de enumeración de usuarios); solo distingue un 429 (rate limit) para mostrar un mensaje específico
+- `/auth/reset-password`: recibe el token enviado por correo y establece la nueva contraseña vía `AuthApiService.resetPassword(token, newPassword)`
 
 ### PWA
 
@@ -205,6 +258,19 @@ src/
 
 ---
 
+## Internacionalización (i18n)
+
+La aplicación es **bilingüe (español/inglés)** vía [`@jsverse/transloco`](https://jsverse.github.io/transloco/).
+
+- **Archivos de traducción**: `public/i18n/es.json` y `public/i18n/en.json`, con **570 claves cada uno** (paridad exacta es/en) organizadas en 14 namespaces de primer nivel: `common`, `nav`, `navbar`, `admin`, `auth`, `dashboard`, `glucose`, `medications`, `caregivers`, `nutrition`, `vitals`, `reports`, `profile`, `legal`
+- **Convención de namespacing**: un objeto anidado por feature/página, con sub-namespaces por componente cuando aplica (ej. `nutrition.barcodeScanner.*`, `profile.reminders.*`, `profile.account.*`)
+- **Carga**: `TranslocoHttpLoader` (`core/i18n/transloco-http-loader.ts`) descarga el JSON del idioma activo bajo demanda; configurado en `app.config.ts` con `reRenderOnLangChange` y fallback a `es`
+- **`LanguageService`** (`core/services/language.service.ts`): persiste el idioma elegido en `localStorage` (`dc_lang`), detecta el idioma del navegador como valor por defecto si no hay preferencia guardada, y **recarga la página completa** al cambiar de idioma — necesario porque `LOCALE_ID` (usado por `DatePipe`/`DecimalPipe`) es un token estático que Angular resuelve una sola vez al arrancar, a diferencia del tema claro/oscuro que sí es dinámico
+- **`languageInterceptor`**: agrega el header `Accept-Language` con el idioma activo a cada request saliente, para que el backend pueda localizar mensajes propios (ej. notificaciones push)
+- Selector de idioma disponible en el navbar
+
+---
+
 ## Sistema de diseño "Calm Health"
 
 | Token | Valor | Uso |
@@ -225,15 +291,20 @@ src/
 
 | Tecnología | Versión | Uso |
 |---|---|---|
-| Angular | 21 | Framework principal |
-| Angular Material | 21 | Componentes UI |
-| NgRx | 21 | Gestión de estado (glucosa) |
+| Angular | ^21.2.14 | Framework principal |
+| Angular Material | ^21.2.11 | Componentes UI |
+| Angular CDK | ^21.2.11 | Primitivas UI |
+| NgRx (store/effects/entity/store-devtools) | ^21.1.0 | Gestión de estado (glucosa) |
 | Angular Signals | — | Estado local de componentes |
-| ngx-echarts | 21 | Directiva Angular para ECharts |
-| ECharts | 6.x | Gráficas y visualizaciones |
-| @angular/service-worker | 21 | PWA y Service Worker |
-| TypeScript | 5.x | Lenguaje principal |
-| RxJS | 7.x | Programación reactiva |
+| @jsverse/transloco | ^8.4.0 | Internacionalización es/en |
+| @zxing/browser | ^0.2.1 | Acceso a cámara y decodificación de código de barras |
+| @zxing/library | ^0.23.0 | Motor de decodificación de códigos (dependencia de @zxing/browser) |
+| ngx-echarts | ^21.0.0 | Directiva Angular para ECharts |
+| ECharts | ^6.1.0 | Gráficas y visualizaciones |
+| @angular/service-worker | ^21.2.14 | PWA y Service Worker |
+| @ngx-pwa/local-storage | ^21.0.0 | Acceso tipado a localStorage |
+| TypeScript | ~5.9.2 | Lenguaje principal |
+| RxJS | ~7.8.0 | Programación reactiva |
 
 ---
 

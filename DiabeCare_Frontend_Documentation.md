@@ -31,6 +31,13 @@
 14. [Estándares Técnicos y de Código](#14-estándares-técnicos-y-de-código)
 15. [Rendimiento y Optimización](#15-rendimiento-y-optimización)
 16. [Accesibilidad](#16-accesibilidad)
+17. [Internacionalización (i18n)](#17-internacionalización-i18n)
+18. [Panel de Administración](#18-panel-de-administración)
+19. [Cuidadores (Caregivers)](#19-cuidadores-caregivers)
+20. [Consentimiento / Habeas Data](#20-consentimiento--habeas-data)
+21. [Recuperación de Contraseña](#21-recuperación-de-contraseña)
+22. [Recordatorios Proactivos](#22-recordatorios-proactivos)
+23. [Escaneo de Código de Barras](#23-escaneo-de-código-de-barras)
 
 ---
 
@@ -62,6 +69,8 @@
 | Routing | Angular Router con Guards y lazy loading |
 | PWA | @angular/service-worker 21 |
 | Push Notifications | Web Push API nativa |
+| Internacionalización | @jsverse/transloco (es/en) |
+| Escaneo de código de barras | @zxing/browser + @zxing/library |
 | Build | Angular CLI 21 + esbuild |
 
 ---
@@ -79,38 +88,52 @@ src/
 ├── app/
 │   ├── core/
 │   │   ├── auth/                  # AuthService (getUserId via JWT claim,
-│   │   │                          #   getPatientId, getRefreshToken, logout),
+│   │   │                          #   getPatientId, getRefreshToken, isAdmin, logout),
 │   │   │                          #   AuthApiService (login/register/refresh/
-│   │   │                          #   logout/logoutAll/getActiveSessions),
+│   │   │                          #   logout/logoutAll/getActiveSessions/
+│   │   │                          #   forgotPassword/resetPassword),
 │   │   │                          #   TokenRefreshCoordinator
+│   │   ├── guards/                 # AuthGuard, AdminGuard
+│   │   ├── i18n/                   # TranslocoHttpLoader
 │   │   ├── interceptors/          # JwtInterceptor, ErrorInterceptor (401 → refresco
-│   │   │                          #   automático + reintento; 403 → notificación)
-│   │   ├── layout/                # Shell, Navbar (logout de sesión actual), Sidebar
-│   │   └── services/              # ThemeService, MetadataService,
-│   │                              # GlucoseStateService, PushNotificationService,
+│   │   │                          #   automático + reintento; 403 → notificación),
+│   │   │                          #   LanguageInterceptor (Accept-Language), LoadingInterceptor
+│   │   ├── layout/                # Shell, Navbar (logout de sesión actual, selector
+│   │   │                          #   de idioma, enlace a Admin si aplica), Sidebar
+│   │   └── services/              # ThemeService, MetadataService, LanguageService,
+│   │                              # PushNotificationService,
 │   │                              # AlertService, SystemConfigService,
 │   │                              # AccountService, NotificationService
 │   ├── shared/
-│   │   ├── components/            # AlertsPanel, NotificationBanner
+│   │   ├── components/            # AlertsPanel, NotificationBanner, LoadingIndicator
 │   │   └── models/                # Interfaces TypeScript del dominio (incluye
-│   │                              # ActiveSession, RefreshTokenRequest/Response)
+│   │                              # ActiveSession, RefreshTokenRequest/Response,
+│   │                              # CaregiverInvite/Link, GlucoseReminder, ExternalFood)
 │   ├── store/
-│   │   └── glucose/               # NgRx store de glucosa
+│   │   └── glucose/               # NgRx store de glucosa (único store NgRx del proyecto)
 │   └── features/
 │       ├── auth/                  # Login (maneja códigos de error
 │       │                          #   ACCOUNT_SUSPENDED, INVALID_CREDENTIALS,
-│       │                          #   guarda refresh token), Register
+│       │                          #   guarda refresh token), Register (consentimiento
+│       │                          #   Habeas Data), ForgotPassword, ResetPassword
+│       ├── admin/                  # Panel de administración (rol ADMIN)
+│       ├── caregivers/             # Compartir acceso paciente↔cuidador
+│       ├── legal/                  # Política de privacidad / Habeas Data
 │       ├── dashboard/              # Vista principal con métricas
 │       ├── glucose/                # Registro, historial (selector de rango +
-│       │                          #   gráfica rediseñada), calculadora de insulina
-│       ├── nutrition/               # Registro de comidas (635 alimentos)
+│       │                          #   gráfica rediseñada)
+│       ├── nutrition/               # Registro de comidas (635 alimentos),
+│       │                          #   escáner de código de barras + FoodLookupService
 │       ├── vitals/                  # Signos vitales, ejercicio
-│       ├── medications/              # Medicamentos
+│       ├── medications/              # Medicamentos + calculadora de insulina/insulin
+│       │                          #   profile como pestañas
 │       ├── reports/                  # Reportes PDF
-│       └── profile/                  # Perfil, ciclo menstrual, tab "Cuenta"
-│                                     #   (sesiones activas, logout-all)
+│       └── profile/                  # Perfil, ciclo menstrual, recordatorios
+│                                     #   proactivos de glucosa, tab "Cuenta"
+│                                     #   (exportar datos, sesiones activas, logout-all)
 ├── public/
 │   ├── manifest.webmanifest
+│   ├── i18n/                       # es.json / en.json (Transloco, ver sección 17)
 │   └── icons/
 └── styles/
     ├── tokens.scss
@@ -137,26 +160,35 @@ Sin cambios respecto a la versión anterior — ver paleta y tipografía en `REA
 ```
 /auth/login
 /auth/register
+/auth/forgot-password
+/auth/reset-password
+/legal/privacidad                 ← Pública, sin guard (Habeas Data)
 /app/dashboard
+/app/glucose                      ← Redirige a /app/glucose/register
 /app/glucose/register
 /app/glucose/history
-/app/glucose/insulin-calculator
 /app/nutrition/log
 /app/nutrition/history
 /app/vitals
 /app/vitals/exercise
-/app/medications
+/app/medications                  ← Incluye pestañas "Activos" y "Calculadora"
+/app/caregivers
+/app/caregivers/view/:patientId
 /app/reports
-/app/profile
+/app/profile                      ← Incluye pestañas Cuenta/Datos/Ciclo/Recordatorios
 /app/cycle                        ← Solo pacientes femeninas
+/app/admin                        ← Protegida por adminGuard (rol ADMIN)
 ```
+
+> **Nota de corrección**: en versiones anteriores de esta documentación, la calculadora de insulina figuraba como ruta independiente `/app/glucose/insulin-calculator`. Hoy es una pestaña (`app-insulin-calculator`) dentro de `MedicationsComponent` (`/app/medications`), junto con `InsulinProfileComponent`.
 
 ### 4.2 Navbar
 
-- Chip de glucosa (color semántico, vía `GlucoseStateService`)
+- Chip de glucosa en tiempo real, alimentado por `selectLatestReading` del store NgRx de glucosa; color semántico resuelto vía `SystemConfigService.getGlucoseStatusColor/Bg`
+- Selector de idioma (`LanguageService`, ver sección 17)
 - Campana de notificaciones push
 - Toggle modo oscuro/claro
-- Menú de usuario (perfil, cerrar sesión)
+- Menú de usuario (perfil, enlace a "Admin" solo si `AuthService.isAdmin()`, cerrar sesión)
 
 ---
 
@@ -648,6 +680,273 @@ Sin cambios respecto a la versión anterior — NgRx con TTL 5 min, Service Work
 ## 16. Accesibilidad
 
 Sin cambios — ver versión anterior para el detalle completo (WCAG 2.1 AA, aria-labels, contraste, navegación por teclado).
+
+---
+
+## 17. Internacionalización (i18n)
+
+### 17.1 Por qué se necesitó
+
+El README y esta documentación no lo reflejaban, pero la aplicación es **bilingüe (español/inglés)** desde hace varias sesiones — es la omisión más grande que tenía la documentación previa. El stack usa [`@jsverse/transloco`](https://jsverse.github.io/transloco/) (`^8.4.0`).
+
+### 17.2 Archivos de traducción
+
+`public/i18n/es.json` y `public/i18n/en.json` — **570 claves cada uno**, con paridad exacta entre ambos idiomas. Ambos archivos comparten los mismos 14 namespaces de primer nivel:
+
+```
+common, nav, navbar, admin, auth, dashboard, glucose,
+medications, caregivers, nutrition, vitals, reports, profile, legal
+```
+
+Convención de namespacing: un objeto anidado por feature, con sub-namespaces por componente cuando el volumen de claves lo justifica (ej. `nutrition.barcodeScanner.*`, `profile.reminders.*`, `profile.account.*`, `admin.users.*`, `admin.config.*`).
+
+### 17.3 Configuración (`app.config.ts`)
+
+```typescript
+provideTransloco({
+    config: {
+        availableLangs: ['es', 'en'],
+        defaultLang: activeLang,      // LanguageService.loadLanguage() al arrancar
+        fallbackLang: 'es',
+        reRenderOnLangChange: true,
+        prodMode: environment.production
+    },
+    loader: TranslocoHttpLoader
+})
+```
+
+`TranslocoHttpLoader` (`core/i18n/transloco-http-loader.ts`) descarga `public/i18n/{lang}.json` bajo demanda vía `HttpClient`.
+
+### 17.4 LanguageService — por qué recarga la página
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class LanguageService {
+    private readonly transloco = inject(TranslocoService);
+    readonly currentLang = signal<AppLanguage>(LanguageService.loadLanguage());
+
+    setLanguage(lang: AppLanguage): void {
+        if (lang === this.currentLang()) return;
+        localStorage.setItem(LANG_KEY, lang);
+        window.location.reload();
+    }
+
+    static loadLanguage(): AppLanguage {
+        const saved = localStorage.getItem(LANG_KEY);
+        if (saved === 'es' || saved === 'en') return saved;
+        return navigator.language.toLowerCase().startsWith('en') ? 'en' : 'es';
+    }
+}
+```
+
+A diferencia del tema claro/oscuro (que cambia en caliente vía `ThemeService`), cambiar de idioma **recarga la página completa**. Razón: `LOCALE_ID` de Angular (usado por `DatePipe`/`DecimalPipe` para formatear fechas y números) es un token estático que Angular resuelve una única vez al arrancar la aplicación. Sin recargar, los textos traducidos por Transloco cambiarían, pero el formato de fechas/números quedaría inconsistente con el nuevo idioma.
+
+### 17.5 `languageInterceptor`
+
+```typescript
+export const languageInterceptor: HttpInterceptorFn = (req, next) => {
+    const lang = inject(LanguageService).getActiveLang();
+    return next(req.clone({ setHeaders: { 'Accept-Language': lang } }));
+};
+```
+
+Envía el idioma activo en cada request saliente para que el backend pueda localizar cualquier mensaje que genere del lado del servidor (ej. contenido de notificaciones push).
+
+---
+
+## 18. Panel de Administración
+
+### 18.1 Acceso
+
+Ruta `/app/admin`, protegida por `adminGuard`:
+
+```typescript
+export const adminGuard: CanActivateFn = () => {
+    const authService = inject(AuthService);
+    const router = inject(Router);
+    return authService.isAdmin() ? true : router.createUrlTree(['/app/dashboard']);
+};
+```
+
+`AuthService.isAdmin()` lee un rol persistido en `localStorage` (`dc_role`) que se guarda tras login/registro. El enlace "Admin" solo aparece en el menú del navbar si este método devuelve `true` — la protección real, de todas formas, vive en el guard (y en el backend), no en ocultar el enlace.
+
+### 18.2 `AdminComponent`
+
+- Listado paginado de usuarios: `AdminService.getUsers(page, size)` → `GET /admin/users`
+- Cambio de rol `PATIENT ⇄ ADMIN` con confirmación de un clic armado (`armedRoleChangeUserId`, mismo patrón usado en revocar vínculos de cuidador y en suspender/eliminar cuenta)
+- Botón "Recargar configuración" que invoca `SystemConfigService.reload()` sin necesidad de recargar la aplicación completa — útil para aplicar cambios de `system_config` (colores, umbrales) hechos en caliente en el backend
+
+---
+
+## 19. Cuidadores (Caregivers)
+
+### 19.1 Modelo de invitación por código
+
+`CaregiversService` expone el flujo completo:
+
+```typescript
+createInvite(patientId: string): Observable<CaregiverInviteResponse>;   // POST /caregivers/{patientId}/invites
+getLinks(patientId: string): Observable<CaregiverLinkResponse[]>;        // GET  /caregivers/{patientId}/links
+revokeLink(patientId: string, linkId: string): Observable<void>;         // DELETE /caregivers/{patientId}/links/{linkId}
+redeem(code: string): Observable<RedeemCaregiverInviteResponse>;         // POST /caregivers/redeem
+getMyPatients(): Observable<PatientAccessResponse[]>;                    // GET  /caregivers/my-patients
+```
+
+Un paciente (`CaregiversComponent`, ruta `/app/caregivers`) genera un código de invitación y lo comparte por un canal externo a la app (no hay envío de correo desde el frontend); un cuidador canjea ese código para vincularse. El paciente puede revocar el vínculo en cualquier momento, con la misma confirmación de un clic armado que el resto de acciones destructivas del proyecto.
+
+### 19.2 `CaregiverViewComponent` — vista de solo lectura
+
+Ruta `/app/caregivers/view/:patientId`. Reutiliza servicios ya existentes de otras features en vez de duplicar lógica:
+
+```typescript
+this.caregiversService.getPatient(patientId)...       // datos del paciente
+this.glucoseService.getLatest(patientId)...           // última lectura
+this.glucoseService.getStats(patientId, from, to)...  // estadísticas de los últimos 14 días
+this.alertService.getAlerts(patientId)...             // alertas activas
+```
+
+El panel de alertas reutiliza `AlertsPanelComponent` sin modificaciones — la única diferencia frente a la vista del propio paciente es que aquí todo es de solo lectura (no hay formularios de registro).
+
+---
+
+## 20. Consentimiento / Habeas Data
+
+### 20.1 Página pública
+
+`PrivacyPolicyComponent` vive en `/legal/privacidad`, fuera de `authGuard` a propósito — el registro enlaza a ella antes de que exista una sesión:
+
+```typescript
+{
+    // Pública a propósito: el registro enlaza aquí antes de que exista sesión.
+    path: 'legal/privacidad',
+    loadComponent: () => import('./features/legal/pages/privacy-policy/privacy-policy.component')
+        .then(m => m.PrivacyPolicyComponent)
+}
+```
+
+El contenido se organiza en 10 secciones (`sectionCount`), alineado con la Ley 1581 de 2012 (protección de datos personales en Colombia — Habeas Data).
+
+### 20.2 Consentimiento obligatorio en registro
+
+`RegisterComponent` incluye un checkbox `termsAccepted` que enlaza a `/legal/privacidad` (`target="_blank"`) y es requerido para poder enviar el formulario:
+
+```html
+<mat-checkbox formControlName="termsAccepted" class="register__terms">
+  {{ 'auth.register.termsPrefix' | transloco }}
+  <a routerLink="/legal/privacidad" target="_blank" rel="noopener">
+    {{ 'auth.register.termsLink' | transloco }}
+  </a>
+</mat-checkbox>
+```
+
+### 20.3 Derecho de acceso — exportación de datos
+
+El mismo marco legal habilita el botón "Exportar mis datos" en el tab "Cuenta" del perfil (`AccountService`, ver sección 8), que descarga un archivo con todos los datos personales y de salud del paciente.
+
+---
+
+## 21. Recuperación de Contraseña
+
+### 21.1 Flujo
+
+```
+/auth/forgot-password  → ForgotPasswordComponent
+/auth/reset-password    → ResetPasswordComponent
+```
+
+```typescript
+// AuthApiService
+forgotPassword(email: string): Observable<void>;              // POST /auth/forgot-password
+resetPassword(token: string, newPassword: string): Observable<void>;  // POST /auth/reset-password
+```
+
+### 21.2 Mitigación de enumeración de usuarios
+
+El backend siempre responde `200` en `/forgot-password`, exista o no la cuenta asociada al correo. `ForgotPasswordComponent` respeta esa semántica en el frontend: solo distingue un `429` (rate limit) para mostrar un mensaje específico; cualquier otro resultado — incluida la ausencia de la cuenta — se trata como éxito genérico:
+
+```typescript
+error: err => {
+    this.loading = false;
+    if (err?.status === 429) {
+        this.errorMessage = this.transloco.translate('auth.forgotPassword.errorRateLimit');
+    } else {
+        // Cualquier otro error (incluida la ausencia de la cuenta) se trata
+        // igual que un éxito, por la misma razón anti-enumeración.
+        this.submitted = true;
+    }
+}
+```
+
+Este mismo interceptor de errores (sección 9) excluye `/api/v1/auth/**` de su lógica de refresco/redirección, así que un error en este flujo nunca dispara el manejo de sesión expirada.
+
+---
+
+## 22. Recordatorios Proactivos
+
+Dos mecanismos distintos, en dos features distintas, que conviene no confundir:
+
+### 22.1 Recordatorios de glucosa — configurables por el paciente
+
+Tab "Recordatorios" del perfil (`GlucoseRemindersComponent`), respaldado por `GlucoseReminderService`:
+
+```typescript
+getAll(patientId): Observable<GlucoseReminderResponse[]>;                        // GET
+create(patientId, request: CreateGlucoseReminderRequest): Observable<...>;       // POST
+toggle(patientId, reminderId, enabled): Observable<...>;                         // PATCH
+delete(patientId, reminderId): Observable<void>;                                 // DELETE
+```
+
+El paciente configura uno o más horarios (`reminderTime`) con una etiqueta opcional (ej. "Antes del desayuno"). El backend envía una notificación push en ese horario, **salvo que ya exista una lectura registrada en los últimos 30 minutos** — evita avisos redundantes si el paciente ya registró la glucosa por iniciativa propia.
+
+### 22.2 Recordatorios de medicamentos — automáticos, no configurables en frontend
+
+No existe un CRUD de recordatorios de medicamentos en el frontend: el recordatorio push se deriva automáticamente de la `frequency` del medicamento (`ONCE_DAILY`, `TWICE_DAILY`, `WITH_MEALS`, etc.) en el backend. El único rastro en la UI es un ícono informativo junto a cada medicamento activo (`medications.reminderActive` — "Recibirás un recordatorio push según esta frecuencia"), sin ninguna pantalla de configuración adicional.
+
+---
+
+## 23. Escaneo de Código de Barras
+
+### 23.1 `BarcodeScannerComponent`
+
+Diálogo modal (`MatDialog`) que usa `@zxing/browser` (`^0.2.1`, sobre `@zxing/library` `^0.23.0`) para decodificar códigos de barras en tiempo real desde la cámara del dispositivo:
+
+```typescript
+async ngAfterViewInit(): Promise<void> {
+    const reader = new BrowserMultiFormatReader();
+    try {
+        this.controls = await reader.decodeFromVideoDevice(
+            undefined, this.videoElement.nativeElement, (result, error) => {
+                this.starting.set(false);
+                if (result) {
+                    this.dialogRef.close(result.getText());
+                }
+                // "error" se dispara en CADA frame sin código detectado — es el
+                // funcionamiento normal de zxing mientras escanea, no un fallo real.
+                void error;
+            });
+    } catch {
+        this.starting.set(false);
+        this.errorMessage.set('nutrition.barcodeScanner.cameraError');
+    }
+}
+
+ngOnDestroy(): void {
+    this.controls?.stop();   // libera la cámara al cerrar el diálogo
+}
+```
+
+### 23.2 `FoodLookupService` — resolución del código
+
+```typescript
+@Injectable({ providedIn: 'root' })
+export class FoodLookupService {
+    lookupBarcode(barcode: string): Observable<ExternalFoodResponse> {
+        return this.http.get<ExternalFoodResponse>(`${this.baseUrl}/food-lookup/barcode/${barcode}`);
+    }
+}
+```
+
+El código escaneado se envía al backend, que lo resuelve contra un catálogo externo de productos y devuelve un `ExternalFoodResponse` con la información nutricional — se integra en el flujo de registro de comidas (`meal-log`) como una vía alternativa al buscador de texto libre.
 
 ---
 

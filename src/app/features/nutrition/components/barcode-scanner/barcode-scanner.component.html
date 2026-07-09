@@ -1,0 +1,23 @@
+<h2 mat-dialog-title>{{ 'nutrition.barcodeScanner.title' | transloco }}</h2>
+
+<mat-dialog-content class="barcode-scanner">
+  @if (errorMessage()) {
+  <div class="barcode-scanner__error">
+    <mat-icon>videocam_off</mat-icon>
+    <p>{{ errorMessage()! | transloco }}</p>
+  </div>
+  } @else {
+  @if (starting()) {
+  <div class="barcode-scanner__loading">
+    <mat-spinner diameter="32" />
+    <p>{{ 'nutrition.barcodeScanner.starting' | transloco }}</p>
+  </div>
+  }
+  <video #video class="barcode-scanner__video" [class.barcode-scanner__video--hidden]="starting()"></video>
+  <p class="barcode-scanner__hint">{{ 'nutrition.barcodeScanner.hint' | transloco }}</p>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">{{ 'common.cancel' | transloco }}</button>
+</mat-dialog-actions>

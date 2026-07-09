@@ -390,6 +390,14 @@
       "label": "Search for a food",
       "hint": "Type at least 2 characters",
       "noResults": "No foods found for \"{{query}}\""
+    },
+    "barcodeScanner": {
+      "scan": "Scan barcode",
+      "title": "Scan barcode",
+      "starting": "Starting camera...",
+      "hint": "Point the camera at the product's barcode",
+      "cameraError": "Couldn't access the camera. Check your browser permissions.",
+      "notFound": "We couldn't find that product. Try searching for it manually."
     }
   },
   "vitals": {

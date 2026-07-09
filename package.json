@@ -27,6 +27,8 @@
     "@ngrx/store": "^21.1.0",
     "@ngrx/store-devtools": "^21.1.0",
     "@ngx-pwa/local-storage": "^21.0.0",
+    "@zxing/browser": "^0.2.1",
+    "@zxing/library": "^0.23.0",
     "echarts": "^6.1.0",
     "ngx-echarts": "^21.0.0",
     "rxjs": "~7.8.0",

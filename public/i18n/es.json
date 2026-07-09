@@ -390,6 +390,14 @@
       "label": "Buscar alimento",
       "hint": "Escribe al menos 2 caracteres",
       "noResults": "No se encontraron alimentos para \"{{query}}\""
+    },
+    "barcodeScanner": {
+      "scan": "Escanear código de barras",
+      "title": "Escanear código de barras",
+      "starting": "Iniciando cámara...",
+      "hint": "Apunta la cámara al código de barras del producto",
+      "cameraError": "No se pudo acceder a la cámara. Revisa los permisos del navegador.",
+      "notFound": "No encontramos ese producto. Intenta buscarlo manualmente."
     }
   },
   "vitals": {

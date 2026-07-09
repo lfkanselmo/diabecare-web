@@ -9,14 +9,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog } from '@angular/material/dialog';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { NutritionService } from '../../services/nutrition.service';
+import { FoodLookupService } from '../../services/food-lookup.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 import { AlertService } from '../../../../core/services/alert.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { MealItemRequest, MealType } from '../../../../shared/models/nutrition.model';
 import { FoodResponse } from '../../../../shared/models/food.model';
 import { FoodSearchComponent } from '@features/nutrition/components/food-search.component';
+import { BarcodeScannerComponent } from '@features/nutrition/components/barcode-scanner/barcode-scanner.component';
 import { MetadataService } from '@core/services/metadata.service';
 import { nowAsLocalIso } from '../../../../shared/utils/date.utils';
 
@@ -43,11 +46,13 @@ export class MealLogComponent {
 
     private readonly fb = inject(FormBuilder);
     private readonly nutritionService = inject(NutritionService);
+    private readonly foodLookupService = inject(FoodLookupService);
     private readonly authService = inject(AuthService);
     private readonly alertService = inject(AlertService);
     private readonly notificationService = inject(NotificationService);
     private readonly transloco = inject(TranslocoService);
     private readonly router = inject(Router);
+    private readonly dialog = inject(MatDialog);
     readonly metadata = inject(MetadataService);
 
     loading = signal(false);
@@ -94,6 +99,30 @@ export class MealLogComponent {
         this.selectedFood.set(food);
         this.valuesEditedManually.set(false);
         this.quantityForm.reset();
+    }
+
+    onScanBarcode(): void {
+        const dialogRef = this.dialog.open(BarcodeScannerComponent, { width: '420px' });
+
+        dialogRef.afterClosed().subscribe((barcode: string | undefined) => {
+            if (!barcode) return;
+
+            this.foodLookupService.lookupBarcode(barcode).subscribe({
+                next: product => this.onFoodSelected({
+                    foodId: product.barcode,
+                    name: product.name ?? barcode,
+                    category: product.brand ?? '',
+                    caloriesPer100g: product.caloriesPer100g ?? 0,
+                    carbsPer100g: product.carbsPer100g ?? 0,
+                    proteinsPer100g: product.proteinsPer100g ?? 0,
+                    fatsPer100g: product.fatsPer100g ?? 0,
+                    fiberPer100g: null,
+                    sodiumPer100g: null
+                }),
+                error: () => this.notificationService.danger(
+                    this.transloco.translate('nutrition.barcodeScanner.notFound'))
+            });
+        });
     }
 
     onClearFood(): void {

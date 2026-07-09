@@ -42,7 +42,13 @@
 
       <h2 class="meal-log__section-title">{{ 'nutrition.mealLog.addFoods' | transloco }}</h2>
 
-      <app-food-search (foodSelected)="onFoodSelected($event)" />
+      <div class="meal-log__search-row">
+        <app-food-search (foodSelected)="onFoodSelected($event)" />
+        <button mat-stroked-button type="button" (click)="onScanBarcode()">
+          <mat-icon>qr_code_scanner</mat-icon>
+          {{ 'nutrition.barcodeScanner.scan' | transloco }}
+        </button>
+      </div>
 
       @if (selectedFood()) {
       <div class="meal-log__selected-food">

@@ -48,6 +48,22 @@
     color: var(--color-text-primary);
   }
 
+  &__search-row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+
+    app-food-search {
+      flex: 1;
+    }
+
+    button {
+      flex-shrink: 0;
+      margin-top: var(--space-1);
+      white-space: nowrap;
+    }
+  }
+
   &__selected-food {
     background: var(--color-surface-variant);
     border-radius: var(--radius-md);

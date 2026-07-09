@@ -93,6 +93,15 @@
     color: var(--color-text-secondary);
   }
 
+  &__reminder-icon {
+    font-size: 14px;
+    width: 14px;
+    height: 14px;
+    vertical-align: text-bottom;
+    color: var(--color-primary);
+    margin-left: 2px;
+  }
+
   &__item-type {
     font-size: var(--font-size-xs);
     color: var(--color-primary);

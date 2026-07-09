@@ -1,0 +1,56 @@
+<div class="glucose-reminders">
+  <p class="glucose-reminders__desc">{{ 'profile.reminders.description' | transloco }}</p>
+
+  @if (!loading()) {
+  <ul class="glucose-reminders__list">
+    @for (reminder of reminders(); track reminder.id) {
+    <li class="glucose-reminders__item">
+      <div class="glucose-reminders__info">
+        <span class="glucose-reminders__time">{{ reminder.reminderTime.slice(0, 5) }}</span>
+        @if (reminder.label) {
+        <span class="glucose-reminders__label">{{ reminder.label }}</span>
+        }
+      </div>
+
+      <div class="glucose-reminders__actions">
+        <mat-slide-toggle [checked]="reminder.enabled" (change)="onToggle(reminder)" />
+
+        @if (armedDeleteId() !== reminder.id) {
+        <button mat-icon-button color="warn" (click)="onArmDelete(reminder.id)"
+          [attr.aria-label]="'common.delete' | transloco">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+        } @else {
+        <button mat-icon-button (click)="onCancelDelete()" [attr.aria-label]="'common.cancel' | transloco">
+          <mat-icon>close</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="onDelete(reminder.id)"
+          [attr.aria-label]="'common.confirm' | transloco">
+          <mat-icon>check</mat-icon>
+        </button>
+        }
+      </div>
+    </li>
+    } @empty {
+    <li class="glucose-reminders__empty">{{ 'profile.reminders.empty' | transloco }}</li>
+    }
+  </ul>
+  }
+
+  <form class="glucose-reminders__form" [formGroup]="form" (ngSubmit)="onAdd()">
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.reminders.time' | transloco }}</mat-label>
+      <input matInput type="time" formControlName="reminderTime" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>{{ 'profile.reminders.labelOptional' | transloco }}</mat-label>
+      <input matInput formControlName="label" maxlength="50" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+      <mat-icon>add</mat-icon>
+      {{ 'profile.reminders.add' | transloco }}
+    </button>
+  </form>
+</div>

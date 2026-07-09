@@ -267,6 +267,7 @@
     "add": "Agregar medicamento",
     "activeMedications": "Medicamentos activos",
     "noActiveMedications": "No hay medicamentos activos",
+    "reminderActive": "Recibirás un recordatorio push según esta frecuencia",
     "deactivate": "Desactivar {{name}}",
     "successAdd": "Medicamento registrado",
     "errorAdd": "Error al registrar el medicamento",
@@ -478,6 +479,18 @@
     "tabAccount": "Cuenta",
     "tabProfileData": "Datos del perfil",
     "tabCycle": "Ciclo menstrual",
+    "tabReminders": "Recordatorios",
+    "reminders": {
+      "description": "Recibe una notificación push en los horarios que elijas para no olvidar registrar tu glucosa. No se te notificará si ya registraste una lectura en los últimos 30 minutos.",
+      "time": "Hora",
+      "labelOptional": "Etiqueta (opcional)",
+      "add": "Agregar",
+      "added": "Recordatorio agregado",
+      "addError": "Error al agregar el recordatorio",
+      "toggleError": "Error al actualizar el recordatorio",
+      "deleteError": "Error al eliminar el recordatorio",
+      "empty": "No tienes recordatorios configurados"
+    },
     "account": {
       "management": "Gestión de cuenta",
       "exportTitle": "Exportar mis datos",

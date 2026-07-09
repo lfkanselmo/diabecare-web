@@ -1,0 +1,71 @@
+.glucose-reminders {
+  max-width: 480px;
+
+  &__desc {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-4);
+  }
+
+  &__list {
+    list-style: none;
+    margin-bottom: var(--space-4);
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3) 0;
+    border-top: 0.5px solid var(--color-border);
+
+    &:first-child {
+      border-top: none;
+    }
+  }
+
+  &__info {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-2);
+  }
+
+  &__time {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+  }
+
+  &__label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+  }
+
+  &__empty {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    padding: var(--space-3) 0;
+  }
+
+  &__form {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+
+    mat-form-field {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    button {
+      margin-top: var(--space-1);
+    }
+  }
+}

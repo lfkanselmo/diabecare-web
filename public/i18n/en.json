@@ -267,6 +267,7 @@
     "add": "Add medication",
     "activeMedications": "Active medications",
     "noActiveMedications": "No active medications",
+    "reminderActive": "You'll get a push reminder based on this frequency",
     "deactivate": "Deactivate {{name}}",
     "successAdd": "Medication added",
     "errorAdd": "Couldn't add the medication",
@@ -478,6 +479,18 @@
     "tabAccount": "Account",
     "tabProfileData": "Profile details",
     "tabCycle": "Menstrual cycle",
+    "tabReminders": "Reminders",
+    "reminders": {
+      "description": "Get a push notification at the times you choose so you don't forget to log your glucose. You won't be notified if you already logged a reading in the last 30 minutes.",
+      "time": "Time",
+      "labelOptional": "Label (optional)",
+      "add": "Add",
+      "added": "Reminder added",
+      "addError": "Error adding the reminder",
+      "toggleError": "Error updating the reminder",
+      "deleteError": "Error deleting the reminder",
+      "empty": "You don't have any reminders set up"
+    },
     "account": {
       "management": "Account management",
       "exportTitle": "Export my data",

@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { TranslocoPipe, TranslocoService } from '@jsverse/transloco';
 import { MedicationsService } from '../../services/medications.service';
 import { AuthService } from '../../../../core/auth/auth.service';
@@ -34,6 +35,7 @@ import { MetadataService } from '@core/services/metadata.service';
         MatSelectModule,
         MatChipsModule,
         MatTabsModule,
+        MatTooltipModule,
         InsulinCalculatorComponent,
         InsulinProfileComponent,
         TranslocoPipe

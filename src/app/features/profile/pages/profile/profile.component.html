@@ -302,6 +302,12 @@
             </div>
         </mat-tab>
         }
+
+        <mat-tab [label]="'profile.tabReminders' | transloco">
+            <div class="profile__tab-content">
+                <app-glucose-reminders />
+            </div>
+        </mat-tab>
     </mat-tab-group>
     }
 </div>

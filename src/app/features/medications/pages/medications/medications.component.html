@@ -76,6 +76,10 @@
                   <span class="medications__item-name">{{ med.name }}</span>
                   <span class="medications__item-detail">
                     {{ med.dose }} {{ med.doseUnit }} — {{ getFrequencyLabel(med.frequency) }}
+                    @if (med.frequency !== 'AS_NEEDED') {
+                    <mat-icon class="medications__reminder-icon" [matTooltip]="'medications.reminderActive' | transloco"
+                      inline="true">notifications_active</mat-icon>
+                    }
                   </span>
                   <span class="medications__item-type">{{ getMedicationTypeLabel(med.type) }}</span>
                 </div>

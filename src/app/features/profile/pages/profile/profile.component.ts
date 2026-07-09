@@ -21,6 +21,7 @@ import { MetadataService } from '@core/services/metadata.service';
 import { PatientResponse } from '../../../../shared/models/patient.model';
 import { ActiveSession } from '../../../../shared/models/auth.model';
 import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstrual-cycle.component';
+import { GlucoseRemindersComponent } from '../../components/glucose-reminders/glucose-reminders.component';
 
 @Component({
     selector: 'app-profile',
@@ -38,6 +39,7 @@ import { MenstrualCycleComponent } from '../../components/menstrual-cycle/menstr
         MatTabsModule,
         MatDialogModule,
         MenstrualCycleComponent,
+        GlucoseRemindersComponent,
         TranslocoPipe
     ],
     templateUrl: './profile.component.html',

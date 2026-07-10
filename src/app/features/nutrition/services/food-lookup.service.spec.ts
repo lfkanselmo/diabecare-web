@@ -35,20 +35,16 @@ describe('FoodLookupService', () => {
     describe('lookupBarcode()', () => {
 
         it('should perform a GET to the food-lookup barcode endpoint', () => {
-            // Arrange
             const barcode = '7622210951902';
 
-            // Act
             service.lookupBarcode(barcode).subscribe();
 
-            // Assert
             const req = controller.expectOne(`${BASE_URL}/barcode/${barcode}`);
             expect(req.request.method).toBe('GET');
             req.flush({} as ExternalFoodResponse);
         });
 
         it('should emit the mapped product on a successful response', () => {
-            // Arrange
             const barcode = '7622210951902';
             const response: ExternalFoodResponse = {
                 barcode,
@@ -61,20 +57,16 @@ describe('FoodLookupService', () => {
             };
             let result: ExternalFoodResponse | undefined;
 
-            // Act
             service.lookupBarcode(barcode).subscribe(r => result = r);
             controller.expectOne(`${BASE_URL}/barcode/${barcode}`).flush(response);
 
-            // Assert
             expect(result).toEqual(response);
         });
 
         it('should propagate an error when the product is not found', () => {
-            // Arrange
             const barcode = '0000000000000';
             let errored = false;
 
-            // Act
             service.lookupBarcode(barcode).subscribe({
                 error: () => errored = true
             });
@@ -82,7 +74,6 @@ describe('FoodLookupService', () => {
                 .expectOne(`${BASE_URL}/barcode/${barcode}`)
                 .flush('Not Found', { status: 404, statusText: 'Not Found' });
 
-            // Assert
             expect(errored).toBe(true);
         });
     });

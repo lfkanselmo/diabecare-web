@@ -8,10 +8,8 @@ import { AlertService } from './alert.service';
 import { AlertResponse } from '../../shared/models/alert.model';
 import { environment } from '../../../environments/environment';
 
-// ─── URL base esperada ────────────────────────────────────────────────────────
 const BASE_URL = `${environment.apiUrl}/alerts`;
 
-// ─── Factories de datos de prueba ─────────────────────────────────────────────
 /**
  * Crea un AlertResponse con valores por defecto sobreescribibles.
  * Usar factories evita literals duplicados y hace los tests más legibles.
@@ -27,7 +25,6 @@ function makeAlert(overrides: Partial<AlertResponse> = {}): AlertResponse {
 }
 
 
-// ─── Suite principal ──────────────────────────────────────────────────────────
 describe('AlertService', () => {
 
     let service: AlertService;
@@ -52,56 +49,44 @@ describe('AlertService', () => {
     });
 
 
-    // ─── getAlerts ────────────────────────────────────────────────────────
     describe('getAlerts()', () => {
 
         it('should perform a GET to the correct URL for the given patientId', () => {
-            // Arrange
             const patientId = 'patient-001';
 
-            // Act
             service.getAlerts(patientId).subscribe();
 
-            // Assert
             const req = controller.expectOne(`${BASE_URL}/${patientId}`);
             expect(req.request.method).toBe('GET');
             req.flush([]);
         });
 
         it('should return the array of alerts emitted by the API', () => {
-            // Arrange
             const patientId = 'patient-001';
             const mockAlerts = [makeAlert(), makeAlert({ type: 'NO_GLUCOSE_RECORDED', severity: 'INFO' })];
             let actual: AlertResponse[] = [];
 
-            // Act
             service.getAlerts(patientId).subscribe(alerts => (actual = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush(mockAlerts);
 
-            // Assert
             expect(actual).toEqual(mockAlerts);
         });
 
         it('should return an empty array when the API responds with no alerts', () => {
-            // Arrange
             const patientId = 'patient-002';
             let actual: AlertResponse[] = [makeAlert()]; // valor inicial no vacío
 
-            // Act
             service.getAlerts(patientId).subscribe(alerts => (actual = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([]);
 
-            // Assert
             expect(actual).toEqual([]);
         });
     });
 
 
-    // ─── primeKnownAlerts ─────────────────────────────────────────────────
     describe('primeKnownAlerts()', () => {
 
         it('should mark all provided alerts as known so getNewAlerts returns none of them', () => {
-            // Arrange
             const patientId = 'patient-001';
             const alertA = makeAlert({ title: 'A', message: 'msg-A' });
             const alertB = makeAlert({ title: 'B', message: 'msg-B' });
@@ -117,7 +102,6 @@ describe('AlertService', () => {
         });
 
         it('should replace any previously primed alerts with the new set', () => {
-            // Arrange
             const patientId = 'patient-001';
             const alertOld = makeAlert({ title: 'Old', message: 'old-msg' });
             const alertNew = makeAlert({ title: 'New', message: 'new-msg' });
@@ -131,12 +115,10 @@ describe('AlertService', () => {
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([alertOld]);
 
-            // Assert
             expect(newAlerts).toEqual([alertOld]);
         });
 
         it('should handle being called with an empty array without errors', () => {
-            // Arrange
             const patientId = 'patient-001';
             const alert = makeAlert({ title: 'X', message: 'msg-X' });
             let newAlerts: AlertResponse[] = [];
@@ -150,19 +132,15 @@ describe('AlertService', () => {
             expect(newAlerts).toEqual([alert]);
         });
 
-        // ── signatureOf() (privado) cubierto INDIRECTAMENTE ─────────────────
-        // Los tests de primeKnownAlerts verifican que la deduplicación funciona
-        // por título Y mensaje juntos. Si signatureOf cambiara su formato, los
-        // tests de deduplicación parcial (abajo) capturarían la regresión.
+        // signatureOf() es privado; se cubre indirectamente vía la deduplicación de
+        // primeKnownAlerts, que combina título Y mensaje.
 
         it('[via signatureOf] should treat alerts with same title but different message as distinct', () => {
-            // Arrange
             const patientId = 'patient-001';
             const knownAlert = makeAlert({ title: 'Título', message: 'Mensaje conocido' });
             const newAlert = makeAlert({ title: 'Título', message: 'Mensaje diferente' });
             let newAlerts: AlertResponse[] = [];
 
-            // Act
             service.primeKnownAlerts([knownAlert]);
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([knownAlert, newAlert]);
@@ -172,13 +150,11 @@ describe('AlertService', () => {
         });
 
         it('[via signatureOf] should treat alerts with same message but different title as distinct', () => {
-            // Arrange
             const patientId = 'patient-001';
             const knownAlert = makeAlert({ title: 'Título conocido', message: 'Mensaje' });
             const newAlert = makeAlert({ title: 'Título diferente', message: 'Mensaje' });
             let newAlerts: AlertResponse[] = [];
 
-            // Act
             service.primeKnownAlerts([knownAlert]);
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([knownAlert, newAlert]);
@@ -189,7 +165,6 @@ describe('AlertService', () => {
     });
 
 
-    // ─── getNewAlerts ─────────────────────────────────────────────────────
     describe('getNewAlerts()', () => {
 
         it('should return all alerts when no previous alerts are known', () => {
@@ -199,16 +174,13 @@ describe('AlertService', () => {
             const alertB = makeAlert({ title: 'B', message: 'msg-B' });
             let newAlerts: AlertResponse[] = [];
 
-            // Act
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([alertA, alertB]);
 
-            // Assert
             expect(newAlerts).toEqual([alertA, alertB]);
         });
 
         it('should return only the alerts not present in the last known set', () => {
-            // Arrange
             const patientId = 'patient-001';
             const knownAlert = makeAlert({ title: 'Conocida', message: 'msg-k' });
             const freshAlert = makeAlert({ title: 'Nueva', message: 'msg-n' });
@@ -216,7 +188,6 @@ describe('AlertService', () => {
 
             service.primeKnownAlerts([knownAlert]);
 
-            // Act
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([knownAlert, freshAlert]);
 
@@ -225,7 +196,6 @@ describe('AlertService', () => {
         });
 
         it('should return an empty array when all returned alerts were already known', () => {
-            // Arrange
             const patientId = 'patient-001';
             const alertA = makeAlert({ title: 'A', message: 'msg-A' });
             const alertB = makeAlert({ title: 'B', message: 'msg-B' });
@@ -233,11 +203,9 @@ describe('AlertService', () => {
 
             service.primeKnownAlerts([alertA, alertB]);
 
-            // Act
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([alertA, alertB]);
 
-            // Assert
             expect(newAlerts).toEqual([]);
         });
 
@@ -260,24 +228,19 @@ describe('AlertService', () => {
         });
 
         it('should perform a GET to the correct URL for the given patientId', () => {
-            // Arrange
             const patientId = 'patient-XYZ';
 
-            // Act
             service.getNewAlerts(patientId).subscribe();
 
-            // Assert
             const req = controller.expectOne(`${BASE_URL}/${patientId}`);
             expect(req.request.method).toBe('GET');
             req.flush([]);
         });
 
         it('should propagate HTTP errors to the subscriber', () => {
-            // Arrange
             const patientId = 'patient-001';
             let caughtError: unknown;
 
-            // Act
             service.getNewAlerts(patientId).subscribe({
                 error: err => (caughtError = err),
             });
@@ -285,7 +248,6 @@ describe('AlertService', () => {
                 .expectOne(`${BASE_URL}/${patientId}`)
                 .flush('Internal Server Error', { status: 500, statusText: 'Server Error' });
 
-            // Assert
             expect(caughtError).toBeTruthy();
         });
 
@@ -299,24 +261,19 @@ describe('AlertService', () => {
 
             service.primeKnownAlerts([known]);
 
-            // Act
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([known, newOne, newTwo]);
 
-            // Assert
             expect(newAlerts).toEqual([newOne, newTwo]);
         });
 
         it('should return an empty array when the API responds with no alerts', () => {
-            // Arrange
             const patientId = 'patient-001';
             let newAlerts: AlertResponse[] = [makeAlert()]; // valor inicial no vacío
 
-            // Act
             service.getNewAlerts(patientId).subscribe(alerts => (newAlerts = alerts));
             controller.expectOne(`${BASE_URL}/${patientId}`).flush([]);
 
-            // Assert
             expect(newAlerts).toEqual([]);
         });
     });

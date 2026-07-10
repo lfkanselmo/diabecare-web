@@ -69,7 +69,6 @@ export class SystemConfigService {
         return this.getValue(key) ?? '';
     }
 
-    // ── Helpers semánticos para glucosa
     getGlucoseStatusColor(status: string, isDark: boolean): string {
         const colors: Record<string, [string, string]> = {
             CRITICALLY_LOW: ['#9B1D6A', '#F48FB1'],
@@ -94,7 +93,6 @@ export class SystemConfigService {
         return colors[status] ?? 'transparent';
     }
 
-    // ── Helpers semánticos para alertas
     getAlertColor(severity: string): string {
         const colors: Record<string, string> = {
             SUCCESS: '#22A96A',

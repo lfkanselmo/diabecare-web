@@ -39,7 +39,7 @@ export class GlucoseChartComponent implements OnChanges {
     private readonly transloco = inject(TranslocoService);
     private readonly languageService = inject(LanguageService);
 
-    private readonly MAX_GAP_MS = 2 * 60 * 60 * 1000; // 2 horas
+    private readonly MAX_GAP_MS = 2 * 60 * 60 * 1000;
 
     ngOnChanges(): void {
         this.buildTimelineEvents();

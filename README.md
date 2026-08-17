@@ -1,6 +1,14 @@
 # DiabeCare Web
 
+[![CI](https://github.com/lfkanselmo/diabecare-web/actions/workflows/ci.yml/badge.svg)](https://github.com/lfkanselmo/diabecare-web/actions/workflows/ci.yml)
+![Angular](https://img.shields.io/badge/Angular-21-DD0031?logo=angular&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)
+
 Frontend de DiabeCare — aplicación de control de salud para pacientes diabéticos. Construido con Angular 21 y Angular Material.
+
+## Capturas
+
+_(pendiente — agregar screenshot o GIF del dashboard, registro de glucosa y panel de alertas)_
 
 ---
 

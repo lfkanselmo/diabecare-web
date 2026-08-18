@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
@@ -21,9 +21,9 @@ import { MetadataService } from '@core/services/metadata.service';
 import { NotificationService } from '../../../../core/services/notification.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import {
-    GlucoseReadingResponse,
-    GlucoseStatus,
-    MealMarkerResponse
+  GlucoseReadingResponse,
+  GlucoseStatus,
+  MealMarkerResponse,
 } from '../../../../shared/models/glucose.model';
 import { ExerciseLogResponse } from '../../../../shared/models/exercise.model';
 import { GlucoseChartComponent } from '../../components/glucose-chart/glucose-chart.component';
@@ -31,193 +31,195 @@ import { MatDividerModule } from '@angular/material/divider';
 import { daysAgo, formatDateRangeLabel } from '../../../../shared/utils/date.utils';
 
 @Component({
-    selector: 'app-glucose-history',
-    standalone: true,
-    imports: [
-        RouterLink,
-        DatePipe,
-        DecimalPipe,
-        NgClass,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatIconModule,
-        MatTableModule,
-        MatButtonToggleModule,
-        MatMenuModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatDividerModule,
-        MatTooltipModule,
-        GlucoseChartComponent,
-        TranslocoPipe
-    ],
-    templateUrl: './glucose-history.component.html',
-    styleUrl: './glucose-history.component.scss'
+  selector: 'app-glucose-history',
+  standalone: true,
+  imports: [
+    RouterLink,
+    DatePipe,
+    DecimalPipe,
+    NgClass,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatButtonToggleModule,
+    MatMenuModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatDividerModule,
+    MatTooltipModule,
+    GlucoseChartComponent,
+    TranslocoPipe,
+  ],
+  templateUrl: './glucose-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './glucose-history.component.scss',
 })
 export class GlucoseHistoryComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly glucoseService = inject(GlucoseService);
+  private readonly exerciseService = inject(ExerciseService);
+  private readonly authService = inject(AuthService);
+  private readonly notificationService = inject(NotificationService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly languageService = inject(LanguageService);
+  readonly metadata = inject(MetadataService);
 
-    private readonly fb = inject(FormBuilder);
-    private readonly glucoseService = inject(GlucoseService);
-    private readonly exerciseService = inject(ExerciseService);
-    private readonly authService = inject(AuthService);
-    private readonly notificationService = inject(NotificationService);
-    private readonly transloco = inject(TranslocoService);
-    private readonly languageService = inject(LanguageService);
-    readonly metadata = inject(MetadataService);
+  readings = signal<GlucoseReadingResponse[]>([]);
+  mealMarkers = signal<MealMarkerResponse[]>([]);
+  exerciseLogs = signal<ExerciseLogResponse[]>([]);
+  loading = signal(true);
+  view = signal<'chart' | 'table'>('chart');
+  armedDeleteReadingId = signal<string | null>(null);
 
-    readings = signal<GlucoseReadingResponse[]>([]);
-    mealMarkers = signal<MealMarkerResponse[]>([]);
-    exerciseLogs = signal<ExerciseLogResponse[]>([]);
-    loading = signal(true);
-    view = signal<'chart' | 'table'>('chart');
-    armedDeleteReadingId = signal<string | null>(null);
+  readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
 
-    readonly displayedColumns = ['measuredAt', 'value', 'readingType', 'status', 'notes', 'actions'];
+  readonly quickRanges = [
+    { labelKey: 'glucose.history.last7Days', days: 7 },
+    { labelKey: 'glucose.history.last30Days', days: 30 },
+    { labelKey: 'glucose.history.last90Days', days: 90 },
+    { labelKey: 'glucose.history.last6Months', days: 180 },
+  ];
 
-    readonly quickRanges = [
-        { labelKey: 'glucose.history.last7Days', days: 7 },
-        { labelKey: 'glucose.history.last30Days', days: 30 },
-        { labelKey: 'glucose.history.last90Days', days: 90 },
-        { labelKey: 'glucose.history.last6Months', days: 180 }
-    ];
+  rangeForm: FormGroup = this.fb.group({
+    from: [daysAgo(30), Validators.required],
+    to: [new Date(), Validators.required],
+  });
 
-    rangeForm: FormGroup = this.fb.group({
-        from: [daysAgo(30), Validators.required],
-        to: [new Date(), Validators.required]
-    });
+  selectedRangeLabel = signal(this.transloco.translate('glucose.history.last30Days'));
 
-    selectedRangeLabel = signal(this.transloco.translate('glucose.history.last30Days'));
+  ngOnInit(): void {
+    this.loadHistory();
+  }
 
-    ngOnInit(): void {
-        this.loadHistory();
-    }
+  applyQuickRange(labelKey: string, days: number): void {
+    const to = new Date();
+    const from = daysAgo(days);
+    this.rangeForm.patchValue({ from, to });
+    this.selectedRangeLabel.set(this.transloco.translate(labelKey));
+    this.loadHistory();
+  }
 
-    applyQuickRange(labelKey: string, days: number): void {
-        const to = new Date();
-        const from = daysAgo(days);
-        this.rangeForm.patchValue({ from, to });
-        this.selectedRangeLabel.set(this.transloco.translate(labelKey));
-        this.loadHistory();
-    }
+  applyCustomRange(): void {
+    if (this.rangeForm.invalid) return;
+    this.selectedRangeLabel.set(this.formatCustomLabel());
+    this.loadHistory();
+  }
 
-    applyCustomRange(): void {
-        if (this.rangeForm.invalid) return;
-        this.selectedRangeLabel.set(this.formatCustomLabel());
-        this.loadHistory();
-    }
+  onArmDelete(readingId: string): void {
+    this.armedDeleteReadingId.set(readingId);
+  }
 
-    onArmDelete(readingId: string): void {
-        this.armedDeleteReadingId.set(readingId);
-    }
+  onCancelDelete(): void {
+    this.armedDeleteReadingId.set(null);
+  }
 
-    onCancelDelete(): void {
+  onDelete(readingId: string): void {
+    const patientId = this.authService.getPatientId();
+    if (!patientId) return;
+
+    this.glucoseService.delete(patientId, readingId).subscribe({
+      next: () => {
+        this.readings.update((list) => list.filter((r) => r.readingId !== readingId));
         this.armedDeleteReadingId.set(null);
-    }
+        this.notificationService.success(
+          this.transloco.translate('glucose.history.deletedSuccess'),
+        );
+      },
+      error: () => {
+        this.armedDeleteReadingId.set(null);
+        this.notificationService.danger(this.transloco.translate('glucose.history.deleteError'));
+      },
+    });
+  }
 
-    onDelete(readingId: string): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
+  getStatusLabel(status: string): string {
+    return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
+  }
 
-        this.glucoseService.delete(patientId, readingId).subscribe({
-            next: () => {
-                this.readings.update(list => list.filter(r => r.readingId !== readingId));
-                this.armedDeleteReadingId.set(null);
-                this.notificationService.success(this.transloco.translate('glucose.history.deletedSuccess'));
-            },
-            error: () => {
-                this.armedDeleteReadingId.set(null);
-                this.notificationService.danger(this.transloco.translate('glucose.history.deleteError'));
-            }
-        });
-    }
+  getStatusClass(status: string): string {
+    const map: Record<GlucoseStatus, string> = {
+      CRITICALLY_LOW: 'status--critical',
+      LOW: 'status--low',
+      NORMAL: 'status--normal',
+      HIGH: 'status--high',
+      CRITICALLY_HIGH: 'status--critical',
+    };
+    return map[status as GlucoseStatus] ?? '';
+  }
 
-    getStatusLabel(status: string): string {
-        return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
-    }
+  getReadingTypeLabel(type: string): string {
+    return this.metadata.getLabelByValue(this.metadata.readingTypes(), type);
+  }
 
-    getStatusClass(status: string): string {
-        const map: Record<GlucoseStatus, string> = {
-            CRITICALLY_LOW: 'status--critical',
-            LOW: 'status--low',
-            NORMAL: 'status--normal',
-            HIGH: 'status--high',
-            CRITICALLY_HIGH: 'status--critical'
-        };
-        return map[status as GlucoseStatus] ?? '';
-    }
+  onExportCsv(): void {
+    const patientId = this.authService.getPatientId();
+    if (!patientId) return;
 
-    getReadingTypeLabel(type: string): string {
-        return this.metadata.getLabelByValue(this.metadata.readingTypes(), type);
-    }
+    const { from, to } = this.getRangeIso();
 
-    onExportCsv(): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
+    this.glucoseService.exportCsv(patientId, from, to).subscribe({
+      next: (blob) => this.downloadFile(blob, 'glucosa.csv', 'text/csv'),
+      error: () => {},
+    });
+  }
 
-        const { from, to } = this.getRangeIso();
+  onExportJson(): void {
+    const patientId = this.authService.getPatientId();
+    if (!patientId) return;
 
-        this.glucoseService.exportCsv(patientId, from, to).subscribe({
-            next: blob => this.downloadFile(blob, 'glucosa.csv', 'text/csv'),
-            error: () => { }
-        });
-    }
+    const { from, to } = this.getRangeIso();
 
-    onExportJson(): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
+    this.glucoseService.exportJson(patientId, from, to).subscribe({
+      next: (blob) => this.downloadFile(blob, 'glucosa.json', 'application/json'),
+      error: () => {},
+    });
+  }
 
-        const { from, to } = this.getRangeIso();
+  private loadHistory(): void {
+    const patientId = this.authService.getPatientId();
+    if (!patientId) return;
 
-        this.glucoseService.exportJson(patientId, from, to).subscribe({
-            next: blob => this.downloadFile(blob, 'glucosa.json', 'application/json'),
-            error: () => { }
-        });
-    }
+    const { from, to } = this.getRangeIso();
+    this.loading.set(true);
 
-    private loadHistory(): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
+    forkJoin({
+      glucose: this.glucoseService.getHistory(patientId, from, to, 0, 500),
+      exercise: this.exerciseService.getHistory(patientId, from, to, 0, 500),
+    }).subscribe({
+      next: ({ glucose, exercise }) => {
+        this.readings.set(glucose.readings.content);
+        this.mealMarkers.set(glucose.mealMarkers);
+        this.exerciseLogs.set(exercise.content);
+        this.loading.set(false);
+      },
+      error: () => this.loading.set(false),
+    });
+  }
 
-        const { from, to } = this.getRangeIso();
-        this.loading.set(true);
+  private getRangeIso(): { from: string; to: string } {
+    const fromDate: Date = this.rangeForm.get('from')?.value;
+    const toDate: Date = this.rangeForm.get('to')?.value;
+    return {
+      from: fromDate.toISOString(),
+      to: toDate.toISOString(),
+    };
+  }
 
-        forkJoin({
-            glucose: this.glucoseService.getHistory(patientId, from, to, 0, 500),
-            exercise: this.exerciseService.getHistory(patientId, from, to, 0, 500)
-        }).subscribe({
-            next: ({ glucose, exercise }) => {
-                this.readings.set(glucose.readings.content);
-                this.mealMarkers.set(glucose.mealMarkers);
-                this.exerciseLogs.set(exercise.content);
-                this.loading.set(false);
-            },
-            error: () => this.loading.set(false)
-        });
-    }
+  private formatCustomLabel(): string {
+    const from: Date = this.rangeForm.get('from')?.value;
+    const to: Date = this.rangeForm.get('to')?.value;
+    return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
+  }
 
-    private getRangeIso(): { from: string; to: string } {
-        const fromDate: Date = this.rangeForm.get('from')?.value;
-        const toDate: Date = this.rangeForm.get('to')?.value;
-        return {
-            from: fromDate.toISOString(),
-            to: toDate.toISOString()
-        };
-    }
-
-    private formatCustomLabel(): string {
-        const from: Date = this.rangeForm.get('from')?.value;
-        const to: Date = this.rangeForm.get('to')?.value;
-        return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
-    }
-
-    private downloadFile(blob: Blob, filename: string, type: string): void {
-        const url = URL.createObjectURL(new Blob([blob], { type }));
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        link.click();
-        URL.revokeObjectURL(url);
-    }
+  private downloadFile(blob: Blob, filename: string, type: string): void {
+    const url = URL.createObjectURL(new Blob([blob], { type }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    link.click();
+    URL.revokeObjectURL(url);
+  }
 }

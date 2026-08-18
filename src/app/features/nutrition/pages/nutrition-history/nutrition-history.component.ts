@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -16,124 +16,128 @@ import { AuthService } from '../../../../core/auth/auth.service';
 import { MetadataService } from '@core/services/metadata.service';
 import { LanguageService } from '../../../../core/services/language.service';
 import { MealEntryResponse } from '../../../../shared/models/nutrition.model';
-import { daysAgo, formatDateRangeLabel, toLocalDateString } from '../../../../shared/utils/date.utils';
+import {
+  daysAgo,
+  formatDateRangeLabel,
+  toLocalDateString,
+} from '../../../../shared/utils/date.utils';
 
 @Component({
-    selector: 'app-nutrition-history',
-    standalone: true,
-    imports: [
-        DatePipe,
-        DecimalPipe,
-        ReactiveFormsModule,
-        MatButtonModule,
-        MatIconModule,
-        MatMenuModule,
-        MatDatepickerModule,
-        MatNativeDateModule,
-        MatFormFieldModule,
-        MatInputModule,
-        MatProgressSpinnerModule,
-        MatPaginatorModule,
-        TranslocoPipe
-    ],
-    templateUrl: './nutrition-history.component.html',
-    styleUrl: './nutrition-history.component.scss'
+  selector: 'app-nutrition-history',
+  standalone: true,
+  imports: [
+    DatePipe,
+    DecimalPipe,
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatIconModule,
+    MatMenuModule,
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatProgressSpinnerModule,
+    MatPaginatorModule,
+    TranslocoPipe,
+  ],
+  templateUrl: './nutrition-history.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './nutrition-history.component.scss',
 })
 export class NutritionHistoryComponent implements OnInit {
+  private readonly fb = inject(FormBuilder);
+  private readonly nutritionService = inject(NutritionService);
+  private readonly authService = inject(AuthService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly languageService = inject(LanguageService);
+  readonly metadata = inject(MetadataService);
 
-    private readonly fb = inject(FormBuilder);
-    private readonly nutritionService = inject(NutritionService);
-    private readonly authService = inject(AuthService);
-    private readonly transloco = inject(TranslocoService);
-    private readonly languageService = inject(LanguageService);
-    readonly metadata = inject(MetadataService);
+  meals = signal<MealEntryResponse[]>([]);
+  loading = signal(true);
+  totalElements = signal(0);
+  pageIndex = signal(0);
+  pageSize = signal(20);
 
-    meals = signal<MealEntryResponse[]>([]);
-    loading = signal(true);
-    totalElements = signal(0);
-    pageIndex = signal(0);
-    pageSize = signal(20);
+  readonly quickRanges = [
+    { labelKey: 'nutrition.history.last7Days', days: 7 },
+    { labelKey: 'nutrition.history.last30Days', days: 30 },
+    { labelKey: 'nutrition.history.last90Days', days: 90 },
+  ];
 
-    readonly quickRanges = [
-        { labelKey: 'nutrition.history.last7Days', days: 7 },
-        { labelKey: 'nutrition.history.last30Days', days: 30 },
-        { labelKey: 'nutrition.history.last90Days', days: 90 }
-    ];
+  rangeForm: FormGroup = this.fb.group({
+    from: [daysAgo(7), Validators.required],
+    to: [new Date(), Validators.required],
+  });
 
-    rangeForm: FormGroup = this.fb.group({
-        from: [daysAgo(7), Validators.required],
-        to: [new Date(), Validators.required]
-    });
+  selectedRangeLabel = signal(this.transloco.translate('nutrition.history.last7Days'));
 
-    selectedRangeLabel = signal(this.transloco.translate('nutrition.history.last7Days'));
+  ngOnInit(): void {
+    this.loadHistory();
+  }
 
-    ngOnInit(): void {
-        this.loadHistory();
-    }
+  applyQuickRange(labelKey: string, days: number): void {
+    const to = new Date();
+    const from = daysAgo(days);
+    this.rangeForm.patchValue({ from, to });
+    this.selectedRangeLabel.set(this.transloco.translate(labelKey));
+    this.pageIndex.set(0);
+    this.loadHistory();
+  }
 
-    applyQuickRange(labelKey: string, days: number): void {
-        const to = new Date();
-        const from = daysAgo(days);
-        this.rangeForm.patchValue({ from, to });
-        this.selectedRangeLabel.set(this.transloco.translate(labelKey));
-        this.pageIndex.set(0);
-        this.loadHistory();
-    }
+  applyCustomRange(): void {
+    if (this.rangeForm.invalid) return;
+    this.selectedRangeLabel.set(this.formatCustomLabel());
+    this.pageIndex.set(0);
+    this.loadHistory();
+  }
 
-    applyCustomRange(): void {
-        if (this.rangeForm.invalid) return;
-        this.selectedRangeLabel.set(this.formatCustomLabel());
-        this.pageIndex.set(0);
-        this.loadHistory();
-    }
+  getMealTypeLabel(type: string): string {
+    return this.metadata.getLabelByValue(this.metadata.mealTypes(), type);
+  }
 
-    getMealTypeLabel(type: string): string {
-        return this.metadata.getLabelByValue(this.metadata.mealTypes(), type);
-    }
+  onPageChange(event: PageEvent): void {
+    this.pageIndex.set(event.pageIndex);
+    this.pageSize.set(event.pageSize);
+    this.loadHistory();
+  }
 
-    onPageChange(event: PageEvent): void {
-        this.pageIndex.set(event.pageIndex);
-        this.pageSize.set(event.pageSize);
-        this.loadHistory();
-    }
+  private loadHistory(): void {
+    const patientId = this.authService.getPatientId();
+    if (!patientId) return;
 
-    private loadHistory(): void {
-        const patientId = this.authService.getPatientId();
-        if (!patientId) return;
+    const { from, to } = this.getRangeIso();
+    this.loading.set(true);
 
-        const { from, to } = this.getRangeIso();
-        this.loading.set(true);
+    this.nutritionService
+      .getMealHistory(patientId, from, to, this.pageIndex(), this.pageSize())
+      .subscribe({
+        next: (page) => {
+          this.meals.set(this.sortByDateDesc(page.content));
+          this.totalElements.set(page.totalElements);
+          this.loading.set(false);
+        },
+        error: () => this.loading.set(false),
+      });
+  }
 
-        this.nutritionService.getMealHistory(
-            patientId, from, to, this.pageIndex(), this.pageSize()
-        ).subscribe({
-            next: page => {
-                this.meals.set(this.sortByDateDesc(page.content));
-                this.totalElements.set(page.totalElements);
-                this.loading.set(false);
-            },
-            error: () => this.loading.set(false)
-        });
-    }
+  private sortByDateDesc(meals: MealEntryResponse[]): MealEntryResponse[] {
+    return [...meals].sort(
+      (a, b) => new Date(b.consumedAt).getTime() - new Date(a.consumedAt).getTime(),
+    );
+  }
 
-    private sortByDateDesc(meals: MealEntryResponse[]): MealEntryResponse[] {
-        return [...meals].sort(
-            (a, b) => new Date(b.consumedAt).getTime() - new Date(a.consumedAt).getTime()
-        );
-    }
+  private getRangeIso(): { from: string; to: string } {
+    const fromDate: Date = this.rangeForm.get('from')?.value;
+    const toDate: Date = this.rangeForm.get('to')?.value;
+    return {
+      from: toLocalDateString(fromDate),
+      to: toLocalDateString(toDate),
+    };
+  }
 
-    private getRangeIso(): { from: string; to: string } {
-        const fromDate: Date = this.rangeForm.get('from')?.value;
-        const toDate: Date = this.rangeForm.get('to')?.value;
-        return {
-            from: toLocalDateString(fromDate),
-            to: toLocalDateString(toDate)
-        };
-    }
-
-    private formatCustomLabel(): string {
-        const from: Date = this.rangeForm.get('from')?.value;
-        const to: Date = this.rangeForm.get('to')?.value;
-        return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
-    }
+  private formatCustomLabel(): string {
+    const from: Date = this.rangeForm.get('from')?.value;
+    const to: Date = this.rangeForm.get('to')?.value;
+    return formatDateRangeLabel(from, to, this.languageService.getActiveLang());
+  }
 }

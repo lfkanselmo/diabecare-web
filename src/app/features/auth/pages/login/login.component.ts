@@ -1,4 +1,4 @@
-import { Component, inject, ViewEncapsulation } from '@angular/core';
+import { Component, inject, ViewEncapsulation, ChangeDetectionStrategy } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -11,61 +11,66 @@ import { AuthApiService } from '../../../../core/auth/auth-api.service';
 import { AuthService } from '../../../../core/auth/auth.service';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    imports: [
-        ReactiveFormsModule,
-        RouterLink,
-        MatFormFieldModule,
-        MatInputModule,
-        MatButtonModule,
-        MatIconModule,
-        MatProgressSpinnerModule,
-        TranslocoPipe
-    ],
-    templateUrl: './login.component.html',
-    styleUrl: './login.component.scss',
-    encapsulation: ViewEncapsulation.None
+  selector: 'app-login',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule,
+    RouterLink,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatIconModule,
+    MatProgressSpinnerModule,
+    TranslocoPipe,
+  ],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  encapsulation: ViewEncapsulation.None,
 })
 export class LoginComponent {
+  private readonly fb = inject(FormBuilder);
+  private readonly authApiService = inject(AuthApiService);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+  private readonly transloco = inject(TranslocoService);
 
-    private readonly fb = inject(FormBuilder);
-    private readonly authApiService = inject(AuthApiService);
-    private readonly authService = inject(AuthService);
-    private readonly router = inject(Router);
-    private readonly transloco = inject(TranslocoService);
+  form: FormGroup = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(8)]],
+  });
 
-    form: FormGroup = this.fb.group({
-        email: ['', [Validators.required, Validators.email]],
-        password: ['', [Validators.required, Validators.minLength(8)]]
+  loading = false;
+  errorMessage = '';
+  hidePassword = true;
+
+  onSubmit(): void {
+    if (this.form.invalid) return;
+
+    this.loading = true;
+    this.errorMessage = '';
+
+    this.authApiService.login(this.form.getRawValue()).subscribe({
+      next: (response) => {
+        this.authService.saveSession(
+          response.accessToken,
+          response.patient,
+          response.refreshToken,
+          response.role,
+        );
+        this.router.navigate(['/app/dashboard']);
+      },
+      error: (err) => {
+        const code = err?.error?.code;
+        if (code === 'ACCOUNT_SUSPENDED') {
+          this.errorMessage = this.transloco.translate('auth.login.errorSuspended');
+        } else if (code === 'INVALID_CREDENTIALS') {
+          this.errorMessage = this.transloco.translate('auth.login.errorInvalidCredentials');
+        } else {
+          this.errorMessage = this.transloco.translate('auth.login.errorGeneric');
+        }
+        this.loading = false;
+      },
     });
-
-    loading = false;
-    errorMessage = '';
-    hidePassword = true;
-
-    onSubmit(): void {
-        if (this.form.invalid) return;
-
-        this.loading = true;
-        this.errorMessage = '';
-
-        this.authApiService.login(this.form.getRawValue()).subscribe({
-            next: response => {
-                this.authService.saveSession(response.accessToken, response.patient, response.refreshToken, response.role);
-                this.router.navigate(['/app/dashboard']);
-            },
-            error: err => {
-                const code = err?.error?.code;
-                if (code === 'ACCOUNT_SUSPENDED') {
-                    this.errorMessage = this.transloco.translate('auth.login.errorSuspended');
-                } else if (code === 'INVALID_CREDENTIALS') {
-                    this.errorMessage = this.transloco.translate('auth.login.errorInvalidCredentials');
-                } else {
-                    this.errorMessage = this.transloco.translate('auth.login.errorGeneric');
-                }
-                this.loading = false;
-            }
-        });
-    }
+  }
 }

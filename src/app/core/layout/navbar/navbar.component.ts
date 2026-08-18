@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Output, inject, signal, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Output,
+  inject,
+  signal,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RouterLink } from '@angular/router';
 import { Store } from '@ngrx/store';
@@ -23,104 +31,104 @@ import { GlucoseStatus } from '../../../shared/models/glucose.model';
 import { Router } from '@angular/router';
 
 @Component({
-    selector: 'app-navbar',
-    standalone: true,
-    imports: [
-        RouterLink,
-        MatToolbarModule,
-        MatIconModule,
-        MatButtonModule,
-        MatMenuModule,
-        MatDividerModule,
-        MatTooltipModule,
-        TranslocoPipe
-    ],
-    templateUrl: './navbar.component.html',
-    styleUrl: './navbar.component.scss'
+  selector: 'app-navbar',
+  standalone: true,
+  imports: [
+    RouterLink,
+    MatToolbarModule,
+    MatIconModule,
+    MatButtonModule,
+    MatMenuModule,
+    MatDividerModule,
+    MatTooltipModule,
+    TranslocoPipe,
+  ],
+  templateUrl: './navbar.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './navbar.component.scss',
 })
 export class NavbarComponent implements OnInit {
+  @Output() menuToggle = new EventEmitter<void>();
 
-    @Output() menuToggle = new EventEmitter<void>();
+  private readonly authService = inject(AuthService);
+  private readonly authApiService = inject(AuthApiService);
+  private readonly router = inject(Router);
+  private readonly notificationService = inject(NotificationService);
+  private readonly pushService = inject(PushNotificationService);
+  private readonly transloco = inject(TranslocoService);
+  private readonly systemConfig = inject(SystemConfigService);
+  private readonly metadata = inject(MetadataService);
+  private readonly store = inject(Store);
+  readonly themeService = inject(ThemeService);
+  readonly languageService = inject(LanguageService);
 
-    private readonly authService = inject(AuthService);
-    private readonly authApiService = inject(AuthApiService);
-    private readonly router = inject(Router);
-    private readonly notificationService = inject(NotificationService);
-    private readonly pushService = inject(PushNotificationService);
-    private readonly transloco = inject(TranslocoService);
-    private readonly systemConfig = inject(SystemConfigService);
-    private readonly metadata = inject(MetadataService);
-    private readonly store = inject(Store);
-    readonly themeService = inject(ThemeService);
-    readonly languageService = inject(LanguageService);
+  readonly latestReading = toSignal(this.store.select(selectLatestReading), { initialValue: null });
+  readonly isAdmin = this.authService.isAdmin();
 
-    readonly latestReading = toSignal(this.store.select(selectLatestReading), { initialValue: null });
-    readonly isAdmin = this.authService.isAdmin();
+  notificationsEnabled = signal(false);
+  showNotifButton = signal(false);
 
-    notificationsEnabled = signal(false);
-    showNotifButton = signal(false);
+  readonly languages: { value: AppLanguage; label: string }[] = [
+    { value: 'es', label: 'Español' },
+    { value: 'en', label: 'English' },
+  ];
 
-    readonly languages: { value: AppLanguage; label: string }[] = [
-        { value: 'es', label: 'Español' },
-        { value: 'en', label: 'English' }
-    ];
-
-    ngOnInit(): void {
-        if ('Notification' in window && 'serviceWorker' in navigator) {
-            this.showNotifButton.set(true);
-            this.notificationsEnabled.set(Notification.permission === 'granted');
-        }
-
-        const patientId = this.authService.getPatientId();
-        if (patientId) {
-            this.store.dispatch(GlucoseActions.loadLatest({ patientId }));
-        }
+  ngOnInit(): void {
+    if ('Notification' in window && 'serviceWorker' in navigator) {
+      this.showNotifButton.set(true);
+      this.notificationsEnabled.set(Notification.permission === 'granted');
     }
 
-    getChipColor(status: GlucoseStatus): string {
-        return this.systemConfig.getGlucoseStatusColor(status, false);
+    const patientId = this.authService.getPatientId();
+    if (patientId) {
+      this.store.dispatch(GlucoseActions.loadLatest({ patientId }));
     }
+  }
 
-    getChipBg(status: GlucoseStatus): string {
-        return this.systemConfig.getGlucoseStatusBg(status);
+  getChipColor(status: GlucoseStatus): string {
+    return this.systemConfig.getGlucoseStatusColor(status, false);
+  }
+
+  getChipBg(status: GlucoseStatus): string {
+    return this.systemConfig.getGlucoseStatusBg(status);
+  }
+
+  getStatusLabel(status: GlucoseStatus): string {
+    return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
+  }
+
+  async onToggleNotifications(): Promise<void> {
+    if (this.notificationsEnabled()) {
+      await this.pushService.unsubscribe();
+      this.notificationsEnabled.set(false);
+      this.notificationService.info(this.transloco.translate('navbar.notificationsDisabled'));
+    } else {
+      const ok = await this.pushService.requestPermissionAndSubscribe();
+      this.notificationsEnabled.set(ok);
+      if (ok) {
+        this.notificationService.success(this.transloco.translate('navbar.notificationsEnabled'));
+      } else {
+        this.notificationService.danger(this.transloco.translate('navbar.notificationsFailed'));
+      }
     }
+  }
 
-    getStatusLabel(status: GlucoseStatus): string {
-        return this.metadata.getLabelByValue(this.metadata.glucoseStatuses(), status);
+  onMenuToggle(): void {
+    this.menuToggle.emit();
+  }
+
+  onSelectLanguage(lang: AppLanguage): void {
+    this.languageService.setLanguage(lang);
+  }
+
+  onLogout(): void {
+    const refreshToken = this.authService.getRefreshToken();
+
+    this.authService.clearSession();
+    this.router.navigate(['/auth/login']);
+
+    if (refreshToken) {
+      this.authApiService.logout(refreshToken).subscribe({ error: () => {} });
     }
-
-    async onToggleNotifications(): Promise<void> {
-        if (this.notificationsEnabled()) {
-            await this.pushService.unsubscribe();
-            this.notificationsEnabled.set(false);
-            this.notificationService.info(this.transloco.translate('navbar.notificationsDisabled'));
-        } else {
-            const ok = await this.pushService.requestPermissionAndSubscribe();
-            this.notificationsEnabled.set(ok);
-            if (ok) {
-                this.notificationService.success(this.transloco.translate('navbar.notificationsEnabled'));
-            } else {
-                this.notificationService.danger(this.transloco.translate('navbar.notificationsFailed'));
-            }
-        }
-    }
-
-    onMenuToggle(): void {
-        this.menuToggle.emit();
-    }
-
-    onSelectLanguage(lang: AppLanguage): void {
-        this.languageService.setLanguage(lang);
-    }
-
-    onLogout(): void {
-        const refreshToken = this.authService.getRefreshToken();
-
-        this.authService.clearSession();
-        this.router.navigate(['/auth/login']);
-
-        if (refreshToken) {
-            this.authApiService.logout(refreshToken).subscribe({ error: () => { } });
-        }
-    }
+  }
 }

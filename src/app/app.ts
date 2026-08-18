@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './core/services/theme.service';
 import { NotificationBannerComponent } from './shared/components/notification-banner/notification-banner.component';
@@ -9,10 +9,10 @@ import { LoadingIndicatorComponent } from './shared/components/loading-indicator
   standalone: true,
   imports: [RouterOutlet, NotificationBannerComponent, LoadingIndicatorComponent],
   templateUrl: './app.html',
-  styleUrl: './app.scss'
+  changeDetection: ChangeDetectionStrategy.Eager,
+  styleUrl: './app.scss',
 })
 export class AppComponent implements OnInit {
-
   private readonly themeService = inject(ThemeService);
 
   ngOnInit(): void {
@@ -22,11 +22,11 @@ export class AppComponent implements OnInit {
 
   private registerPushHandler(): void {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.ready.then(registration => {
+      navigator.serviceWorker.ready.then((registration) => {
         if (!registration.active) return;
         fetch('/sw-push-handler.js')
-          .then(r => r.text())
-          .then(code => {
+          .then((r) => r.text())
+          .then((code) => {
             const blob = new Blob([code], { type: 'application/javascript' });
             const url = URL.createObjectURL(blob);
             registration.active!.postMessage({ type: 'IMPORT_SCRIPTS', url });

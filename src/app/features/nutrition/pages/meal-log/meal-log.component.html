@@ -15,19 +15,25 @@
           <mat-label>{{ 'nutrition.mealLog.mealType' | transloco }}</mat-label>
           <mat-select formControlName="mealType">
             @for (type of metadata.mealTypes(); track type.value) {
-            <mat-option [value]="type.value">{{ type.label }}</mat-option>
+              <mat-option [value]="type.value">{{ type.label }}</mat-option>
             }
           </mat-select>
           @if (mealForm.get('mealType')?.hasError('required')) {
-          <mat-error>{{ 'nutrition.mealLog.mealTypeRequired' | transloco }}</mat-error>
+            <mat-error>{{ 'nutrition.mealLog.mealTypeRequired' | transloco }}</mat-error>
           }
         </mat-form-field>
 
         <mat-form-field appearance="outline">
           <mat-label>{{ 'nutrition.mealLog.dateTime' | transloco }}</mat-label>
           <input matInput formControlName="consumedAt" type="datetime-local" />
-          <button mat-icon-button matSuffix type="button" (click)="setNow()" [matTooltip]="'common.now' | transloco"
-            [attr.aria-label]="'common.now' | transloco">
+          <button
+            mat-icon-button
+            matSuffix
+            type="button"
+            (click)="setNow()"
+            [matTooltip]="'common.now' | transloco"
+            [attr.aria-label]="'common.now' | transloco"
+          >
             <mat-icon>schedule</mat-icon>
           </button>
         </mat-form-field>
@@ -51,76 +57,126 @@
       </div>
 
       @if (selectedFood()) {
-      <div class="meal-log__selected-food">
-        <div class="meal-log__selected-food-header">
-          <div>
-            <span class="meal-log__selected-food-name">{{ selectedFood()!.name }}</span>
-            <span class="meal-log__selected-food-ref">
-              {{ 'nutrition.mealLog.per100g' | transloco: {
-                kcal: selectedFood()!.caloriesPer100g,
-                carbs: selectedFood()!.carbsPer100g,
-                protein: selectedFood()!.proteinsPer100g,
-                fat: selectedFood()!.fatsPer100g
-              } }}
-            </span>
-          </div>
-          <button mat-icon-button (click)="onClearFood()" [attr.aria-label]="'nutrition.mealLog.removeSelectedFood' | transloco">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
-
-        <form [formGroup]="quantityForm" class="meal-log__quantity-form">
-          <mat-form-field appearance="outline">
-            <mat-label>{{ 'nutrition.mealLog.quantityGrams' | transloco }}</mat-label>
-            <input matInput formControlName="quantityGrams" type="number" min="0.1" step="1"
-              (input)="onQuantityChanged()" />
-            <mat-icon matSuffix>scale</mat-icon>
-          </mat-form-field>
-
-          @if (quantityForm.get('calories')?.value !== null) {
-          <div class="meal-log__calculated-header">
-            <span class="meal-log__calculated-label">{{ 'nutrition.mealLog.nutritionalValues' | transloco }}</span>
-            @if (valuesEditedManually()) {
-            <button mat-button type="button" class="meal-log__reset-link" (click)="resetToSuggestedValues()">
-              <mat-icon>restart_alt</mat-icon>
-              {{ 'nutrition.mealLog.useSuggestedValues' | transloco }}
+        <div class="meal-log__selected-food">
+          <div class="meal-log__selected-food-header">
+            <div>
+              <span class="meal-log__selected-food-name">{{ selectedFood()!.name }}</span>
+              <span class="meal-log__selected-food-ref">
+                {{
+                  'nutrition.mealLog.per100g'
+                    | transloco
+                      : {
+                          kcal: selectedFood()!.caloriesPer100g,
+                          carbs: selectedFood()!.carbsPer100g,
+                          protein: selectedFood()!.proteinsPer100g,
+                          fat: selectedFood()!.fatsPer100g,
+                        }
+                }}
+              </span>
+            </div>
+            <button
+              mat-icon-button
+              (click)="onClearFood()"
+              [attr.aria-label]="'nutrition.mealLog.removeSelectedFood' | transloco"
+            >
+              <mat-icon>close</mat-icon>
             </button>
-            }
           </div>
-          <p class="meal-log__calc-hint">
-            {{ 'nutrition.mealLog.calcHint' | transloco }}
-          </p>
-          <div class="meal-log__calculated">
-            <mat-form-field appearance="outline" class="meal-log__calc-field">
-              <mat-label>{{ 'nutrition.mealLog.calories' | transloco }}</mat-label>
-              <input matInput formControlName="calories" type="number" min="0" step="0.1"
-                (input)="onNutrientEditedManually()" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="meal-log__calc-field">
-              <mat-label>{{ 'nutrition.mealLog.carbohydrates' | transloco }}</mat-label>
-              <input matInput formControlName="carbohydrates" type="number" min="0" step="0.1"
-                (input)="onNutrientEditedManually()" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="meal-log__calc-field">
-              <mat-label>{{ 'nutrition.mealLog.proteins' | transloco }}</mat-label>
-              <input matInput formControlName="proteins" type="number" min="0" step="0.1"
-                (input)="onNutrientEditedManually()" />
-            </mat-form-field>
-            <mat-form-field appearance="outline" class="meal-log__calc-field">
-              <mat-label>{{ 'nutrition.mealLog.fats' | transloco }}</mat-label>
-              <input matInput formControlName="fats" type="number" min="0" step="0.1"
-                (input)="onNutrientEditedManually()" />
-            </mat-form-field>
-          </div>
-          }
 
-          <button mat-stroked-button color="primary" type="button" [disabled]="quantityForm.invalid"
-            (click)="onAddItem()">
-            <mat-icon>add</mat-icon>
-            {{ 'nutrition.mealLog.addToMeal' | transloco }}
-          </button>
-        </form>
-      </div>
+          <form [formGroup]="quantityForm" class="meal-log__quantity-form">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'nutrition.mealLog.quantityGrams' | transloco }}</mat-label>
+              <input
+                matInput
+                formControlName="quantityGrams"
+                type="number"
+                min="0.1"
+                step="1"
+                (input)="onQuantityChanged()"
+              />
+              <mat-icon matSuffix>scale</mat-icon>
+            </mat-form-field>
+
+            @if ($safeNavigationMigration(quantityForm.get('calories')?.value) !== null) {
+              <div class="meal-log__calculated-header">
+                <span class="meal-log__calculated-label">{{
+                  'nutrition.mealLog.nutritionalValues' | transloco
+                }}</span>
+                @if (valuesEditedManually()) {
+                  <button
+                    mat-button
+                    type="button"
+                    class="meal-log__reset-link"
+                    (click)="resetToSuggestedValues()"
+                  >
+                    <mat-icon>restart_alt</mat-icon>
+                    {{ 'nutrition.mealLog.useSuggestedValues' | transloco }}
+                  </button>
+                }
+              </div>
+              <p class="meal-log__calc-hint">
+                {{ 'nutrition.mealLog.calcHint' | transloco }}
+              </p>
+              <div class="meal-log__calculated">
+                <mat-form-field appearance="outline" class="meal-log__calc-field">
+                  <mat-label>{{ 'nutrition.mealLog.calories' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="calories"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    (input)="onNutrientEditedManually()"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="meal-log__calc-field">
+                  <mat-label>{{ 'nutrition.mealLog.carbohydrates' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="carbohydrates"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    (input)="onNutrientEditedManually()"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="meal-log__calc-field">
+                  <mat-label>{{ 'nutrition.mealLog.proteins' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="proteins"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    (input)="onNutrientEditedManually()"
+                  />
+                </mat-form-field>
+                <mat-form-field appearance="outline" class="meal-log__calc-field">
+                  <mat-label>{{ 'nutrition.mealLog.fats' | transloco }}</mat-label>
+                  <input
+                    matInput
+                    formControlName="fats"
+                    type="number"
+                    min="0"
+                    step="0.1"
+                    (input)="onNutrientEditedManually()"
+                  />
+                </mat-form-field>
+              </div>
+            }
+
+            <button
+              mat-stroked-button
+              color="primary"
+              type="button"
+              [disabled]="quantityForm.invalid"
+              (click)="onAddItem()"
+            >
+              <mat-icon>add</mat-icon>
+              {{ 'nutrition.mealLog.addToMeal' | transloco }}
+            </button>
+          </form>
+        </div>
       }
     </div>
 
@@ -128,57 +184,77 @@
       <h2 class="meal-log__section-title">{{ 'nutrition.mealLog.summary' | transloco }}</h2>
 
       @if (items().length === 0) {
-      <div class="meal-log__empty">
-        <mat-icon>restaurant</mat-icon>
-        <p>{{ 'nutrition.mealLog.emptySummary' | transloco }}</p>
-      </div>
+        <div class="meal-log__empty">
+          <mat-icon>restaurant</mat-icon>
+          <p>{{ 'nutrition.mealLog.emptySummary' | transloco }}</p>
+        </div>
       } @else {
-      <div class="meal-log__totals">
-        <div class="meal-log__total-item">
-          <span class="meal-log__total-label">{{ 'nutrition.mealLog.totalCalories' | transloco }}</span>
-          <span class="meal-log__total-value">{{ totalCalories | number:'1.0-0' }} kcal</span>
-        </div>
-        <div class="meal-log__total-item">
-          <span class="meal-log__total-label">{{ 'nutrition.mealLog.totalCarbs' | transloco }}</span>
-          <span class="meal-log__total-value">{{ totalCarbs | number:'1.0-1' }} g</span>
-        </div>
-        <div class="meal-log__total-item">
-          <span class="meal-log__total-label">{{ 'nutrition.mealLog.totalProteins' | transloco }}</span>
-          <span class="meal-log__total-value">{{ totalProteins | number:'1.0-1' }} g</span>
-        </div>
-        <div class="meal-log__total-item">
-          <span class="meal-log__total-label">{{ 'nutrition.mealLog.totalFats' | transloco }}</span>
-          <span class="meal-log__total-value">{{ totalFats | number:'1.0-1' }} g</span>
-        </div>
-      </div>
-
-      <div class="meal-log__items">
-        @for (item of items(); track item.foodName; let i = $index) {
-        <div class="meal-log__item">
-          <div class="meal-log__item-info">
-            <span class="meal-log__item-name">{{ item.foodName }}</span>
-            <span class="meal-log__item-detail">
-              {{ item.quantityGrams }}g —
-              {{ item.calories | number:'1.0-0' }} kcal ·
-              C: {{ item.carbohydrates | number:'1.0-1' }}g ·
-              P: {{ item.proteins | number:'1.0-1' }}g ·
-              G: {{ item.fats | number:'1.0-1' }}g
-            </span>
+        <div class="meal-log__totals">
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">{{
+              'nutrition.mealLog.totalCalories' | transloco
+            }}</span>
+            <span class="meal-log__total-value">{{ totalCalories | number: '1.0-0' }} kcal</span>
           </div>
-          <button mat-icon-button color="warn" (click)="onRemoveItem(i)"
-            [attr.aria-label]="'nutrition.mealLog.removeItem' | transloco: { name: item.foodName }">
-            <mat-icon>delete_outline</mat-icon>
-          </button>
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">{{
+              'nutrition.mealLog.totalCarbs' | transloco
+            }}</span>
+            <span class="meal-log__total-value">{{ totalCarbs | number: '1.0-1' }} g</span>
+          </div>
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">{{
+              'nutrition.mealLog.totalProteins' | transloco
+            }}</span>
+            <span class="meal-log__total-value">{{ totalProteins | number: '1.0-1' }} g</span>
+          </div>
+          <div class="meal-log__total-item">
+            <span class="meal-log__total-label">{{
+              'nutrition.mealLog.totalFats' | transloco
+            }}</span>
+            <span class="meal-log__total-value">{{ totalFats | number: '1.0-1' }} g</span>
+          </div>
         </div>
-        }
-      </div>
+
+        <div class="meal-log__items">
+          @for (item of items(); track item.foodName; let i = $index) {
+            <div class="meal-log__item">
+              <div class="meal-log__item-info">
+                <span class="meal-log__item-name">{{ item.foodName }}</span>
+                <span class="meal-log__item-detail">
+                  {{ item.quantityGrams }}g — {{ item.calories | number: '1.0-0' }} kcal · C:
+                  {{ item.carbohydrates | number: '1.0-1' }}g · P:
+                  {{ item.proteins | number: '1.0-1' }}g · G: {{ item.fats | number: '1.0-1' }}g
+                </span>
+              </div>
+              <button
+                mat-icon-button
+                color="warn"
+                (click)="onRemoveItem(i)"
+                [attr.aria-label]="
+                  'nutrition.mealLog.removeItem' | transloco: { name: item.foodName }
+                "
+              >
+                <mat-icon>delete_outline</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
       }
 
       <div class="meal-log__actions">
         <button mat-stroked-button (click)="onCancel()">{{ 'common.cancel' | transloco }}</button>
-        <button mat-raised-button color="primary" [disabled]="mealForm.invalid || items().length === 0 || loading()"
-          (click)="onSubmit()">
-          @if (loading()) { {{ 'nutrition.mealLog.saving' | transloco }} } @else { {{ 'nutrition.mealLog.save' | transloco }} }
+        <button
+          mat-raised-button
+          color="primary"
+          [disabled]="mealForm.invalid || items().length === 0 || loading()"
+          (click)="onSubmit()"
+        >
+          @if (loading()) {
+            {{ 'nutrition.mealLog.saving' | transloco }}
+          } @else {
+            {{ 'nutrition.mealLog.save' | transloco }}
+          }
         </button>
       </div>
     </div>

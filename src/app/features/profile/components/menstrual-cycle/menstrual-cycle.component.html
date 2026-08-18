@@ -1,324 +1,393 @@
 <div class="cycle">
-    @if (loading()) {
+  @if (loading()) {
     <p class="cycle__loading-text">{{ 'profile.cycle.loading' | transloco }}</p>
-    } @else if (noData() || !status()) {
+  } @else if (noData() || !status()) {
     <div class="cycle__layout">
-        <div class="cycle__card">
-            <h2 class="cycle__section-title">
-                <mat-icon>calendar_month</mat-icon>
-                {{ 'profile.cycle.registerPeriodTitle' | transloco }}
-            </h2>
-            <p class="cycle__hint">
-                {{ 'profile.cycle.registerPeriodHint' | transloco }}
-            </p>
+      <div class="cycle__card">
+        <h2 class="cycle__section-title">
+          <mat-icon>calendar_month</mat-icon>
+          {{ 'profile.cycle.registerPeriodTitle' | transloco }}
+        </h2>
+        <p class="cycle__hint">
+          {{ 'profile.cycle.registerPeriodHint' | transloco }}
+        </p>
 
-            <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
-                    <input matInput formControlName="startDate" type="date" />
-                    <mat-icon matSuffix>event</mat-icon>
-                </mat-form-field>
+        <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
+            <input matInput formControlName="startDate" type="date" />
+            <mat-icon matSuffix>event</mat-icon>
+          </mat-form-field>
 
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
-                    <textarea matInput formControlName="notes" rows="2"></textarea>
-                </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
+            <textarea matInput formControlName="notes" rows="2"></textarea>
+          </mat-form-field>
 
-                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { {{ 'profile.cycle.registering' | transloco }} } @else { {{ 'profile.cycle.registerPeriodStart' | transloco }} }
-                </button>
-            </form>
-        </div>
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+            @if (saving()) {
+              {{ 'profile.cycle.registering' | transloco }}
+            } @else {
+              {{ 'profile.cycle.registerPeriodStart' | transloco }}
+            }
+          </button>
+        </form>
+      </div>
     </div>
-    } @else if (!noData() && status() && !status()!.isOngoing) {
+  } @else if (!noData() && status() && !status()!.isOngoing) {
     <div class="cycle__layout">
-        <div class="cycle__card">
-            <h2 class="cycle__section-title">
-                <mat-icon>calendar_month</mat-icon>
-                {{ 'profile.cycle.registerNextPeriodTitle' | transloco }}
-            </h2>
-            <p class="cycle__hint">
-                {{ 'profile.cycle.lastPeriodEnded' | transloco: { date: (status()!.history[0]?.endDate | date:'dd/MM/yyyy') } }}
-            </p>
+      <div class="cycle__card">
+        <h2 class="cycle__section-title">
+          <mat-icon>calendar_month</mat-icon>
+          {{ 'profile.cycle.registerNextPeriodTitle' | transloco }}
+        </h2>
+        <p class="cycle__hint">
+          {{
+            'profile.cycle.lastPeriodEnded'
+              | transloco
+                : {
+                    date:
+                      ($safeNavigationMigration(status()!.history[0]?.endDate)
+                      | date: 'dd/MM/yyyy'),
+                  }
+          }}
+        </p>
 
-            <div class="cycle__stat cycle__stat--inline">
-                <span class="cycle__stat-label">
-                    @if (status()!.isProjectionStale) {
-                    {{ 'profile.cycle.staleEstimate' | transloco }}
-                    } @else {
-                    {{ 'profile.cycle.nextPeriodEstimated' | transloco }}
-                    }
-                </span>
-                <span class="cycle__stat-value">
-                    {{ status()!.nextCycleStart | date:'dd MMM yyyy' }}
-                </span>
-            </div>
-
+        <div class="cycle__stat cycle__stat--inline">
+          <span class="cycle__stat-label">
             @if (status()!.isProjectionStale) {
-            <p class="cycle__hint cycle__hint--muted">
-                {{ 'profile.cycle.staleHint' | transloco }}
-            </p>
+              {{ 'profile.cycle.staleEstimate' | transloco }}
+            } @else {
+              {{ 'profile.cycle.nextPeriodEstimated' | transloco }}
             }
-
-            <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
-                    <input matInput formControlName="startDate" type="date" />
-                    <mat-icon matSuffix>event</mat-icon>
-                </mat-form-field>
-
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
-                    <textarea matInput formControlName="notes" rows="2"></textarea>
-                </mat-form-field>
-
-                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { {{ 'profile.cycle.registering' | transloco }} } @else { {{ 'profile.cycle.registerPeriodStart' | transloco }} }
-                </button>
-            </form>
+          </span>
+          <span class="cycle__stat-value">
+            {{ status()!.nextCycleStart | date: 'dd MMM yyyy' }}
+          </span>
         </div>
 
-        <div class="cycle__card">
-            <h2 class="cycle__section-title">
-                <mat-icon>history</mat-icon>
-                {{ 'profile.cycle.yourHistory' | transloco }}
-            </h2>
+        @if (status()!.isProjectionStale) {
+          <p class="cycle__hint cycle__hint--muted">
+            {{ 'profile.cycle.staleHint' | transloco }}
+          </p>
+        }
 
-            @if (status()!.history.length > 0) {
-            <div class="cycle__history">
-                @for (item of status()!.history; track item.cycleId) {
-                <div class="cycle__history-item">
-                    <span class="cycle__history-date">
-                        {{ item.startDate | date:'dd/MM/yyyy' }}
-                        @if (item.endDate) {
-                        → {{ item.endDate | date:'dd/MM/yyyy' }}
-                        }
-                    </span>
-                    <span class="cycle__history-detail">
-                        @if (item.actualPeriodLengthDays) {
-                        {{ 'profile.cycle.periodDaysReal' | transloco: { days: item.actualPeriodLengthDays } }}
-                        } @else {
-                        {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
-                        }
-                    </span>
-                </div>
-                }
-            </div>
+        <form [formGroup]="startForm" (ngSubmit)="onStartCycle()">
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'profile.cycle.periodStartDate' | transloco }}</mat-label>
+            <input matInput formControlName="startDate" type="date" />
+            <mat-icon matSuffix>event</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>{{ 'profile.cycle.additionalNotes' | transloco }}</mat-label>
+            <textarea matInput formControlName="notes" rows="2"></textarea>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+            @if (saving()) {
+              {{ 'profile.cycle.registering' | transloco }}
+            } @else {
+              {{ 'profile.cycle.registerPeriodStart' | transloco }}
             }
+          </button>
+        </form>
+      </div>
 
-            @if (status()!.averageCycleLength) {
-            <div class="cycle__stat">
-                <span class="cycle__stat-label">{{ 'profile.cycle.averageCycleLength' | transloco }}</span>
-                <span class="cycle__stat-value">{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span>
-            </div>
+      <div class="cycle__card">
+        <h2 class="cycle__section-title">
+          <mat-icon>history</mat-icon>
+          {{ 'profile.cycle.yourHistory' | transloco }}
+        </h2>
+
+        @if (status()!.history.length > 0) {
+          <div class="cycle__history">
+            @for (item of status()!.history; track item.cycleId) {
+              <div class="cycle__history-item">
+                <span class="cycle__history-date">
+                  {{ item.startDate | date: 'dd/MM/yyyy' }}
+                  @if (item.endDate) {
+                    → {{ item.endDate | date: 'dd/MM/yyyy' }}
+                  }
+                </span>
+                <span class="cycle__history-detail">
+                  @if (item.actualPeriodLengthDays) {
+                    {{
+                      'profile.cycle.periodDaysReal'
+                        | transloco: { days: item.actualPeriodLengthDays }
+                    }}
+                  } @else {
+                    {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
+                  }
+                </span>
+              </div>
             }
-        </div>
+          </div>
+        }
 
-        <div class="cycle__card">
-            <app-cycle-calendar [status]="status()!" />
-        </div>
+        @if (status()!.averageCycleLength) {
+          <div class="cycle__stat">
+            <span class="cycle__stat-label">{{
+              'profile.cycle.averageCycleLength' | transloco
+            }}</span>
+            <span class="cycle__stat-value"
+              >{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span
+            >
+          </div>
+        }
+      </div>
+
+      <div class="cycle__card">
+        <app-cycle-calendar [status]="status()!" />
+      </div>
     </div>
-    } @else {
+  } @else {
     <div class="cycle__layout">
-        <div class="cycle__card">
-            <h2 class="cycle__section-title">
-                <mat-icon>insights</mat-icon>
-                {{ 'profile.cycle.currentStatusTitle' | transloco }}
-            </h2>
+      <div class="cycle__card">
+        <h2 class="cycle__section-title">
+          <mat-icon>insights</mat-icon>
+          {{ 'profile.cycle.currentStatusTitle' | transloco }}
+        </h2>
 
-            @if (status()!.isOpenTooLong) {
-            <div class="cycle__open-too-long-banner">
-                <mat-icon>warning</mat-icon>
-                <div class="cycle__open-too-long-text">
-                    <strong>{{ 'profile.cycle.periodAlreadyEnded' | transloco }}</strong>
-                    <span>
-                        {{ 'profile.cycle.openTooLongText' | transloco: { days: status()!.dayOfCycle } }}
-                    </span>
-                </div>
-                <button mat-stroked-button color="warn" type="button" (click)="onJumpToFinishPeriod()">
-                    {{ 'profile.cycle.finishNow' | transloco }}
-                </button>
+        @if (status()!.isOpenTooLong) {
+          <div class="cycle__open-too-long-banner">
+            <mat-icon>warning</mat-icon>
+            <div class="cycle__open-too-long-text">
+              <strong>{{ 'profile.cycle.periodAlreadyEnded' | transloco }}</strong>
+              <span>
+                {{ 'profile.cycle.openTooLongText' | transloco: { days: status()!.dayOfCycle } }}
+              </span>
             </div>
-            }
+            <button mat-stroked-button color="warn" type="button" (click)="onJumpToFinishPeriod()">
+              {{ 'profile.cycle.finishNow' | transloco }}
+            </button>
+          </div>
+        }
 
-            <div class="cycle__phase-card" [style.border-color]="getPhaseColor(status()!.currentPhase)">
-                <div class="cycle__phase-header">
-                    <mat-icon [style.color]="getPhaseColor(status()!.currentPhase)">
-                        {{ getPhaseIcon(status()!.currentPhase) }}
-                    </mat-icon>
-                    <div>
-                        <span class="cycle__phase-label" [style.color]="getPhaseColor(status()!.currentPhase)">
-                            {{ status()!.currentPhaseLabel }}
-                        </span>
-                        <span class="cycle__phase-day">
-                            {{ 'profile.cycle.dayOfCycle' | transloco: { day: status()!.dayOfCycle } }}
-                            @if (status()!.isOngoing) {
-                            · {{ 'profile.cycle.ongoingPeriod' | transloco }}
-                            }
-                        </span>
-                    </div>
-                </div>
-                <p class="cycle__phase-guidance">{{ status()!.glucoseGuidance }}</p>
-            </div>
-
-            <div class="cycle__stats">
-                <div class="cycle__stat">
-                    <span class="cycle__stat-label">{{ 'profile.cycle.nextCycle' | transloco }}</span>
-                    <span class="cycle__stat-value">
-                        {{ status()!.nextCycleStart | date:'dd MMM yyyy' }}
-                    </span>
-                    <span class="cycle__stat-sub">
-                        @if (status()!.daysUntilNextCycle > 0) {
-                        {{ 'profile.cycle.inDays' | transloco: { days: status()!.daysUntilNextCycle } }}
-                        } @else {
-                        {{ 'profile.cycle.todayOrSoon' | transloco }}
-                        }
-                    </span>
-                </div>
-                <div class="cycle__stat">
-                    <span class="cycle__stat-label">{{ 'profile.cycle.averageCycleLength' | transloco }}</span>
-                    @if (status()!.averageCycleLength) {
-                    <span class="cycle__stat-value">{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span>
-                    <span class="cycle__stat-sub">{{ 'profile.cycle.basedOnHistory' | transloco }}</span>
-                    } @else {
-                    <span class="cycle__stat-value cycle__stat-value--muted">—</span>
-                    <span class="cycle__stat-sub">{{ 'profile.cycle.notEnoughData' | transloco }}</span>
-                    }
-                </div>
-            </div>
-
-            @if (status()!.isOngoing) {
-            <mat-divider />
-            <div class="cycle__finish-section" id="finish-period-section">
-                <h3 class="cycle__subsection-title">{{ 'profile.cycle.periodEndedQuestion' | transloco }}</h3>
-                <p class="cycle__hint">
-                    {{ 'profile.cycle.finishHint' | transloco }}
-                </p>
-                <form [formGroup]="finishForm" class="cycle__finish-form">
-                    <mat-form-field appearance="outline">
-                        <mat-label>{{ 'profile.cycle.periodEndDate' | transloco }}</mat-label>
-                        <input matInput formControlName="endDate" type="date" />
-                    </mat-form-field>
-
-                    @if (!confirmFinish()) {
-                    <button mat-stroked-button color="primary" type="button" [disabled]="finishingPeriod()"
-                        (click)="onFinishPeriod()">
-                        {{ 'profile.cycle.finishPeriod' | transloco }}
-                    </button>
-                    } @else {
-                    <div class="cycle__finish-confirm">
-                        <span>{{ 'profile.cycle.finishConfirm' | transloco }}</span>
-                        <div class="cycle__finish-confirm-actions">
-                            <button mat-stroked-button type="button" (click)="cancelFinish()"
-                                [disabled]="finishingPeriod()">
-                                {{ 'profile.cycle.cancel' | transloco }}
-                            </button>
-                            <button mat-raised-button color="primary" type="button" [disabled]="finishingPeriod()"
-                                (click)="onFinishPeriod()">
-                                @if (finishingPeriod()) { {{ 'profile.saving' | transloco }} } @else { {{ 'profile.cycle.yesConfirm' | transloco }} }
-                            </button>
-                        </div>
-                    </div>
-                    }
-                </form>
-            </div>
-            }
-
-            @if (status()!.history.length > 0) {
-            <mat-divider />
-            <h3 class="cycle__history-title">{{ 'profile.cycle.recentHistory' | transloco }}</h3>
-            <div class="cycle__history">
-                @for (item of status()!.history; track item.cycleId) {
-                <div class="cycle__history-item">
-                    <span class="cycle__history-date">
-                        {{ item.startDate | date:'dd/MM/yyyy' }}
-                        @if (item.endDate) {
-                        → {{ item.endDate | date:'dd/MM/yyyy' }}
-                        }
-                    </span>
-                    <span class="cycle__history-detail">
-                        @if (item.actualPeriodLengthDays) {
-                        {{ 'profile.cycle.periodDaysReal' | transloco: { days: item.actualPeriodLengthDays } }}
-                        } @else {
-                        {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
-                        }
-                    </span>
-                </div>
+        <div class="cycle__phase-card" [style.border-color]="getPhaseColor(status()!.currentPhase)">
+          <div class="cycle__phase-header">
+            <mat-icon [style.color]="getPhaseColor(status()!.currentPhase)">
+              {{ getPhaseIcon(status()!.currentPhase) }}
+            </mat-icon>
+            <div>
+              <span
+                class="cycle__phase-label"
+                [style.color]="getPhaseColor(status()!.currentPhase)"
+              >
+                {{ status()!.currentPhaseLabel }}
+              </span>
+              <span class="cycle__phase-day">
+                {{ 'profile.cycle.dayOfCycle' | transloco: { day: status()!.dayOfCycle } }}
+                @if (status()!.isOngoing) {
+                  · {{ 'profile.cycle.ongoingPeriod' | transloco }}
                 }
+              </span>
             </div>
-            }
+          </div>
+          <p class="cycle__phase-guidance">{{ status()!.glucoseGuidance }}</p>
+        </div>
 
-            @if (status()) {
-            <div class="cycle__calendar-card">
-                <app-cycle-calendar [status]="status()!" />
-            </div>
+        <div class="cycle__stats">
+          <div class="cycle__stat">
+            <span class="cycle__stat-label">{{ 'profile.cycle.nextCycle' | transloco }}</span>
+            <span class="cycle__stat-value">
+              {{ status()!.nextCycleStart | date: 'dd MMM yyyy' }}
+            </span>
+            <span class="cycle__stat-sub">
+              @if (status()!.daysUntilNextCycle > 0) {
+                {{ 'profile.cycle.inDays' | transloco: { days: status()!.daysUntilNextCycle } }}
+              } @else {
+                {{ 'profile.cycle.todayOrSoon' | transloco }}
+              }
+            </span>
+          </div>
+          <div class="cycle__stat">
+            <span class="cycle__stat-label">{{
+              'profile.cycle.averageCycleLength' | transloco
+            }}</span>
+            @if (status()!.averageCycleLength) {
+              <span class="cycle__stat-value"
+                >{{ status()!.averageCycleLength }} {{ 'profile.cycle.days' | transloco }}</span
+              >
+              <span class="cycle__stat-sub">{{ 'profile.cycle.basedOnHistory' | transloco }}</span>
+            } @else {
+              <span class="cycle__stat-value cycle__stat-value--muted">—</span>
+              <span class="cycle__stat-sub">{{ 'profile.cycle.notEnoughData' | transloco }}</span>
             }
+          </div>
         </div>
 
         @if (status()!.isOngoing) {
-        <div class="cycle__card">
-            <h2 class="cycle__section-title">
-                <mat-icon>edit_calendar</mat-icon>
-                {{ 'profile.cycle.todayEntryTitle' | transloco }}
-            </h2>
+          <mat-divider />
+          <div class="cycle__finish-section" id="finish-period-section">
+            <h3 class="cycle__subsection-title">
+              {{ 'profile.cycle.periodEndedQuestion' | transloco }}
+            </h3>
             <p class="cycle__hint">
-                {{ 'profile.cycle.todayEntryHint' | transloco }}
+              {{ 'profile.cycle.finishHint' | transloco }}
             </p>
+            <form [formGroup]="finishForm" class="cycle__finish-form">
+              <mat-form-field appearance="outline">
+                <mat-label>{{ 'profile.cycle.periodEndDate' | transloco }}</mat-label>
+                <input matInput formControlName="endDate" type="date" />
+              </mat-form-field>
 
-            <form [formGroup]="dayEntryForm" (ngSubmit)="onSaveDayEntry()">
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.flowIntensityToday' | transloco }}</mat-label>
-                    <mat-select formControlName="flowIntensity">
-                        @for (option of metadata.flowIntensities(); track option.value) {
-                        <mat-option [value]="option.value">{{ option.label }}</mat-option>
-                        }
-                    </mat-select>
-                </mat-form-field>
-
-                <div class="cycle__symptoms-section">
-                    <label class="cycle__symptoms-label">{{ 'profile.cycle.symptomsToday' | transloco }}</label>
-                    <div class="cycle__symptoms-grid">
-                        @for (symptomItem of metadata.cycleSymptoms(); track symptomItem.value) {
-                        <button type="button" class="cycle__symptom-chip"
-                            [class.cycle__symptom-chip--selected]="isSymptomSelected(symptomItem.value)"
-                            (click)="toggleSymptom(symptomItem.value)">
-                            {{ symptomItem.label }}
-                        </button>
-                        }
-                    </div>
-                </div>
-
-                @if (selectedSymptoms().size > 0) {
-                <div class="cycle__severity-section">
-                    <label class="cycle__symptoms-label">{{ 'profile.cycle.howIntenseSymptom' | transloco }}</label>
-                    @for (entry of selectedSymptoms().entries(); track entry[0]) {
-                    <div class="cycle__severity-row">
-                        <span class="cycle__severity-symptom">{{ getSymptomLabel(entry[0]) }}</span>
-                        <div class="cycle__severity-options">
-                            @for (sev of metadata.symptomSeverities(); track sev.value) {
-                            <button type="button" class="cycle__severity-chip"
-                                [class.cycle__severity-chip--selected]="getSeverityFor(entry[0]) === sev.value"
-                                (click)="setSeverity(entry[0], asSeverity(sev.value))">
-                                {{ sev.label }}
-                            </button>
-                            }
-                        </div>
-                    </div>
-                    }
-                </div>
-                }
-
-                <mat-form-field appearance="outline">
-                    <mat-label>{{ 'profile.cycle.todayNotes' | transloco }}</mat-label>
-                    <textarea matInput formControlName="notes" rows="2"></textarea>
-                </mat-form-field>
-
-                <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
-                    @if (saving()) { {{ 'profile.saving' | transloco }} } @else { {{ 'profile.cycle.saveTodayEntry' | transloco }} }
+              @if (!confirmFinish()) {
+                <button
+                  mat-stroked-button
+                  color="primary"
+                  type="button"
+                  [disabled]="finishingPeriod()"
+                  (click)="onFinishPeriod()"
+                >
+                  {{ 'profile.cycle.finishPeriod' | transloco }}
                 </button>
+              } @else {
+                <div class="cycle__finish-confirm">
+                  <span>{{ 'profile.cycle.finishConfirm' | transloco }}</span>
+                  <div class="cycle__finish-confirm-actions">
+                    <button
+                      mat-stroked-button
+                      type="button"
+                      (click)="cancelFinish()"
+                      [disabled]="finishingPeriod()"
+                    >
+                      {{ 'profile.cycle.cancel' | transloco }}
+                    </button>
+                    <button
+                      mat-raised-button
+                      color="primary"
+                      type="button"
+                      [disabled]="finishingPeriod()"
+                      (click)="onFinishPeriod()"
+                    >
+                      @if (finishingPeriod()) {
+                        {{ 'profile.saving' | transloco }}
+                      } @else {
+                        {{ 'profile.cycle.yesConfirm' | transloco }}
+                      }
+                    </button>
+                  </div>
+                </div>
+              }
             </form>
-        </div>
+          </div>
         }
+
+        @if (status()!.history.length > 0) {
+          <mat-divider />
+          <h3 class="cycle__history-title">{{ 'profile.cycle.recentHistory' | transloco }}</h3>
+          <div class="cycle__history">
+            @for (item of status()!.history; track item.cycleId) {
+              <div class="cycle__history-item">
+                <span class="cycle__history-date">
+                  {{ item.startDate | date: 'dd/MM/yyyy' }}
+                  @if (item.endDate) {
+                    → {{ item.endDate | date: 'dd/MM/yyyy' }}
+                  }
+                </span>
+                <span class="cycle__history-detail">
+                  @if (item.actualPeriodLengthDays) {
+                    {{
+                      'profile.cycle.periodDaysReal'
+                        | transloco: { days: item.actualPeriodLengthDays }
+                    }}
+                  } @else {
+                    {{ 'profile.cycle.periodOngoingOrUnfinished' | transloco }}
+                  }
+                </span>
+              </div>
+            }
+          </div>
+        }
+
+        @if (status()) {
+          <div class="cycle__calendar-card">
+            <app-cycle-calendar [status]="status()!" />
+          </div>
+        }
+      </div>
+
+      @if (status()!.isOngoing) {
+        <div class="cycle__card">
+          <h2 class="cycle__section-title">
+            <mat-icon>edit_calendar</mat-icon>
+            {{ 'profile.cycle.todayEntryTitle' | transloco }}
+          </h2>
+          <p class="cycle__hint">
+            {{ 'profile.cycle.todayEntryHint' | transloco }}
+          </p>
+
+          <form [formGroup]="dayEntryForm" (ngSubmit)="onSaveDayEntry()">
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'profile.cycle.flowIntensityToday' | transloco }}</mat-label>
+              <mat-select formControlName="flowIntensity">
+                @for (option of metadata.flowIntensities(); track option.value) {
+                  <mat-option [value]="option.value">{{ option.label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+
+            <div class="cycle__symptoms-section">
+              <label class="cycle__symptoms-label">{{
+                'profile.cycle.symptomsToday' | transloco
+              }}</label>
+              <div class="cycle__symptoms-grid">
+                @for (symptomItem of metadata.cycleSymptoms(); track symptomItem.value) {
+                  <button
+                    type="button"
+                    class="cycle__symptom-chip"
+                    [class.cycle__symptom-chip--selected]="isSymptomSelected(symptomItem.value)"
+                    (click)="toggleSymptom(symptomItem.value)"
+                  >
+                    {{ symptomItem.label }}
+                  </button>
+                }
+              </div>
+            </div>
+
+            @if (selectedSymptoms().size > 0) {
+              <div class="cycle__severity-section">
+                <label class="cycle__symptoms-label">{{
+                  'profile.cycle.howIntenseSymptom' | transloco
+                }}</label>
+                @for (entry of selectedSymptoms().entries(); track entry[0]) {
+                  <div class="cycle__severity-row">
+                    <span class="cycle__severity-symptom">{{ getSymptomLabel(entry[0]) }}</span>
+                    <div class="cycle__severity-options">
+                      @for (sev of metadata.symptomSeverities(); track sev.value) {
+                        <button
+                          type="button"
+                          class="cycle__severity-chip"
+                          [class.cycle__severity-chip--selected]="
+                            getSeverityFor(entry[0]) === sev.value
+                          "
+                          (click)="setSeverity(entry[0], asSeverity(sev.value))"
+                        >
+                          {{ sev.label }}
+                        </button>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+
+            <mat-form-field appearance="outline">
+              <mat-label>{{ 'profile.cycle.todayNotes' | transloco }}</mat-label>
+              <textarea matInput formControlName="notes" rows="2"></textarea>
+            </mat-form-field>
+
+            <button mat-raised-button color="primary" type="submit" [disabled]="saving()">
+              @if (saving()) {
+                {{ 'profile.saving' | transloco }}
+              } @else {
+                {{ 'profile.cycle.saveTodayEntry' | transloco }}
+              }
+            </button>
+          </form>
+        </div>
+      }
     </div>
-    }
+  }
 </div>

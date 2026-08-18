@@ -68,8 +68,8 @@ export class AgpChartComponent implements OnChanges {
       grid: { top: 30, right: 20, bottom: 40, left: 55 },
       tooltip: {
         trigger: 'axis',
-        backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
-        borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
+        backgroundColor: getCssColor('--color-surface', dark ? '#121414' : '#FFFFFF'),
+        borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E6F5F5',
         textStyle: {
           color: getCssColor('--color-text-primary', dark ? '#E8F8F8' : '#173030'),
           fontSize: 12,

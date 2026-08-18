@@ -29,16 +29,16 @@
   --glucose-critically-high: #bf360c;
 
   // ── Superficies
-  --color-background: #f7f6fc;
+  --color-background: #f6fcfc;
   --color-surface: #ffffff;
-  --color-surface-variant: #f0eff9;
+  --color-surface-variant: #eff9f9;
   --color-border: rgba(15, 110, 106, 0.12);
 
   // ── Degradados de marca (identidad "Liquid Glass" — sin transparencias)
   --gradient-primary: #{p.$gradient-primary};
   --gradient-primary-hover: #{p.$gradient-primary-hover};
   --gradient-header: #{p.$gradient-header};
-  --gradient-surface: linear-gradient(160deg, #ffffff 0%, #f7f6fc 100%);
+  --gradient-surface: linear-gradient(160deg, #ffffff 0%, #f6fcfc 100%);
 
   // ── Campos de formulario (inputs/selects) — un solo origen para toda la app
   --input-bg: #{p.$color-primary-light};
@@ -135,17 +135,17 @@
   --glucose-critically-high: #ff8a65;
 
   --color-background: #000000;
-  --color-surface: #121214;
-  --color-surface-variant: #1c1c20;
+  --color-surface: #121414;
+  --color-surface-variant: #1c201f;
   --color-border: rgba(255, 255, 255, 0.08);
 
   --gradient-primary: #{p.$gradient-primary-dark-mode};
   --gradient-primary-hover: #{p.$gradient-primary-hover-dark-mode};
   --gradient-header: #{p.$gradient-header-dark-mode};
-  --gradient-surface: linear-gradient(160deg, #17171b 0%, #121214 100%);
+  --gradient-surface: linear-gradient(160deg, #171b1a 0%, #121414 100%);
 
-  --input-bg: #1c1c20;
-  --input-bg-focus: #232328;
+  --input-bg: #1c201f;
+  --input-bg-focus: #232827;
   --input-border: rgba(255, 255, 255, 0.12);
   --input-border-hover: #82d9d2;
   --input-border-focus: #{p.$color-primary-dark-mode};

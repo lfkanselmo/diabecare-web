@@ -66,7 +66,7 @@ export class CycleCalendarComponent implements OnChanges {
       : 28;
     const dayOfCycle = this.status.dayOfCycle;
     const currentPhase = this.status.currentPhase;
-    const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
+    const labelColor = getCssColor('--color-text-secondary', dark ? '#97C0BE' : '#546E7A');
     const borderColor = dark ? getCssColor('--color-surface-variant', '#1C1C20') : '#FFFFFF';
     const cfg = this.systemConfig.phaseConfig;
 
@@ -109,7 +109,7 @@ export class CycleCalendarComponent implements OnChanges {
         trigger: 'item',
         backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
         borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
-        textStyle: { color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730') },
+        textStyle: { color: getCssColor('--color-text-primary', dark ? '#E8F8F8' : '#173030') },
         formatter: (p: any) => {
           const phase = phases[p.dataIndex];
           const pCfg = cfg[phase.phase];

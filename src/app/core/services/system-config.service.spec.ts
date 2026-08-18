@@ -201,7 +201,7 @@ describe('SystemConfigService', () => {
     it('should return the dark fallback color for an unknown status in dark mode', () => {
       const result = service.getGlucoseStatusColor('UNKNOWN_STATUS', true);
 
-      expect(result).toBe('#9B97C0');
+      expect(result).toBe('#97C0BE');
     });
 
     it('should return distinct colors for each defined glucose status in light mode', () => {

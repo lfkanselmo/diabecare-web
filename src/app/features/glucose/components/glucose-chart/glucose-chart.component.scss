@@ -52,10 +52,26 @@
   flex-shrink: 0;
   border-radius: 1px;
 
-  &--meal     { background: #0EA5A0; border-top: 2px dashed #0EA5A0; height: 0; }
-  &--exercise { background: #5B4FCF; border-top: 2px dotted #5B4FCF; height: 0; }
-  &--min      { background: #C62828; border-top: 2px dashed #C62828; height: 0; }
-  &--max      { background: #E8A020; border-top: 2px dashed #E8A020; height: 0; }
+  &--meal {
+    background: #0ea5a0;
+    border-top: 2px dashed #0ea5a0;
+    height: 0;
+  }
+  &--exercise {
+    background: var(--color-chart-accent);
+    border-top: 2px dotted var(--color-chart-accent);
+    height: 0;
+  }
+  &--min {
+    background: #c62828;
+    border-top: 2px dashed #c62828;
+    height: 0;
+  }
+  &--max {
+    background: #e8a020;
+    border-top: 2px dashed #e8a020;
+    height: 0;
+  }
 }
 
 .glucose-chart__timeline {
@@ -91,8 +107,12 @@
   border-left: 3px solid transparent;
   background: var(--color-surface-variant);
 
-  &--meal     { border-left-color: #0EA5A0; }
-  &--exercise { border-left-color: #5B4FCF; }
+  &--meal {
+    border-left-color: #0ea5a0;
+  }
+  &--exercise {
+    border-left-color: var(--color-chart-accent);
+  }
 }
 
 .glucose-chart__timeline-icon {

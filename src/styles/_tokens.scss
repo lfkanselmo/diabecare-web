@@ -1,159 +1,164 @@
 @use 'palette' as p;
 
 :root {
-  // ── Colores primarios — Índigo (fuente única: _palette.scss)
-  --color-primary:          #{p.$color-primary};
-  --color-primary-mid:      #{p.$color-primary-mid};
-  --color-primary-light:    #{p.$color-primary-light};
-  --color-primary-dark:     #{p.$color-primary-dark};
+  // ── Colores primarios — Vital Teal (fuente única: _palette.scss)
+  --color-primary: #{p.$color-primary};
+  --color-primary-mid: #{p.$color-primary-mid};
+  --color-primary-light: #{p.$color-primary-light};
+  --color-primary-dark: #{p.$color-primary-dark};
 
   // ── Colores semánticos
-  --color-success:          #{p.$color-success};
-  --color-success-light:    #E3F7EE;
-  --color-warning:          #{p.$color-warning};
-  --color-warning-light:    #FEF5E0;
-  --color-danger:           #{p.$color-danger};
-  --color-danger-light:     #FEECEC;
-  --color-info:             #{p.$color-info};
-  --color-info-light:       #E0F5F4;
+  --color-success: #{p.$color-success};
+  --color-success-light: #e3f7ee;
+  --color-warning: #{p.$color-warning};
+  --color-warning-light: #fef5e0;
+  --color-danger: #{p.$color-danger};
+  --color-danger-light: #feecec;
+  --color-info: #{p.$color-info};
+  --color-info-light: #e0f5f4;
+  // Tercer color categórico para gráficos donde primary e info (ambos
+  // teal) ya están ocupados por otras dos series — ejercicio vs. comida
+  // en el gráfico de glucosa, HbA1c vs. promedio de glucosa en vitals.
+  --color-chart-accent: #7b61c4;
 
   // ── Estados de glucosa
-  --glucose-critically-low:  #9B1D6A;
-  --glucose-low:             #E04B4B;
-  --glucose-normal:          #22A96A;
-  --glucose-high:            #E8A020;
-  --glucose-critically-high: #BF360C;
+  --glucose-critically-low: #9b1d6a;
+  --glucose-low: #e04b4b;
+  --glucose-normal: #22a96a;
+  --glucose-high: #e8a020;
+  --glucose-critically-high: #bf360c;
 
   // ── Superficies
-  --color-background:       #F7F6FC;
-  --color-surface:          #FFFFFF;
-  --color-surface-variant:  #F0EFF9;
-  --color-border:           rgba(91, 79, 207, 0.12);
+  --color-background: #f7f6fc;
+  --color-surface: #ffffff;
+  --color-surface-variant: #f0eff9;
+  --color-border: rgba(15, 110, 106, 0.12);
 
   // ── Degradados de marca (identidad "Liquid Glass" — sin transparencias)
-  --gradient-primary:        #{p.$gradient-primary};
-  --gradient-primary-hover:  #{p.$gradient-primary-hover};
-  --gradient-header:         #{p.$gradient-header};
-  --gradient-surface:        linear-gradient(160deg, #FFFFFF 0%, #F7F6FC 100%);
+  --gradient-primary: #{p.$gradient-primary};
+  --gradient-primary-hover: #{p.$gradient-primary-hover};
+  --gradient-header: #{p.$gradient-header};
+  --gradient-surface: linear-gradient(160deg, #ffffff 0%, #f7f6fc 100%);
 
   // ── Campos de formulario (inputs/selects) — un solo origen para toda la app
-  --input-bg:            #{p.$color-primary-light};
-  --input-bg-focus:      #FFFFFF;
-  --input-border:        rgba(91, 79, 207, 0.18);
-  --input-border-hover:  #{p.$color-primary-mid};
-  --input-border-focus:  #{p.$color-primary};
-  --input-label:         var(--color-text-secondary);
-  --input-label-focus:   #{p.$color-primary};
-  --input-text:          var(--color-text-primary);
-  --input-caret:         #{p.$color-primary};
-  --input-icon:          var(--color-text-secondary);
+  --input-bg: #{p.$color-primary-light};
+  --input-bg-focus: #ffffff;
+  --input-border: rgba(15, 110, 106, 0.18);
+  --input-border-hover: #{p.$color-primary-mid};
+  --input-border-focus: #{p.$color-primary};
+  --input-label: var(--color-text-secondary);
+  --input-label-focus: #{p.$color-primary};
+  --input-text: var(--color-text-primary);
+  --input-caret: #{p.$color-primary};
+  --input-icon: var(--color-text-secondary);
 
   // ── Texto
-  --color-text-primary:     #1A1730;
-  --color-text-secondary:   #6E6A8A;
-  --color-text-disabled:    #A9A6C0;
-  --color-text-inverse:     #FFFFFF;
+  --color-text-primary: #173030;
+  --color-text-secondary: #6a8a8a;
+  --color-text-disabled: #a6c0bf;
+  --color-text-inverse: #ffffff;
 
   // ── Tipografía
-  --font-family:            'Inter', sans-serif;
-  --font-size-xs:           12px;
-  --font-size-sm:           14px;
-  --font-size-md:           16px;
-  --font-size-lg:           18px;
-  --font-size-xl:           22px;
-  --font-size-2xl:          28px;
-  --font-size-metric:       36px;
+  --font-family: 'Inter', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 28px;
+  --font-size-metric: 36px;
 
-  --font-weight-regular:    400;
-  --font-weight-medium:     500;
-  --font-weight-semibold:   500;
-  --font-weight-bold:       500;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 500;
+  --font-weight-bold: 500;
 
-  --line-height-tight:      1.2;
-  --line-height-normal:     1.5;
-  --line-height-relaxed:    1.75;
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
 
   // ── Espaciado
-  --space-1:  4px;
-  --space-2:  8px;
-  --space-3:  12px;
-  --space-4:  16px;
-  --space-5:  20px;
-  --space-6:  24px;
-  --space-8:  32px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
   --space-10: 40px;
   --space-12: 48px;
   --space-16: 64px;
 
   // ── Bordes
-  --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   14px;
-  --radius-xl:   20px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   // ── Sombras — más sutiles
-  --shadow-sm:  0 1px 3px rgba(91, 79, 207, 0.06);
-  --shadow-md:  0 4px 12px rgba(91, 79, 207, 0.08);
-  --shadow-lg:  0 8px 24px rgba(91, 79, 207, 0.10);
+  --shadow-sm: 0 1px 3px rgba(15, 110, 106, 0.06);
+  --shadow-md: 0 4px 12px rgba(15, 110, 106, 0.08);
+  --shadow-lg: 0 8px 24px rgba(15, 110, 106, 0.1);
 
   // ── Layout
-  --sidebar-width:        220px;
-  --navbar-height:        60px;
-  --content-max-width:    1280px;
+  --sidebar-width: 220px;
+  --navbar-height: 60px;
+  --content-max-width: 1280px;
 
   // ── Transiciones
-  --transition-fast:      150ms ease;
-  --transition-normal:    250ms ease;
-  --transition-slow:      400ms ease;
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 400ms ease;
 }
 
-[data-theme="dark"] {
-  --color-primary:          #{p.$color-primary-dark-mode};
-  --color-primary-mid:      #9588ED;
-  --color-primary-light:    rgba(91, 79, 207, 0.12);
-  --color-primary-dark:     #{p.$color-primary};
+[data-theme='dark'] {
+  --color-primary: #{p.$color-primary-dark-mode};
+  --color-primary-mid: #82d9d2;
+  --color-primary-light: rgba(15, 110, 106, 0.12);
+  --color-primary-dark: #{p.$color-primary};
 
-  --color-success:          #{p.$color-success-dark-mode};
-  --color-success-light:    rgba(34, 169, 106, 0.12);
-  --color-warning:          #{p.$color-warning-dark-mode};
-  --color-warning-light:    rgba(232, 160, 32, 0.12);
-  --color-danger:           #{p.$color-danger-dark-mode};
-  --color-danger-light:     rgba(224, 75, 75, 0.12);
-  --color-info:             #{p.$color-info-dark-mode};
-  --color-info-light:       rgba(14, 165, 160, 0.12);
+  --color-success: #{p.$color-success-dark-mode};
+  --color-success-light: rgba(34, 169, 106, 0.12);
+  --color-warning: #{p.$color-warning-dark-mode};
+  --color-warning-light: rgba(232, 160, 32, 0.12);
+  --color-danger: #{p.$color-danger-dark-mode};
+  --color-danger-light: rgba(224, 75, 75, 0.12);
+  --color-info: #{p.$color-info-dark-mode};
+  --color-info-light: rgba(14, 165, 160, 0.12);
+  --color-chart-accent: #a996e0;
 
-  --glucose-critically-low:  #F48FB1;
-  --glucose-low:             #F07070;
-  --glucose-normal:          #4ADE98;
-  --glucose-high:            #FABD4A;
-  --glucose-critically-high: #FF8A65;
+  --glucose-critically-low: #f48fb1;
+  --glucose-low: #f07070;
+  --glucose-normal: #4ade98;
+  --glucose-high: #fabd4a;
+  --glucose-critically-high: #ff8a65;
 
-  --color-background:       #000000;
-  --color-surface:          #121214;
-  --color-surface-variant:  #1C1C20;
-  --color-border:           rgba(255, 255, 255, 0.08);
+  --color-background: #000000;
+  --color-surface: #121214;
+  --color-surface-variant: #1c1c20;
+  --color-border: rgba(255, 255, 255, 0.08);
 
-  --gradient-primary:        #{p.$gradient-primary-dark-mode};
-  --gradient-primary-hover:  #{p.$gradient-primary-hover-dark-mode};
-  --gradient-header:         #{p.$gradient-header-dark-mode};
-  --gradient-surface:        linear-gradient(160deg, #17171B 0%, #121214 100%);
+  --gradient-primary: #{p.$gradient-primary-dark-mode};
+  --gradient-primary-hover: #{p.$gradient-primary-hover-dark-mode};
+  --gradient-header: #{p.$gradient-header-dark-mode};
+  --gradient-surface: linear-gradient(160deg, #17171b 0%, #121214 100%);
 
-  --input-bg:            #1C1C20;
-  --input-bg-focus:      #232328;
-  --input-border:        rgba(255, 255, 255, 0.12);
-  --input-border-hover:  #9588ED;
-  --input-border-focus:  #{p.$color-primary-dark-mode};
-  --input-label:         var(--color-text-secondary);
-  --input-label-focus:   #{p.$color-primary-dark-mode};
-  --input-text:          var(--color-text-primary);
-  --input-caret:         #{p.$color-primary-dark-mode};
-  --input-icon:          var(--color-text-secondary);
+  --input-bg: #1c1c20;
+  --input-bg-focus: #232328;
+  --input-border: rgba(255, 255, 255, 0.12);
+  --input-border-hover: #82d9d2;
+  --input-border-focus: #{p.$color-primary-dark-mode};
+  --input-label: var(--color-text-secondary);
+  --input-label-focus: #{p.$color-primary-dark-mode};
+  --input-text: var(--color-text-primary);
+  --input-caret: #{p.$color-primary-dark-mode};
+  --input-icon: var(--color-text-secondary);
 
-  --color-text-primary:     #EAE8F8;
-  --color-text-secondary:   #9B97C0;
-  --color-text-disabled:    #5C5980;
-  --color-text-inverse:     #FFFFFF;
+  --color-text-primary: #e8f8f8;
+  --color-text-secondary: #97c0be;
+  --color-text-disabled: #59807e;
+  --color-text-inverse: #ffffff;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);

@@ -2,28 +2,28 @@
 // con una tarjeta central que gana profundidad por su PROPIO degradado y sombra
 // — nunca dejando ver el fondo a través de ella. Nada de transparencia/blur.
 :root {
-  --auth-bg-gradient-start:   #2D1B6B;
-  --auth-bg-gradient-end:     #1A1730;
-  --auth-card-bg:             linear-gradient(160deg, #2E2568 0%, #201A4D 100%);
-  --auth-card-border:         rgba(255, 255, 255, 0.1);
+  --auth-bg-gradient-start: #1b646b;
+  --auth-bg-gradient-end: #173030;
+  --auth-card-bg: linear-gradient(160deg, #256868 0%, #1a4d4c 100%);
+  --auth-card-border: rgba(255, 255, 255, 0.1);
 
-  --auth-logo-bg:             linear-gradient(135deg, #776CDA 0%, #4A3FBF 100%);
-  --auth-logo-icon:           #F0EEF8;
+  --auth-logo-bg: linear-gradient(135deg, #4fbdb6 0%, #1f7d76 100%);
+  --auth-logo-icon: #eef7f8;
 
-  --auth-title:               #F0EEF8;
-  --auth-subtitle:            #8A85B0;
-  --auth-text:                #EAE8F8;
-  --auth-text-muted:          #6B6590;
+  --auth-title: #eef7f8;
+  --auth-subtitle: #85b0af;
+  --auth-text: #e8f8f8;
+  --auth-text-muted: #659090;
 
-  --auth-accent:              #9588ED;
-  --auth-accent-hover:        #C4BBFF;
+  --auth-accent: #82d9d2;
+  --auth-accent-hover: #bbffff;
 
-  --auth-primary-disabled:    #4A4470;
-  --auth-on-primary-disabled: #9B97C0;
+  --auth-primary-disabled: #447070;
+  --auth-on-primary-disabled: #97c0be;
 
-  --auth-error:               #F07070;
-  --auth-error-bg:            #3A2340;
-  --auth-error-border:        rgba(224, 75, 75, 0.35);
+  --auth-error: #f07070;
+  --auth-error-bg: #3a2340;
+  --auth-error-border: rgba(224, 75, 75, 0.35);
 }
 
 // Las páginas de auth reutilizan el mismo partial global de inputs/selects
@@ -31,14 +31,14 @@
 // para adaptarlas al fondo oscuro, en vez de duplicar las reglas de estilo.
 .login__form,
 .register__fields {
-  --input-bg:            #2A2465;
-  --input-bg-focus:      #322A78;
-  --input-border:        rgba(255, 255, 255, 0.15);
-  --input-border-hover:  #9588ED;
-  --input-border-focus:  #9588ED;
-  --input-label:         var(--auth-subtitle);
-  --input-label-focus:   var(--auth-accent);
-  --input-text:          var(--auth-text);
-  --input-caret:         var(--auth-accent);
-  --input-icon:          var(--auth-text-muted);
+  --input-bg: #246562;
+  --input-bg-focus: #2a7875;
+  --input-border: rgba(255, 255, 255, 0.15);
+  --input-border-hover: #82d9d2;
+  --input-border-focus: #82d9d2;
+  --input-label: var(--auth-subtitle);
+  --input-label-focus: var(--auth-accent);
+  --input-text: var(--auth-text);
+  --input-caret: var(--auth-accent);
+  --input-icon: var(--auth-text-muted);
 }

@@ -32,10 +32,10 @@ export class Hba1cChartComponent implements OnChanges {
     const hba1c = this.trend.map((t) => t.estimatedHba1c ?? null);
     const glucose = this.trend.map((t) => t.averageGlucose ?? null);
 
-    const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
+    const labelColor = getCssColor('--color-text-secondary', dark ? '#97C0BE' : '#546E7A');
     const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
     const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
-    const primaryColor = getCssColor('--color-primary', dark ? '#776CDA' : '#5B4FCF');
+    const primaryColor = getCssColor('--color-chart-accent', dark ? '#A996E0' : '#7B61C4');
     const tealColor = getCssColor('--color-info', dark ? '#2DD4CF' : '#0EA5A0');
     const barColor = dark ? 'rgba(14,165,160,0.35)' : '#A2D9CE';
     const goalColor = getCssColor('--color-success', dark ? '#4ADE98' : '#22A96A');
@@ -55,7 +55,7 @@ export class Hba1cChartComponent implements OnChanges {
         backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
         borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
         textStyle: {
-          color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730'),
+          color: getCssColor('--color-text-primary', dark ? '#E8F8F8' : '#173030'),
           fontSize: 12,
         },
         formatter: (params: any) => {

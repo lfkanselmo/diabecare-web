@@ -103,7 +103,7 @@ export class GlucoseChartComponent implements OnChanges {
     const mealMarkLines = this.buildMealMarkLines(sorted, dark);
     const exerciseMarkLines = this.buildExerciseMarkLines(sorted, dark);
 
-    const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
+    const labelColor = getCssColor('--color-text-secondary', dark ? '#97C0BE' : '#546E7A');
     const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
     const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
     const areaColor = dark ? 'rgba(34,169,106,0.08)' : 'rgba(34,169,106,0.06)';
@@ -118,7 +118,7 @@ export class GlucoseChartComponent implements OnChanges {
         backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
         borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
         textStyle: {
-          color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730'),
+          color: getCssColor('--color-text-primary', dark ? '#E8F8F8' : '#173030'),
           fontSize: 12,
         },
         formatter: (params: any) => {
@@ -250,8 +250,8 @@ export class GlucoseChartComponent implements OnChanges {
     if (!this.exerciseLogs.length || !sorted.length) return [];
 
     const exerciseColor = dark
-      ? getCssColor('--color-primary-mid', '#9588ED')
-      : getCssColor('--color-primary', '#5B4FCF');
+      ? getCssColor('--color-chart-accent', '#A996E0')
+      : getCssColor('--color-chart-accent', '#7B61C4');
 
     return this.exerciseLogs
       .filter((log) => this.hasNearbyReading(log.performedAt, sorted))

@@ -5,40 +5,58 @@
 @use 'sass:color';
 
 // ── Marca — modo claro
-$color-primary:       #5B4FCF;
-$color-primary-mid:   #7B6FE0;
-$color-primary-light: #EEF0FF;
-$color-primary-dark:  #3D3399;
+// "Vital Teal": clínico y calmo, deliberadamente distinto del índigo genérico
+// de wellness/meditación — y separado del espectro rosa-rojo-verde-ámbar de
+// la escala de glucosa (sección de estados clínicos, más abajo) para que ese
+// espectro siga significando una sola cosa.
+$color-primary: #0f6e6a;
+$color-primary-mid: #2a938d;
+$color-primary-light: #e3f2f0;
+$color-primary-dark: #0a4a47;
 
-$color-success: #22A96A;
-$color-warning: #E8A020;
-$color-danger:  #E04B4B;
-$color-info:    #0EA5A0;
+$color-success: #22a96a;
+$color-warning: #e8a020;
+$color-danger: #e04b4b;
+$color-info: #0ea5a0;
 
 // ── Marca — modo oscuro (variantes ya aclaradas para contraste sobre fondo negro)
-$color-primary-dark-mode: #776CDA;
-$color-success-dark-mode: #4ADE98;
-$color-warning-dark-mode: #FABD4A;
-$color-danger-dark-mode:  #F07070;
-$color-info-dark-mode:    #2DD4CF;
+$color-primary-dark-mode: #4fbdb6;
+$color-success-dark-mode: #4ade98;
+$color-warning-dark-mode: #fabd4a;
+$color-danger-dark-mode: #f07070;
+$color-info-dark-mode: #2dd4cf;
 
 // ── Identidad visual "Liquid Glass" (sin transparencias) ──────────────────
 // Misma sensación de profundidad/brillo por capas que Apple Liquid Glass, pero
 // lograda con degradados y sombras — nunca con opacidad/blur sobre el fondo.
-$gradient-primary:        linear-gradient(135deg, #{$color-primary-mid} 0%, #{$color-primary} 55%, #{$color-primary-dark} 100%);
-$gradient-primary-hover:  linear-gradient(135deg, #{$color-primary} 0%, #{$color-primary-dark} 100%);
-$gradient-header:         linear-gradient(120deg, #{$color-primary-dark} 0%, #{$color-primary} 100%);
+$gradient-primary: linear-gradient(
+  135deg,
+  #{$color-primary-mid} 0%,
+  #{$color-primary} 55%,
+  #{$color-primary-dark} 100%
+);
+$gradient-primary-hover: linear-gradient(135deg, #{$color-primary} 0%, #{$color-primary-dark} 100%);
+$gradient-header: linear-gradient(120deg, #{$color-primary-dark} 0%, #{$color-primary} 100%);
 
-$gradient-primary-dark-mode:       linear-gradient(135deg, #9588ED 0%, #{$color-primary-dark-mode} 55%, #4A3FBF 100%);
-$gradient-primary-hover-dark-mode: linear-gradient(135deg, #{$color-primary-dark-mode} 0%, #4A3FBF 100%);
-$gradient-header-dark-mode:        linear-gradient(120deg, #241C57 0%, #342B7A 100%);
+$gradient-primary-dark-mode: linear-gradient(
+  135deg,
+  #82d9d2 0%,
+  #{$color-primary-dark-mode} 55%,
+  #1f7d76 100%
+);
+$gradient-primary-hover-dark-mode: linear-gradient(
+  135deg,
+  #{$color-primary-dark-mode} 0%,
+  #1f7d76 100%
+);
+$gradient-header-dark-mode: linear-gradient(120deg, #0d2e2c 0%, #164944 100%);
 
 // Construye un mapa de paleta M2 completo (50-900 + acentos) a partir de un único
 // color de marca, para que Angular Material use exactamente el mismo hex que los
 // design tokens en vez de una paleta de stock (deep-purple, teal, red) sin relación.
 @function m2-palette-from($base) {
   @return (
-    50:  color.scale($base, $lightness: 85%),
+    50: color.scale($base, $lightness: 85%),
     100: color.scale($base, $lightness: 70%),
     200: color.scale($base, $lightness: 50%),
     300: color.scale($base, $lightness: 30%),
@@ -53,7 +71,7 @@ $gradient-header-dark-mode:        linear-gradient(120deg, #241C57 0%, #342B7A 1
     A400: color.scale($base, $lightness: -10%, $saturation: 10%),
     A700: color.scale($base, $lightness: -25%, $saturation: 10%),
     contrast: (
-      50:  rgba(black, 0.87),
+      50: rgba(black, 0.87),
       100: rgba(black, 0.87),
       200: rgba(black, 0.87),
       300: white,

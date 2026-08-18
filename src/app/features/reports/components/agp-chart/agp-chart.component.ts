@@ -55,10 +55,10 @@ export class AgpChartComponent implements OnChanges {
       b.p75 !== null && b.p25 !== null ? round1(b.p75 - p25[i]!) : null,
     );
 
-    const labelColor = getCssColor('--color-text-secondary', dark ? '#9B97C0' : '#546E7A');
+    const labelColor = getCssColor('--color-text-secondary', dark ? '#97C0BE' : '#546E7A');
     const gridColor = dark ? 'rgba(255,255,255,0.06)' : '#F0F0F0';
     const axisColor = dark ? 'rgba(255,255,255,0.12)' : '#E0E0E0';
-    const primary = getCssColor('--color-primary', dark ? '#776CDA' : '#5B4FCF');
+    const primary = getCssColor('--color-primary', dark ? '#4FBDB6' : '#0F6E6A');
     const targetAreaColor = dark ? 'rgba(34,169,106,0.08)' : 'rgba(34,169,106,0.06)';
     const minLine = getCssColor('--color-danger', dark ? '#F07070' : '#C62828');
     const maxLine = getCssColor('--color-warning', dark ? '#FABD4A' : '#E8A020');
@@ -71,7 +71,7 @@ export class AgpChartComponent implements OnChanges {
         backgroundColor: getCssColor('--color-surface', dark ? '#121214' : '#FFFFFF'),
         borderColor: dark ? 'rgba(255,255,255,0.08)' : '#E8E6F5',
         textStyle: {
-          color: getCssColor('--color-text-primary', dark ? '#EAE8F8' : '#1A1730'),
+          color: getCssColor('--color-text-primary', dark ? '#E8F8F8' : '#173030'),
           fontSize: 12,
         },
         formatter: (params: any) => {

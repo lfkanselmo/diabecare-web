@@ -38,16 +38,29 @@ a {
   }
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   line-height: var(--line-height-tight);
   font-weight: var(--font-weight-medium);
   color: var(--color-text-primary);
 }
 
-.text-muted    { color: var(--color-text-secondary); }
-.text-success  { color: var(--color-success); }
-.text-warning  { color: var(--color-warning); }
-.text-danger   { color: var(--color-danger); }
+.text-muted {
+  color: var(--color-text-secondary);
+}
+.text-success {
+  color: var(--color-success);
+}
+.text-warning {
+  color: var(--color-warning);
+}
+.text-danger {
+  color: var(--color-danger);
+}
 
 .card {
   background: var(--color-surface);
@@ -79,9 +92,42 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto;
 }
 
-::-webkit-scrollbar        { width: 5px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  {
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
   background: var(--color-border);
   border-radius: var(--radius-full);
+  transition: background var(--transition-normal);
+
+  &:hover {
+    background: var(--color-primary-light);
+  }
+}
+
+::selection {
+  background: var(--color-primary-light);
+  color: var(--color-text-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

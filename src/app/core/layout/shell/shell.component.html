@@ -2,8 +2,11 @@
   <app-navbar (menuToggle)="toggleSidebar()" />
   <div class="shell__body">
     <app-sidebar [isOpen]="sidebarOpen" />
-    <main class="shell__content">
-      <router-outlet />
+    @if (isMobile && sidebarOpen) {
+      <div class="shell__backdrop" (click)="closeSidebar()"></div>
+    }
+    <main class="shell__content" [@routeFade]="getRouteState(outlet)">
+      <router-outlet #outlet="outlet" />
     </main>
   </div>
 </div>

@@ -8,6 +8,7 @@ import {
 import { MatIconModule } from '@angular/material/icon';
 import { AlertResponse, AlertSeverity } from '../../../shared/models/alert.model';
 import { SystemConfigService } from '../../../core/services/system-config.service';
+import { listStagger } from '../../animations/app.animations';
 
 @Component({
   selector: 'app-alerts-panel',
@@ -15,6 +16,7 @@ import { SystemConfigService } from '../../../core/services/system-config.servic
   imports: [MatIconModule],
   templateUrl: './alerts-panel.component.html',
   styleUrl: './alerts-panel.component.scss',
+  animations: [listStagger],
   changeDetection: ChangeDetectionStrategy.Eager,
   encapsulation: ViewEncapsulation.None,
 })

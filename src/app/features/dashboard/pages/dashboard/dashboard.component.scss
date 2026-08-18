@@ -24,7 +24,7 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: var(--space-4);
     margin-bottom: var(--space-6);
   }
@@ -40,14 +40,44 @@
     border-left: 3px solid transparent;
     box-shadow: none;
     transition: box-shadow var(--transition-fast);
+    animation: dashboard-card-in var(--transition-slow) var(--ease-spring) backwards;
 
-    &:hover { box-shadow: var(--shadow-sm); }
+    &:hover {
+      box-shadow: var(--shadow-sm);
+    }
 
-    &--glucose  { border-left-color: var(--color-primary); }
-    &--calories { border-left-color: var(--color-success); }
-    &--vitals   { border-left-color: var(--color-info); }
-    &--cv       { border-left-color: var(--color-warning); }
-    &--cycle    { border-left-color: #FFA726; }
+    &--glucose {
+      border-left-color: var(--color-primary);
+    }
+    &--calories {
+      border-left-color: var(--color-success);
+    }
+    &--vitals {
+      border-left-color: var(--color-info);
+    }
+    &--cv {
+      border-left-color: var(--color-warning);
+    }
+    &--cycle {
+      border-left-color: #ffa726;
+    }
+
+    @for $i from 1 through 5 {
+      &:nth-child(#{$i}) {
+        animation-delay: #{($i - 1) * 40}ms;
+      }
+    }
+  }
+
+  @keyframes dashboard-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 
   &__card-header {
@@ -58,7 +88,11 @@
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
 
-    mat-icon { font-size: 18px; width: 18px; height: 18px; }
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
   }
 
   &__metric {
@@ -78,7 +112,9 @@
     color: var(--color-text-primary);
     line-height: 1;
 
-    &--warning { color: var(--color-warning); }
+    &--warning {
+      color: var(--color-warning);
+    }
   }
 
   &__metric-unit {
@@ -106,7 +142,9 @@
     margin-top: auto;
     cursor: pointer;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__badge {
@@ -191,7 +229,9 @@
     margin-top: var(--space-1);
     cursor: pointer;
 
-    &:hover { text-decoration: underline; }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 
   &__hba1c {
@@ -218,9 +258,15 @@
     font-size: var(--font-size-lg);
     font-weight: var(--font-weight-medium);
 
-    &--good   { color: var(--color-success); }
-    &--warn   { color: var(--color-warning); }
-    &--danger { color: var(--color-danger);  }
+    &--good {
+      color: var(--color-success);
+    }
+    &--warn {
+      color: var(--color-warning);
+    }
+    &--danger {
+      color: var(--color-danger);
+    }
   }
 
   &__hba1c-bar {
@@ -235,9 +281,15 @@
     border-radius: var(--radius-full);
     transition: width var(--transition-normal);
 
-    &--good   { background: var(--color-success); }
-    &--warn   { background: var(--color-warning); }
-    &--danger { background: var(--color-danger);  }
+    &--good {
+      background: var(--color-success);
+    }
+    &--warn {
+      background: var(--color-warning);
+    }
+    &--danger {
+      background: var(--color-danger);
+    }
   }
 
   &__hba1c-targets {

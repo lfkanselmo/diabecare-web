@@ -11,8 +11,12 @@
   position: sticky;
   top: var(--space-2);
 
-  &--open  { width: calc(var(--sidebar-width) - var(--space-2)); }
-  &--closed { width: 56px; }
+  &--open {
+    width: calc(var(--sidebar-width) - var(--space-2));
+  }
+  &--closed {
+    width: 56px;
+  }
 
   &__nav {
     list-style: none;
@@ -23,7 +27,9 @@
     height: 100%;
   }
 
-  &__item { margin: 0; }
+  &__item {
+    margin: 0;
+  }
 
   &__link {
     display: flex;
@@ -35,8 +41,9 @@
     text-decoration: none;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    transition: background-color var(--transition-fast),
-                color var(--transition-fast);
+    transition:
+      background-color var(--transition-fast),
+      color var(--transition-fast);
     white-space: nowrap;
 
     &:hover {
@@ -58,5 +65,31 @@
 
   &__label {
     overflow: hidden;
+  }
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    position: fixed;
+    top: var(--navbar-height);
+    left: 0;
+    margin: 0;
+    border-radius: 0;
+    height: calc(100vh - var(--navbar-height));
+    z-index: 96;
+    transition: transform var(--transition-normal) var(--ease-spring);
+    box-shadow: var(--shadow-lg);
+
+    &--open,
+    &--closed {
+      width: var(--sidebar-width);
+    }
+
+    &--open {
+      transform: translateX(0);
+    }
+    &--closed {
+      transform: translateX(-100%);
+    }
   }
 }

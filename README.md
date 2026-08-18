@@ -159,7 +159,7 @@ src/
 └── styles/
     ├── tokens.scss             ← Design tokens "Calm Health"
     ├── mixins.scss             ← Mixins SCSS globales
-    └── theme.scss              ← Tema Angular Material (índigo)
+    └── theme.scss              ← Tema Angular Material (Vital Teal)
 ```
 
 ---
@@ -290,13 +290,13 @@ La aplicación es **bilingüe (español/inglés)** vía [`@jsverse/transloco`](h
 
 | Token | Valor | Uso |
 |---|---|---|
-| `--color-primary` | `#5B4FCF` | Índigo — acciones principales, nav |
+| `--color-primary` | `#0F6E6A` | Vital Teal — acciones principales, nav |
 | `--color-success` | `#22A96A` | Glucosa en rango, metas cumplidas |
 | `--color-warning` | `#E8A020` | Glucosa alta, variabilidad alta |
 | `--color-danger` | `#E04B4B` | Hipoglucemia, errores |
 | `--color-info` | `#0EA5A0` | Teal — información secundaria |
 | `--color-surface` | `#FFFFFF` | Cards, paneles |
-| `--color-background` | `#F7F6FC` | Fondo principal |
+| `--color-background` | `#F6FCFC` | Fondo principal |
 | `--radius-lg` | `14px` | Cards |
 | `--radius-md` | `10px` | Inputs, chips |
 

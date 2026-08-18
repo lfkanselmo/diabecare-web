@@ -205,7 +205,7 @@ Sin cambios funcionales esta sesión, pero corrigió un bug de Angular: el `@for
 
 **Solución implementada**:
 
-1. **Líneas verticales sin texto** — `markLine` solo dibuja la línea discontinua (teal=comida, índigo=ejercicio), sin `label`
+1. **Líneas verticales sin texto** — `markLine` solo dibuja la línea discontinua (teal=comida, violeta=ejercicio — colores separados a propósito, ver `--color-chart-accent` en `_tokens.scss`), sin `label`
 2. **Tooltip enriquecido al hover** — muestra glucosa + tipo de lectura + eventos relacionados (si los hay)
 3. **Ventana de tolerancia temporal** (`MAX_GAP_MS = 2 horas`) — un evento solo se considera "relacionado" con una lectura de glucosa si ocurrió dentro de ±2 horas; si no hay ninguna lectura cercana, el evento ni se dibuja como línea ni aparece en el tooltip de ninguna lectura
 4. **Lista "Eventos registrados" debajo de la gráfica** — muestra TODOS los eventos (comida + ejercicio) ordenados cronológicamente, sin el filtro de tolerancia temporal — preserva la información completa sin saturar la gráfica
